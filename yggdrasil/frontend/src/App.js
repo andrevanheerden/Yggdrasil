@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import './App.css';
 import Login from './pages/loginPage/Login';
+import Home from './pages/homePage/Home'; // Import Home.js
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/home" element={<Home />} /> {/* Add Home route */}
         </Routes>
       </Router>
     </div>
