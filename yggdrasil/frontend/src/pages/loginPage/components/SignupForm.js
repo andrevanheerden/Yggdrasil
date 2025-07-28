@@ -2,8 +2,8 @@ import React from 'react';
 
 function SignupForm() {
   return (
-    <form className="login-form">
-      <h2>Sign Up</h2>
+    <>
+
       <div className="form-group">
         <label htmlFor="signup-username">Username</label>
         <input type="text" id="signup-username" name="username" required />
@@ -17,7 +17,7 @@ function SignupForm() {
         <input type="password" id="signup-password" name="password" required />
       </div>
       <button type="submit">Sign Up</button>
-    </form>
+    </>
   );
 }
 

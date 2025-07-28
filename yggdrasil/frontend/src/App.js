@@ -1,0 +1,24 @@
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import './App.css';
+import Login from './pages/loginPage/Login';
+
+function App() {
+  return (
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100vw', overflow: 'hidden' }}>
+      <div className="absolute-bg"></div>
+      <div className="fog-container">
+        <div className="fog-img fog-img-first"></div>
+        <div className="fog-img fog-img-second"></div>
+      </div>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </Router>
+    </div>
+  );
+}
+
+export default App;

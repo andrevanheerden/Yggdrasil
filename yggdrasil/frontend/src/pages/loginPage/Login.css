@@ -1,31 +1,30 @@
-body {
-  background-image: url('../../assets/images/forest.jpg');
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center;
+body, #root {
   min-height: 100vh;
-  margin: 0;
-  padding: 0;
-
-  /* Center content using flexbox */
+  width: 100vw;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .login-form {
-
   border-radius: 20px;
   background: rgba(0, 0, 0, 0.3);
   box-shadow: 5.333px 4px 12px 0 rgba(255, 255, 255, 0.65) inset;
   padding: 30px 40px;
   color: white;
-  width: 350px;
   backdrop-filter: blur(2px); /* Add this line for blur effect */
   -webkit-backdrop-filter: blur(10px); /* For Safari support */
   border: 1px solid rgba(255, 255, 255, 0.15);
   transition: transform 0.3s ease;
+  /* Remove fixed width and height */
+  width: auto;
+  min-width: 320px;
+  max-width: 400px;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+   z-index: 2;
 }
 
 .login-form:hover {
@@ -80,7 +79,7 @@ body {
 }
 
 button[type="submit"] {
-  width: 100%;
+  width: 90%;
   padding: 12px;
   background: linear-gradient(90deg, #69d6a7, #199A6A);
   border: none;
@@ -93,6 +92,10 @@ button[type="submit"] {
   cursor: pointer;
   box-shadow: 0 0 10px rgba(0, 255, 255, 0.4);
   transition: all 0.3s ease;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 20px;
 }
 
 button[type="submit"]:hover {
@@ -108,19 +111,29 @@ button[type="submit"]:hover {
 }
 
 .switch-btn {
-  padding: 8px 16px;
-  border-radius: 8px;
-  border: none;
-  background: #eee;
-  color: #222;
+  border-radius: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  backdrop-filter: blur(2px); /* Add this line for blur effect */
+  -webkit-backdrop-filter: blur(10px); /* For Safari support */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.3s ease;
+  height: 50px;
   font-weight: bold;
   cursor: pointer;
-  transition: background 0.2s;
+  width: 30%;
+  margin-bottom: 1vh;
+  margin-top: 10px;
 }
 
 .switch-btn.active {
-  background: #00ffff;
-  color: #222;
+  background: rgba(69, 190, 138, 0.3);
+  box-shadow: 5.333px 4px 12px 0 rgba(255, 255, 255, 0.65);
+  color: white;
+  backdrop-filter: blur(2px); /* Add this line for blur effect */
+  -webkit-backdrop-filter: blur(10px); /* For Safari support */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: transform 0.3s ease;
 }
 
 .login-logo {
@@ -129,4 +142,5 @@ button[type="submit"]:hover {
   display: block;
   margin-left: auto;
   margin-right: auto;
+  margin-bottom: 2vh;
 }
