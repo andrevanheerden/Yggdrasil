@@ -1,16 +1,20 @@
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 50%;
   left: 0;
-  width: 80px;
-  height: 100vh;
+  transform: translateY(-50%);
+  width: 120px;
+  height: 93vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
-  border-right: 1px solid rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
   z-index: 1000;
+  box-shadow: 0 0 24px 8px #37ff14b2; /* Neon green shadow all around */
+  margin-left: 30px;
 }
 
 .logo-container {
@@ -20,8 +24,8 @@
 }
 
 .logo {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   object-fit: contain;
   border: 1px solid white;
   border-radius: 50%;
@@ -38,8 +42,8 @@
 }
 
 .nav-icon {
-  width: 40px;
-  height: 40px;
+  width: 60px;
+  height: 60px;
   font-size: 20px;
   color: white;
   display: flex;
