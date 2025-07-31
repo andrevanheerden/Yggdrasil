@@ -1,3 +1,6 @@
+/* Import fantasy fonts */
+
+
 body, #root {
   min-height: 100vh;
   width: 100vw;
@@ -6,70 +9,221 @@ body, #root {
   align-items: center;
 }
 
-.login-container {
-  width: 450px;
-  min-height: 600px;
-  background: url("../../assets/images/page.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  padding: 40px 30px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+/* Forest background still managed elsewhere */
+
+
+/* Notepad wrapper with black back cover */
+.notepad-container {
   position: relative;
+  width: 600px;
+  min-height: 580px;
+  margin: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
-  z-index: 5;
+  z-index: 10;
 }
 
-.title {
-  font-size: 28px;
-  font-weight: bold;
-  margin-bottom: 8px;
-  letter-spacing: 3px;
-  text-align: center;
-}
-
-.login-label {
-  font-size: 18px;
-  margin-bottom: 20px;
-}
-
-.login-form {
+/* Black cover shadow */
+.notepad-container::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
   width: 100%;
+  height: 100%;
+  background: #000;
+  border-radius: 12px;
+  z-index: -2;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Spiral rings */
+.spiral-rings {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: -28px;
+  width: 100%;
+  height: 30px;
+  z-index: 30;
+}
+.spiral-ring {
+  width: 18px;
+  height: 28px;
+  background: #222;
+  border-radius: 6px;
+  margin: 0 5px;
+  box-shadow: 0 2px 5px #000a;
+}
+
+/* Notepad paper */
+.notepad-paper {
+  width: 80%;
+  min-height: 580px;
+  padding: 40px 36px 48px 36px;
+  background: url("../../assets/images/page.png") center/cover no-repeat;
+  border-radius: 12px;
+  box-shadow: inset 0 0 0 2px #ddd, 0 8px 24px rgba(0, 0, 0, 0.3);
+  position: relative;
+  z-index: 20;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
-.login-form label {
-  font-size: 14px;
-  margin: 10px 0 4px;
+/* Paper shadow effect */
+.leaf-overlay {
+  position: absolute;
+  inset: 0;
+  background: url("../../assets/images/page.png") center/cover no-repeat;
+  opacity: 0.2;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.login-form input {
-  border: none;
-  border-bottom: 1px solid #000;
-  background: transparent;
-  font-size: 16px;
-  padding: 6px 2px;
-  margin-bottom: 10px;
-  outline: none;
+/* Notebook lines */
+.notepad-lines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 28px,
+    #bbb 29px,
+    transparent 30px
+  );
+  z-index: 2;
+  pointer-events: none;
 }
 
-button {
-  margin-top: 20px;
-  background: transparent;
-  border: none;
-  font-size: 18px;
+/* Title & subtitle */
+.notepad-title {
+  font-family: 'Cinzel', serif;
+  font-size: 2.4rem;
   font-weight: bold;
-  cursor: pointer;
+  letter-spacing: 6px;
+  margin-bottom: 8px;
+  text-align: center;
+  position: relative;
+  z-index: 3;
+}
+
+.notepad-subtitle {
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  margin-bottom: 20px;
+  z-index: 3;
+  position: relative;
+}
+
+/* Labels & inputs */
+.notepad-label {
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.1rem;
+  margin-bottom: 2px;
+  margin-left: 10px;
+  z-index: 3;
+  position: relative;
+}
+
+.notepad-input {
+  width: 95%;
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 2px solid #333;
+  background: transparent;
+  font-size: 1.1rem;
+  color: #222;
+  outline: none;
+  margin-bottom: 16px;
+  z-index: 3;
+  position: relative;
+}
+
+/* Submit button */
+.notepad-submit {
+  width: 60%;
+  padding: 10px 0;
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.4rem;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: #222;
+  background: transparent;
+  border-top: 2px solid #222;
+  border-bottom: 2px solid #222;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  gap: 16px;
+  cursor: pointer;
+  margin-top: 28px;
+  z-index: 3;
+  position: relative;
+  transition: color 0.3s, border-color 0.3s;
 }
 
-.tree-icon {
-  width: 24px;
-  height: auto;
+
+
+.floral-left,
+.floral-right {
+  height: 60px;
+  color: #37ff14;
+  font-family: 'Cinzel', serif;
+}
+
+/* Tabs flush to paper edge */
+.side-tabs {
+  position: absolute;
+  left: -32px;
+  top: 80px;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.side-tab {
+  writing-mode: vertical-rl;
+  font-family: 'Cinzel', serif;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #222;
+  background: #37ff14b2;
+  border-radius: 8px 8px 0 0;
+  box-shadow: 0 2px 6px #0004;
+  padding: 6px 4px;
+  cursor: pointer;
+  user-select: none;
+  text-align: center;
+  transition: background 0.2s;
+}
+
+.signup-tab {
+  background: #bbb;
+  border-radius: 0 0 8px 8px;
+}
+
+.side-tab.active {
+  background: #37ff14;
+}
+
+/* Footer glow */
+.notepad-footer {
+  position: absolute;
+  bottom: -38px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  z-index: 30;
+}
+
+.footer-glow {
+  font-family: 'Cinzel', serif;
+  font-size: 1.3rem;
+  color: #37ff14;
+  text-shadow: 0 0 16px #37ff14, 0 0 32px #37ff14;
+  letter-spacing: 4px;
 }
