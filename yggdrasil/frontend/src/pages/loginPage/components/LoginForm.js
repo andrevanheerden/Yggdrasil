@@ -1,48 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../Login.css';
-import logoLong from '../../../assets/images/Logo.png';
-import SignupForm from './SignupForm';
-
-function LoginFormContent() {
-  return (
-    <>
-      <div className="form-group">
-        <label htmlFor="login-username">Username</label>
-        <input type="text" id="login-username" name="username" required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="login-password">Password</label>
-        <input type="password" id="login-password" name="password" required />
-      </div>
-      <button type="submit">Login</button>
-    </>
-  );
-}
+import paperBg from '../../../assets/images/page.png';
+import treeIcon from '../../../assets/images/logoB.png';
 
 function LoginForm() {
-  const [showSignup, setShowSignup] = useState(false);
-
   return (
-    <div className="login-form">
-      <div className="switch-btn-group">
-        <button
-          type="button"
-          className={`switch-btn ${!showSignup ? 'active' : ''}`}
-          onClick={() => setShowSignup(false)}
-        >
-          Login
+    <div className="login-container" >
+      <h1 className="title">YGGDRASIL</h1>
+      <p className="login-label">Log in</p>
+      
+      <form className="login-form">
+        <label>Username:</label>
+        <input type="text" />
+
+        <label>Password:</label>
+        <input type="password" />
+
+        <button type="submit">
+          <img src={treeIcon} alt="tree logo" className="tree-icon" />
+          Submit
         </button>
-        <button
-          type="button"
-          className={`switch-btn ${showSignup ? 'active' : ''}`}
-          onClick={() => setShowSignup(true)}
-        >
-          Sign Up
-        </button>
-      </div>
-      <img src={logoLong} alt="Logo" className="login-logo" />
-      <form>
-        {showSignup ? <SignupForm /> : <LoginFormContent />}
       </form>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import './Login.css';
 import LoginForm from './components/LoginForm';
-import Navbar from '../homePage/components/Navbar'; // Adjust the path if needed
+
 
 function Login() {
   return (
@@ -13,7 +13,7 @@ function Login() {
       justifyContent: 'center',
       alignItems: 'center'
     }}>
-      <Navbar />
+  
       <LoginForm />
     </div>
   );
