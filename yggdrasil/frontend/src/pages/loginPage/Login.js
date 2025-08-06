@@ -1,18 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Login.css';
-import LoginSwitch from './components/LoginSwitch';
+import LoginForm from './components/LoginForm';
+import SignupForm from './components/SignupForm';
 
 function Login() {
+  const [isLogin, setIsLogin] = useState(true);
+
   return (
-    <div style={{
-      minHeight: '100vh',
-      width: '100vw',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center'
-    }}>
-      <LoginSwitch />
+    <div className="login-page">
+      <div className="login-container">
+        <div className="tab-buttons">
+          <button
+            className={`tab-btn ${isLogin ? 'active' : ''}`}
+            onClick={() => setIsLogin(true)}
+          >
+            Log In
+          </button>
+          <button
+            className={`tab-btn ${!isLogin ? 'active' : ''}`}
+            onClick={() => setIsLogin(false)}
+          >
+            Sign Up
+          </button>
+        </div>
+        <div className="form-wrapper">
+          {isLogin ? <LoginForm /> : <SignupForm />}
+        </div>
+      </div>
     </div>
   );
 }

@@ -8,32 +8,29 @@ body, #root {
 }
 
 
+/* Fullscreen background */
+.login-page {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: none;
+  position: relative;
+}
+
+/* Notepad container */
 .login-container {
   background: url('../../assets/images/notepad.png') no-repeat center center;
   background-size: cover;
   width: 500px;
   height: 600px;
+  position: relative;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  z-index: 5;
-
+  justify-content: center;
+   align-items: flex-start; 
+  z-index: 8;
 }
-
-.login-form {
-  width: 100%;
-  max-width: 300px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-family: 'Caudex', serif;
-  color: #333;
-  margin-top: 120px; /* Margin from top for form content */
-}
-
-
 
 
 label {
@@ -69,65 +66,85 @@ input {
   text-align: left;
 }
 
-input:focus {
-  border: 1.5px solid #000000;
-  box-shadow: 0 2px 8px rgba(55,255,20,0.08);
-}
-
-button {
-  margin-top: 30px;
-  padding: 10px;
-  font-size: 16px;
-  border: none;
-  background-color: #2f4f2f;
-  color: white;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  border-radius: 4px;
-}
-
-button:hover {
-  background-color: #3b6f3b;
-}
-
-.login-switch-wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start; /* Align to top */
-  justify-content: center;
-}
-
+/* Vertical tab buttons */
 .tab-buttons {
+  position: absolute;
+  left: 6px; /* overlap to the left */
+  top: 90px;
   display: flex;
   flex-direction: column;
-  margin-left: -20px; /* overlap the notepad edge on the right */
-  margin-right: 0;
   z-index: 10;
 }
 
 .tab-btn {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  background: #3b6f3b;
+  background: #05512C;
   color: #fff;
   border: none;
-  border-radius: 10px 10px 0 0;
+  border-radius: 0px 10px 10px 0px;
   margin-bottom: 10px;
   padding: 10px 5px;
   cursor: pointer;
   font-family: 'Caudex', serif;
   font-size: 16px;
   transition: background 0.3s;
-  opacity: 0.7;
 }
 
-.tab-btn.active,
-.tab-btn:hover {
-  background: #37ff14b2;
+.tab-btn.active {
+  background: #199A6A;
   color: #222;
   opacity: 1;
+  padding: 20px 5px;
+}
+
+/* Form inside the notepad */
+.form-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.login-form {
+  width: 300px;
+  margin-top: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Caudex', serif;
+  color: #333;
+}
+
+.submit-btn:focus {
+  outline: none;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37); /* keep the drop shadow */
 }
 
 
+.submit-btn {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 15px;
+  padding: 12px 30px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  user-select: none;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+
+  /* Reset any default button inner styles */
+  box-sizing: border-box;
+  background-clip: padding-box; /* prevents background bleeding into border */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
 
 

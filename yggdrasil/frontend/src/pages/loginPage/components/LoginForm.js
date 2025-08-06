@@ -19,7 +19,9 @@ const LoginForm = () => {
         placeholder="Password"
         required
       />
-      <button type="submit">Submit</button>
+      <div className='submit-btn'>
+      <button type="submit">Log in</button>
+      </div>
     </form>
   );
 };
