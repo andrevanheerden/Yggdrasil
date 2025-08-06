@@ -1,7 +1,6 @@
 import React from 'react';
 import './Login.css';
-import LoginForm from './components/LoginForm';
-
+import LoginSwitch from './components/LoginSwitch';
 
 function Login() {
   return (
@@ -13,8 +12,7 @@ function Login() {
       justifyContent: 'center',
       alignItems: 'center'
     }}>
-  
-      <LoginForm />
+      <LoginSwitch />
     </div>
   );
 }

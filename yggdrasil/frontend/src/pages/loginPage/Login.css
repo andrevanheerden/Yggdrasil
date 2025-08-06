@@ -1,4 +1,3 @@
-
 body, #root {
   min-height: 100vh;
   width: 100vw;
@@ -12,44 +11,67 @@ body, #root {
 .login-container {
   background: url('../../assets/images/notepad.png') no-repeat center center;
   background-size: cover;
-  width: 400px;
-  height: 500px;
+  width: 500px;
+  height: 600px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   z-index: 5;
+
 }
 
 .login-form {
-  width: 80%;
+  width: 100%;
+  max-width: 300px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  font-family: 'Georgia', serif;
+  align-items: center;
+  font-family: 'Caudex', serif;
   color: #333;
+  margin-top: 120px; /* Margin from top for form content */
 }
 
 
-.subtitle {
-  text-align: center;
-  font-size: 18px;
-  margin-bottom: 30px;
-  color: #444;
-}
+
 
 label {
+  display: block;
+  width: 100%;
+  height: auto;
   margin-top: 10px;
-  font-size: 14px;
+  margin-bottom: 0;
+  font-size: 16px;
+  color: #000;
+  text-align: center;
+
 }
 
 input {
-  padding: 8px;
-  margin-top: 2px;
-  border: none;
-  border-bottom: 1px solid #555;
-  background: transparent;
-  font-size: 16px;
-  color: #333;
+  width: 300px;
+  max-width: 100%;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 5px 10px;
+  margin-top: 8px;
+  margin-bottom: 18px;
+  border: 1px solid #808080;
+  border-radius: 20px;
+  background: rgba(255,255,255,0);
+  font-size: 18px;
+  color: #000000;
   outline: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  transition: border 0.2s, box-shadow 0.2s;
+  box-sizing: border-box;
+  text-align: left;
+}
+
+input:focus {
+  border: 1.5px solid #000000;
+  box-shadow: 0 2px 8px rgba(55,255,20,0.08);
 }
 
 button {
@@ -67,5 +89,45 @@ button {
 button:hover {
   background-color: #3b6f3b;
 }
+
+.login-switch-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start; /* Align to top */
+  justify-content: center;
+}
+
+.tab-buttons {
+  display: flex;
+  flex-direction: column;
+  margin-left: -20px; /* overlap the notepad edge on the right */
+  margin-right: 0;
+  z-index: 10;
+}
+
+.tab-btn {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  background: #3b6f3b;
+  color: #fff;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  margin-bottom: 10px;
+  padding: 10px 5px;
+  cursor: pointer;
+  font-family: 'Caudex', serif;
+  font-size: 16px;
+  transition: background 0.3s;
+  opacity: 0.7;
+}
+
+.tab-btn.active,
+.tab-btn:hover {
+  background: #37ff14b2;
+  color: #222;
+  opacity: 1;
+}
+
+
 
 

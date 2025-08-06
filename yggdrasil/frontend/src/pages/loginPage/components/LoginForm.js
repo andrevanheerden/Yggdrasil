@@ -1,20 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import '../Login.css';
 
 const LoginForm = () => {
   return (
-
-      <div className="login-container">
-        <form className="login-form">
-          <h2 className="subtitle">Log in</h2>
-          <label htmlFor="username">Username:</label>
-          <input type="text" id="username" name="username" />
-          <label htmlFor="password">Password:</label>
-          <input type="password" id="password" name="password" />
-          <button type="submit">Submit</button>
-        </form>
-      </div>
-
+    <form className="login-form">
+      <h2 className="subtitle">Log In</h2>
+      <input
+        type="text"
+        id="login-username"
+        name="username"
+        placeholder="Username"
+        required
+      />
+      <input
+        type="password"
+        id="login-password"
+        name="password"
+        placeholder="Password"
+        required
+      />
+      <button type="submit">Submit</button>
+    </form>
   );
 };
 

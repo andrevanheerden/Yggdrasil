@@ -13,6 +13,27 @@
   }
 }
 
+/* Import MedievalSharp from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
+/* Import Caudex from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Caudex&display=swap');
+
+* {
+  font-family: 'Caudex', serif !important;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
