@@ -15,7 +15,7 @@ const Navbar = () => {
         <div className="nav-icon" onClick={() => navigate('/home')} style={{ cursor: 'pointer' }}>🏠</div>
         <div className="nav-icon">👤</div>
         <div className="nav-icon">🔲</div>
-        <div className="nav-icon">⚙️</div>
+        <div className="nav-icon" onClick={() => navigate('/login')} style={{ cursor: 'pointer' }}>⚙️</div>
       </div>
     </div>
   );

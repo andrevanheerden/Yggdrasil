@@ -1,9 +1,17 @@
 import React from 'react';
 import '../Login.css';
+import { useNavigate } from 'react-router-dom';
 
 const LoginForm = () => {
+  const navigate = useNavigate(); // <-- you forgot this
+
+  const handleSubmit = (e) => {
+    e.preventDefault(); // prevent form from reloading the page
+    navigate('/home');  // navigate after submit
+  };
+
   return (
-    <form className="login-form">
+    <form className="login-form" onSubmit={handleSubmit}>
       <h2 className="subtitle">Log In</h2>
       <input
         type="text"
@@ -19,11 +27,12 @@ const LoginForm = () => {
         placeholder="Password"
         required
       />
-      <div className='submit-btn'>
-      <button type="submit">Log in</button>
-      </div>
+      <button type="submit" className="submit-btn">
+        Log in
+      </button>
     </form>
   );
 };
 
 export default LoginForm;
+

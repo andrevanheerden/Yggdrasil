@@ -123,12 +123,12 @@ input {
 
 
 .submit-btn {
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-  background: rgba(255, 255, 255, 0.15);
+  border: 0px solid rgba(255, 255, 255, 0);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.6);
+  background: rgba(11, 143, 92, 0.521);
   border-radius: 15px;
   padding: 12px 30px;
-  color: #fff;
+  color: #333;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
@@ -138,13 +138,13 @@ input {
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: background 0.3s ease, box-shadow 0.3s ease;
-
   /* Reset any default button inner styles */
   box-sizing: border-box;
   background-clip: padding-box; /* prevents background bleeding into border */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
+  margin-top: 10px;
 }
 
 
