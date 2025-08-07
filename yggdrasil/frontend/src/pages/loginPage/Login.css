@@ -23,8 +23,8 @@ body, #root {
 .login-container {
   background: url('../../assets/images/notepad.png') no-repeat center center;
   background-size: cover;
-  width: 500px;
-  height: 600px;
+  width: 600px;
+  height: 700px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -42,16 +42,22 @@ label {
   font-size: 16px;
   color: #000;
   text-align: center;
+}
 
+.subtitle {
+  font-size: 28px;
+  color: #000;
+  text-align: center;
+  margin-top: 50px;
 }
 
 input {
-  width: 300px;
+  width: 100%;
   max-width: 100%;
   display: block;
   margin-left: auto;
   margin-right: auto;
-  padding: 5px 10px;
+  padding: 10px 10px;
   margin-top: 8px;
   margin-bottom: 18px;
   border: 1px solid #808080;
@@ -69,7 +75,7 @@ input {
 /* Vertical tab buttons */
 .tab-buttons {
   position: absolute;
-  left: 6px; /* overlap to the left */
+  left: 1px; /* overlap to the left */
   top: 90px;
   display: flex;
   flex-direction: column;
@@ -84,10 +90,10 @@ input {
   border: none;
   border-radius: 0px 10px 10px 0px;
   margin-bottom: 10px;
-  padding: 10px 5px;
+  padding: 20px 10px 20px 10px;
   cursor: pointer;
   font-family: 'Caudex', serif;
-  font-size: 16px;
+  font-size: 18px;
   transition: background 0.3s;
 }
 
@@ -95,7 +101,7 @@ input {
   background: #199A6A;
   color: #222;
   opacity: 1;
-  padding: 20px 5px;
+  padding: 40px 10px;
 }
 
 /* Form inside the notepad */
