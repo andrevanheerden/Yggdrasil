@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './App.css';
 import Login from './pages/loginPage/Login';
 import Home from './pages/homePage/Home';
-import { loginUser, fetchHomeData } from './services/api';
+import { loginUser, fetchHomeData } from './api';
 
 function App() {
   const [user, setUser] = useState(null);
