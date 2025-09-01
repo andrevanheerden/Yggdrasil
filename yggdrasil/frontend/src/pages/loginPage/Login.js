@@ -1,29 +1,24 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
-import { signupUser } from '../../api'; // Add this import
+
 
 function Login({ onLogin, loading, error }) {
   const [isLogin, setIsLogin] = useState(true);
   const [signupError, setSignupError] = useState(null);
   const [signupLoading, setSignupLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSignup = async (userData) => {
-    setSignupLoading(true);
-    setSignupError(null);
-    try {
-      const response = await signupUser(userData);
-      // Automatically log in after successful signup
-      await onLogin({
-        username: userData.username,
-        password: userData.password
-      });
-    } catch (err) {
-      setSignupError(err.message);
-    } finally {
-      setSignupLoading(false);
-    }
+  // Handle login: just navigate to home
+  const handleLogin = async () => {
+    navigate('/home');
+  };
+
+  // Handle signup: just navigate to home
+  const handleSignup = async () => {
+    navigate('/home');
   };
 
   return (
@@ -52,7 +47,7 @@ function Login({ onLogin, loading, error }) {
         <div className="form-wrapper">
           {isLogin ? (
             <LoginForm 
-              onLogin={onLogin} 
+              onLogin={handleLogin} 
               loading={loading} 
               error={error} 
             />
