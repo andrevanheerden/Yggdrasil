@@ -23,8 +23,8 @@ const CreateCampaignPage = () => {
         <div className="book-vertical-line" style={{ background: color }} />
         <div className="book-title">{title}</div>
 
-        <div className="book-campaign-img-wrapper" style={{maxHeight: '300px'}}>
-          <img className="book-campaign-img" src={image} alt="Campaign" />
+        <div className="book-campaign-img-wrapper" >
+          <img className="book-campaign-img" style={{maxHeight: '400px' , maxWidth: '100%' }} src={image} alt="Campaign" />
         </div>
 
         <div className="book-color-block" style={{ background: color }} />
