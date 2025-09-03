@@ -4,6 +4,7 @@ import './App.css';
 import Login from './pages/loginPage/Login';
 import Home from './pages/homePage/Home';
 import CreateCampaignPage from './pages/homePage/components/createCampaign';
+import Campaign from './pages/campaignPage/campaign';
 
 function App() {
   return (
@@ -30,6 +31,10 @@ function App() {
           <Route 
             path="/create" 
             element={<CreateCampaignPage />} 
+          />
+          <Route 
+            path="/campaign" 
+            element={<Campaign />} 
           />
         </Routes>
       </Router>

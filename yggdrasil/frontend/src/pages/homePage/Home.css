@@ -62,9 +62,7 @@
   background-position: center;
   width: 350px;
   height: 468px;
-  box-shadow:
-    0 15px 40px rgba(0, 0, 0, 0.6), /* outer shadow */
-    inset 60px 0 80px -40px rgba(0,0,0,0.7); /* stronger inner left shadow */
+box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0, 0.20);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -75,11 +73,7 @@
   margin-bottom: 20px;
 }
 
-.book-container:hover {
-  width: 380px;
-  height: 508px;
-  transform: 1s ease;
-}
+
 
 .book-title {
   position: absolute;
@@ -125,7 +119,7 @@
 .book-campaign-img-wrapper {
   position: relative;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   margin-bottom: 10px;
 }
 
@@ -172,52 +166,65 @@
   justify-content: center;
   align-items: flex-start;
   gap: 40px;      /* space between book & panel */
-  padding: 40px;
+
 }
 
 /* Fix book size */
 .large-preview {
-  width: 500px;
-  height: 650px;
+  width: 561px;
+  height: 750px;
 }
 .large-preview:hover {
-  width: 500px !important;
-  height: 650px !important;
+  width: 561px !important;
+  height: 750px !important;
   transform: none !important;
 }
 
-/* Inputs panel sits outside to the right */
-.content-panel {
+/* Container for the panel next to the book */
+.notepad-panel {
+  position: absolute;
+  right: 50px;         /* 50px from the right edge */
+  top: 50%;            /* vertical center */
+  transform: translateY(-50%);
+  width: 350px;
+  height: auto;
+  background: url('../../assets/images/notepad.png') no-repeat center center;
+  background-size: cover;
+  padding: 40px 20px;
+  border-radius: 20px;
   display: flex;
-  flex-direction: column;
-  gap: 20px;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 20px;
-  border-radius: 12px;
-  color: #fff;
-  min-width: 280px;
+  justify-content: center;
+  align-items: flex-start;
   z-index: 5;
 }
 
-.content-panel input[type="text"],
-.content-panel input[type="file"],
-.content-panel input[type="color"] {
-  margin-top: 5px;
-  padding: 8px;
-  font-size: 14px;
-  background: #222;
-  border: 1px solid #555;
-  border-radius: 6px;
-  color: white;
+/* Inputs inherit same style as your login form */
+.notepad-panel input[type="text"],
+.notepad-panel input[type="file"],
+.notepad-panel input[type="color"] {
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  border: 1px solid #808080;
+  border-radius: 20px;
+  background: rgba(255,255,255,0);
+  font-size: 18px;
+  color: #000;
+  outline: none;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  text-align: left;
+  box-sizing: border-box;
+}
+
+/* Use same submit button styling */
+.notepad-panel .submit-btn {
+  width: 100%;
+  margin-top: 15px;
 }
 
 
 
-.large-preview:hover {
-  width: 500px !important;
-  height: 650px !important;
-  transform: none !important;
-}
+
 
 
 
