@@ -167,7 +167,7 @@
 
 /* Layout: book left, panel right */
 .create-campaign-page {
-  min-height: 100vh;
+  max-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: flex-start;
