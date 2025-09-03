@@ -70,7 +70,7 @@ code {
   background-repeat: no-repeat;
   background-size: cover;
   overflow: hidden;
-    /* Center content using flexbox */
+
   display: flex;
   justify-content: center;
   align-items: center;

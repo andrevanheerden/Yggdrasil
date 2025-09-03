@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import './App.css';
 import Login from './pages/loginPage/Login';
 import Home from './pages/homePage/Home';
+import CreateCampaignPage from './pages/homePage/components/createCampaign';
 
 function App() {
   return (
@@ -25,6 +26,10 @@ function App() {
           <Route 
             path="/home" 
             element={<Home />} 
+          />
+          <Route 
+            path="/create" 
+            element={<CreateCampaignPage />} 
           />
         </Routes>
       </Router>

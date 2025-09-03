@@ -62,9 +62,8 @@
   background-position: center;
   width: 350px;
   height: 468px;
-
   box-shadow:
-    0 15px 40px rgb(0, 0, 0), /* outer shadow */
+    0 15px 40px rgba(0, 0, 0, 0.6), /* outer shadow */
     inset 60px 0 80px -40px rgba(0,0,0,0.7); /* stronger inner left shadow */
   position: relative;
   display: flex;
@@ -74,6 +73,12 @@
   overflow: hidden;
   margin-top: 50px;
   margin-bottom: 20px;
+}
+
+.book-container:hover {
+  width: 380px;
+  height: 508px;
+  transform: 1s ease;
 }
 
 .book-title {
@@ -156,3 +161,63 @@
   border-radius: 2px;
   z-index: 2;
 }
+
+
+
+
+/* Layout: book left, panel right */
+.create-campaign-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 40px;      /* space between book & panel */
+  padding: 40px;
+}
+
+/* Fix book size */
+.large-preview {
+  width: 500px;
+  height: 650px;
+}
+.large-preview:hover {
+  width: 500px !important;
+  height: 650px !important;
+  transform: none !important;
+}
+
+/* Inputs panel sits outside to the right */
+.content-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px;
+  border-radius: 12px;
+  color: #fff;
+  min-width: 280px;
+  z-index: 5;
+}
+
+.content-panel input[type="text"],
+.content-panel input[type="file"],
+.content-panel input[type="color"] {
+  margin-top: 5px;
+  padding: 8px;
+  font-size: 14px;
+  background: #222;
+  border: 1px solid #555;
+  border-radius: 6px;
+  color: white;
+}
+
+
+
+.large-preview:hover {
+  width: 500px !important;
+  height: 650px !important;
+  transform: none !important;
+}
+
+
+
