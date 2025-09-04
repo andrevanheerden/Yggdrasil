@@ -10,6 +10,9 @@ const Campaign = () => {
       className="campaign-container"
       style={{ backgroundImage: `url(${OPcover})` }}
     >
+      {/* Top block */}
+      <div className="top-block"></div>
+
       <div className="book-wrapper">
         <LeftP />
         <RightP />
@@ -19,5 +22,6 @@ const Campaign = () => {
 };
 
 export default Campaign;
+
 
 

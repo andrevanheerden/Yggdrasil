@@ -9,7 +9,6 @@ const RightP = () => {
       style={{ backgroundImage: `url(${pageBg})` }}
     >
 
-      <h2>Inventory</h2>
     </div>
   );
 };

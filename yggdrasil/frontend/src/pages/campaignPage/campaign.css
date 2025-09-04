@@ -17,6 +17,24 @@
     z-index: 3;
 }
 
+/* Top block above left and right pages */
+.top-block {
+  position: absolute;
+  top: 14px; /* position at the top of campaign-container */
+  left: 50%; /* center horizontally */
+  transform: translateX(-50%);
+  width: 40px; /* fixed width */
+  height: 96.5%; /* full height of container */
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.05),   /* left light */
+    rgba(0, 0, 0, 0.8) 50%, /* center dark */
+    rgba(0, 0, 0, 0.05)    /* right light */
+  );
+
+  z-index: 5; /* above pages */
+}
+
 
 .book-wrapper {
   display: flex;
@@ -33,10 +51,12 @@
   flex: 1;
   background-size: cover;
   background-position: center;
-  padding: 20px;
-  overflow-y: auto;
+  padding: 10px;
+  overflow: visible;
     z-index: 3;
 }
+
+
 
 
 
@@ -109,31 +129,49 @@
   margin-top: 10px;
 }
 
-/* Container for the two boxes */
 .side-by-side {
   display: flex;
-  gap: 20px; /* space between boxes */
+  gap: 20px;       /* space between boxes */
+  width: 97%;      /* container width */
+  margin: 0 auto;  /* center horizontally */
+  justify-content: center; /* optional: center the boxes inside if extra space */
 }
 
+
+/* White boxes */
 /* White boxes */
 .white-box {
   background-color: white;
   padding: 10px 10px;
   border-radius: 10px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  flex: 1; /* both boxes take equal width */
-  
+  flex: 1;                 /* both boxes take equal width */
+  display: flex;           /* enable flex layout */
+  flex-direction: column;  /* stack children vertically */
+  align-items: center;     /* center horizontally */
+
+  text-align: center;      /* center text */
 }
 
-/* Optional list styling */
-.players-container ul {
-  padding-left: 20px;
-  margin: 0;
+/* Side by side boxes */
+.players-container {
+  flex: 0 0 150px;  /* fixed width */
+  height: 300px;    /* fixed height */
+  overflow: hidden; /* hide any overflowing content */
 }
 
+.description-container {
+  flex: 1;           /* fills remaining width */
+  height: 300px;     /* same height as players-container */
+  overflow: hidden;  /* hide overflow */
+}
+
+/* Optional: make text wrap nicely inside the boxes */
+.players-container ul,
 .description-container p {
-  margin: 1;
+  margin: 0;
+  padding: 0;
+  word-wrap: break-word;
 }
-
 
 
