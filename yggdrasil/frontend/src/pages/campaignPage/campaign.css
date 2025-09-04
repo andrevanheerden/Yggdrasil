@@ -14,6 +14,7 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
+    z-index: 3;
 }
 
 
@@ -25,7 +26,7 @@
   box-shadow: 0px 10px 40px rgba(0,0,0,0.5);
 
   overflow: hidden;
-  z-index: 5;
+  z-index: 3;
 }
 
 .page {
@@ -34,16 +35,105 @@
   background-position: center;
   padding: 20px;
   overflow-y: auto;
-    z-index: 5;
+    z-index: 3;
 }
 
-/* Left and Right page styles */
-.left-page {
-  border-right: 2px solid rgba(0,0,0,0.3);
-}
+
 
 .right-page {
-  border-left: 2px solid rgba(0,0,0,0.3);
+  position: relative; /* needed for pseudo-element */
+
+  overflow: hidden; /* make sure pseudo-element stays inside */
 }
+
+/* Flip only the background */
+.right-page::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url('../../assets/images/page.png'); /* set your right page background */
+  background-size: cover;
+  background-position: center;
+  transform: scaleX(-1); /* horizontal flip */
+  z-index: -1; /* keep behind page content */
+}
+
+
+
+
+/* Common styles for both pages */
+.campaign-title {
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 0px;
+}
+
+
+
+.players-container, .description-container {
+  margin-bottom: 20px;
+    z-index: 8;
+}
+
+/* Campaign map styling */
+.campaign-map {
+  width: 100%;       /* fill page width */
+  max-width: 500px;  /* optional max width */
+  display: block;
+  margin: 0 auto 20px auto; /* center and add bottom spacing */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  object-fit: cover;
+}
+
+
+/* Map image styling */
+.map-container img {
+  width: 100%; /* fill container width */
+  height: auto; /* maintain aspect ratio */
+  display: block; /* remove inline spacing */
+  object-fit: cover; /* cover container if needed */
+}
+
+/* Info container to hold players and description side by side */
+.info-container {
+  display: flex;
+  gap: 20px; /* space between columns */
+  background-color: white; /* white background */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  margin-top: 10px;
+}
+
+/* Container for the two boxes */
+.side-by-side {
+  display: flex;
+  gap: 20px; /* space between boxes */
+}
+
+/* White boxes */
+.white-box {
+  background-color: white;
+  padding: 10px 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  flex: 1; /* both boxes take equal width */
+  
+}
+
+/* Optional list styling */
+.players-container ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.description-container p {
+  margin: 1;
+}
+
 
 
