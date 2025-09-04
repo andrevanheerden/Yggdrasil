@@ -9,7 +9,7 @@ const LeftP = () => {
       className="page left-page"
       style={{ backgroundImage: `url(${pageBg})` }}
     >
-      <Sheet /> {/* <-- Capitalize here */}
+
     </div>
   );
 };
