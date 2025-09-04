@@ -1,0 +1,41 @@
+.bookmark-tabs-container {
+  position: relative;
+  display: flex;
+}
+
+.bookmark-tab-buttons {
+  position: absolute;
+  left: 17.5%; /* overlap to the left */
+  top: 50px;
+  display: flex;
+  flex-direction: column;
+  z-index: 13;
+}
+
+.bookmark-tab-btn {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  background: #05512c;
+  color: #fff;
+  border: none;
+  border-radius: 0px 10px 10px 0px;
+  margin-bottom: 10px;
+  padding: 20px 6px;
+  cursor: pointer;
+  font-family: "Caudex", serif;
+  font-size: 18px;
+  transition: all 0.3s ease;
+}
+
+.bookmark-tab-btn.active {
+  background: #199a6a;
+  color: #000;
+  opacity: 1;
+  padding: 40px 10px;
+}
+
+.bookmark-tab-content {
+  margin-left: 80px; /* space so tabs don’t overlap */
+  padding: 20px;
+  flex: 1;
+}

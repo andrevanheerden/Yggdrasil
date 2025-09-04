@@ -5,6 +5,8 @@ import Login from './pages/loginPage/Login';
 import Home from './pages/homePage/Home';
 import CreateCampaignPage from './pages/homePage/components/createCampaign';
 import Campaign from './pages/campaignPage/campaign';
+import Character from './pages/characterPage/character';
+import Encounter from './pages/encounterPage/encounter';
 
 function App() {
   return (
@@ -35,6 +37,14 @@ function App() {
           <Route 
             path="/campaign" 
             element={<Campaign />} 
+          />
+          <Route 
+            path="/character" 
+            element={<Character />} 
+          />
+          <Route 
+            path="/encounter" 
+            element={<Encounter />} 
           />
         </Routes>
       </Router>

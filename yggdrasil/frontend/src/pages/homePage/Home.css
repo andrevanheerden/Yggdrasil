@@ -119,12 +119,14 @@ box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0
 .book-campaign-img-wrapper {
   position: relative;
   width: 100%;
+  height: auto;
   max-width: 600px;
   margin-bottom: 10px;
 }
 
 .book-campaign-img {
   width: 100%;
+    height: auto;
   display: block;
   position: relative;
   z-index: 2;
