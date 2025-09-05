@@ -1,11 +1,12 @@
 
 .campaign-container {
-  position: relative;
-  width: 1197px;
-  height: 800px;
-  margin: auto; /* centers horizontally */
-  top: 50%;
-  transform: translateY(2%); /* centers vertically */
+  position: absolute;         /* must be absolute/fixed for vertical centering */
+  width: 1272px;
+  height: 850px;
+  margin: auto;               /* centers horizontally */
+  
+  top: 50%;                   /* push halfway down */
+  transform: translateY(-50%); /* pull up by half height */
 
   background-size: contain;
   background-position: center center;
@@ -15,8 +16,9 @@
   justify-content: center;
   align-items: center;
   overflow: hidden;
-    z-index: 3;
+  z-index: 3;
 }
+
 
 
 /* Top block above left and right pages */
@@ -158,13 +160,13 @@
 /* Side by side boxes */
 .players-container {
   flex: 0 0 150px;  /* fixed width */
-  height: 300px;    /* fixed height */
+  height: 340px;    /* fixed height */
   overflow: hidden; /* hide any overflowing content */
 }
 
 .description-container {
   flex: 1;           /* fills remaining width */
-  height: 300px;     /* same height as players-container */
+  height: 340px;     /* same height as players-container */
   overflow: hidden;  /* hide overflow */
 }
 
@@ -199,7 +201,7 @@
 
 .dm-notes-textarea {
   width: 95%;
-  height: 640px;        /* fixed height */
+  height: 700px;        /* fixed height */
   background: repeating-linear-gradient(
       to bottom,
       #ffffff70,

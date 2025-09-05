@@ -4,6 +4,7 @@ import LeftP from "./componets/leftP";
 import RightP from "./componets/rightP";
 import Navbar from "../homePage/components/Navbar";
 import BookmarkNav  from "../bookmarkNav/bookmarkNav";
+import "./encounter.css";
 
 
 
@@ -15,7 +16,7 @@ return (
 
       <div
         className="campaign-container"
-        style={{ backgroundImage: `url(${OPcover})` ,}}
+        style={{ backgroundImage: `url(${OPcover})` , marginTop: '20px'}}
       >
         {/* Top block */}
         <div className="top-block"></div>

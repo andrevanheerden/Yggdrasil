@@ -1,7 +1,7 @@
 .campaign-container {
   position: relative;
-  width: 1197px;
-  height: 800px;
+  width: 1272px;
+  height: 850px;
   margin: auto; /* centers horizontally */
   top: 50%;
   transform: translateY(2%); /* centers vertically */

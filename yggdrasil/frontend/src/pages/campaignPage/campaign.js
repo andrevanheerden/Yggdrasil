@@ -13,7 +13,7 @@ const Campaign = () => {
 
       <div
         className="campaign-container"
-        style={{ backgroundImage: `url(${OPcover})` ,}}
+        style={{ backgroundImage: `url(${OPcover})`, marginTop: '20px' }}
       >
         {/* Top block */}
         <div className="top-block"></div>

@@ -5,8 +5,8 @@
 
 .bookmark-tab-buttons {
   position: absolute;
-  left: 17.5%; /* overlap to the left */
-  top: 50px;
+  left: 15.6%; /* overlap to the left */
+  top: 85px;
   display: flex;
   flex-direction: column;
   z-index: 13;
