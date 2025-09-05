@@ -80,3 +80,214 @@
   transform: scaleX(-1); /* horizontal flip */
   z-index: -1; /* keep behind page content */
 }
+
+
+
+
+
+
+/* === Character Sheet === */
+/* === Header with Portrait === */
+.character-header-with-portrait {
+  display: flex;
+  align-items: center;
+  justify-content: center; /* center content horizontally in the container */
+  gap: 20px;
+  margin-bottom: 10px;
+
+}
+
+.portrait-img-header {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  margin-left: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.header-dropdowns {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* center-align the dropdowns */
+  gap: 8px;
+}
+
+.two-column-inline {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Editable Dropdowns */
+.dropdown-inline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #333;
+  font-family: 'Caudex', serif;
+  font-size: 18px;
+  text-align: center;
+  padding: 2px 6px;
+  min-width: 120px;
+  outline: none;
+}
+
+.dropdown-inline:focus {
+  border-bottom: 1px solid #555;
+}
+
+/* === Character Main === */
+.character-main {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+/* Charts Column */
+.charts-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.ability-chart {
+  width: 250px;  /* change width */
+  height: 250px; /* change height */
+  background: #D9D9D9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+.saving-chart {
+  width: 250px;  /* change width */
+  height: 250px; /* change height */
+  background: #D9D9D9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+/* Stats & Skills Column */
+.portrait-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  justify-items: center;
+}
+
+.stat-box {
+  width: 80px;
+  height: 80px;
+  background: #D9D9D9;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: 'Caudex', serif;
+  font-weight: bold;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  position: relative;
+  border: 2px solid #333; /* Added solid border */
+}
+
+/* Hexagon Shape with solid border */
+.stat-box.hex {
+  clip-path: polygon(
+    50% 0%,
+    93% 25%,
+    93% 75%,
+    50% 100%,
+    7% 75%,
+    7% 25%
+  );
+  border: 2px solid #333; /* Solid border for hexagons */
+}
+
+
+/* Wrapper for hexes + HP bar */
+.stats-hp-wrapper {
+  display: flex;
+  gap: 15px; /* space between hex stack and HP bar */
+  align-items: flex-start; /* align top edges */
+}
+
+/* Stack hex boxes vertically */
+.hex-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* space between hexes */
+}
+
+/* Adjust HP bar container if needed */
+.hp-bar-container {
+  width: 40px;
+  height: 265px;
+  border: 2px solid #333;
+  border-radius: 6px;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+}
+
+
+.hp-bar-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #f00, #900);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.hp-bar-label {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Caudex', serif;
+  font-weight: bold;
+  color: #000;
+  font-size: 14px; /* Smaller font to fit better */
+}
+
+
+
+/* Skills Box */
+.skills-box {
+  width: 200px;   /* change width */
+  height: 100px;  /* change height */
+  background: #D9D9D9;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.skills-box h3 {
+  margin-top: 0;
+  font-family: 'Caudex', serif;
+}
+
+.skills-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'Caudex', serif;
+}
+
+.skills-box li {
+  margin: 5px 0;
+}
