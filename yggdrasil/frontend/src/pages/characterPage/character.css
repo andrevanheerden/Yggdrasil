@@ -480,3 +480,233 @@
   line-height: 1.4;
   outline: none;
 }
+
+
+
+/* background des */
+/* background des */
+
+/* Header */
+.background-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  margin-bottom: 20px;
+}
+
+.background-character-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.background-character-name {
+  font-size: 24px;
+  font-weight: bold;
+  color: #222;
+  text-align: center;
+}
+
+
+
+.background-character-details {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+
+.background-character-background {
+  font-size: 20px;
+  color: #333;
+  text-align: center;
+}
+
+.background-portrait-img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 75px;
+  border: 2px solid #ccc;
+    margin-left: 50px;
+}
+
+/* Main content: description + right column */
+.background-main-content {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+  align-items: flex-start;
+}
+
+/* Description */
+.background-description-box {
+  width: 60%;
+  max-width: 800px;
+  height: 575px;
+  background: #d9d9d9;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
+
+.background-description-textarea {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  resize: none;
+  font-family: 'Caudex', serif;
+  font-size: 16px;
+  line-height: 1.4;
+  outline: none;
+}
+
+/* Title inside the description box */
+/* Title inside the description box - centered */
+.background-description-title-inside {
+  font-family: 'Caudex', serif;
+  font-size: 18px;
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 8px;
+  text-align: center; /* center horizontally */
+}
+
+
+
+/* Right column (hexes + skills) */
+.background-right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+/* Hex bonuses */
+/* Hex bonuses */
+.background-hex {
+  width: 100px;
+  height: 100px;
+  background: #d9d9d9;
+  /* Remove border-radius */
+  border-radius: 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+
+  /* Hexagon shape */
+  clip-path: polygon(
+    50% 0%,   /* top middle */
+    93% 25%,  /* top right */
+    93% 75%,  /* bottom right */
+    50% 100%, /* bottom middle */
+    7% 75%,   /* bottom left */
+    7% 25%    /* top left */
+  );
+
+  stroke-width: 1px;
+stroke: #000; 
+}
+
+.background-hex-bonus {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.background-hex-label {
+  font-size: 14px;
+  color: #333;
+  margin-top: 5px;
+}
+
+
+
+
+/* Tools / Languages box */
+.background-skills-box {
+  width: 150px;
+  height: 350px;
+
+  background: #d9d9d9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  position: relative;
+  margin-right: 30px;
+}
+
+.background-skills-content {
+  display: flex;               /* use flexbox */
+  flex-direction: column;      /* stack title and list vertically */
+  justify-content: center;     /* vertical centering */
+  align-items: center;         /* horizontal centering */
+  flex: 1;
+  padding: 5px;
+  overflow-y: auto;
+  text-align: center;          /* center list text */
+}
+
+.background-skills-content h3 {
+  margin: 0 0 5px;
+  font-size: 19px;
+  font-family: 'Caudex', serif;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.background-skills-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'Caudex', serif;
+}
+
+.background-skills-content li {
+  margin: 3px 0;
+}
+
+/* Tabs outside */
+.background-skills-tabs-container {
+  position: absolute;
+
+  top: 10px;
+  left: 94.5%; /* outside to right */
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 13;
+}
+
+.background-skills-tab-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.background-skills-tab-btn {
+  writing-mode: vertical-rl;
+  transform: rotate(0deg);
+  background: #05512c;
+  color: #fff;
+  border: none;
+  border-radius: 0px 10px 10px 0px;
+  padding: 15px 4px;
+  cursor: pointer;
+  font-family: "Caudex", serif;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.background-skills-tab-btn.active {
+  background: #199a6a;
+  color: #000;
+  font-weight: bold;
+  padding: 25px 4px;
+}
