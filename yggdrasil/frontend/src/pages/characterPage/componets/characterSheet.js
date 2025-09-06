@@ -146,8 +146,8 @@ const CharacterSheet = () => {
     scales: {
       r: {
         angleLines: { display: true },
-        suggestedMin: -2,
-        suggestedMax: 5,
+        suggestedMin: 0,
+        suggestedMax: 20,
       },
     },
     plugins: {

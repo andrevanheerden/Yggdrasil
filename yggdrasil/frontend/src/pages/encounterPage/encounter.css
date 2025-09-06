@@ -80,3 +80,267 @@
   transform: scaleX(-1); /* horizontal flip */
   z-index: -1; /* keep behind page content */
 }
+
+
+
+
+
+
+/* === Encounter Sheet === */
+/* === Header with Portrait === */
+.encounter-header-with-portrait {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 100px;
+  margin-bottom: 10px;
+}
+
+.portrait-img-header {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  margin-left: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  margin-bottom: 5px;
+}
+
+.header-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;          /* tighter spacing between name and race */
+  margin-left: 50px;
+}
+
+.header-text h2 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.header-text p {
+  font-size: 1.2rem;
+  margin: 0;
+  opacity: 0.8;      /* makes race look more like a subtitle */
+}
+
+
+/* Editable Dropdowns */
+.dropdown-inline {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #333;
+  font-family: 'Caudex', serif;
+  font-size: 18px;
+  text-align: center;
+  padding: 2px 6px;
+  min-width: 120px;
+  outline: none;
+}
+
+.dropdown-inline:focus {
+  border-bottom: 1px solid #555;
+}
+
+/* === Encounter Main === */
+.encounter-main {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
+/* Charts Column */
+.charts-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+  margin-left: 10px;
+}
+
+.ability-chart {
+  width: 310px;
+  height: 300px;
+  background: #D9D9D9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+.saving-chart {
+  width: 300px;
+  height: 250px;
+  background: #D9D9D9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+/* Stats & Skills Column */
+.portrait-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  justify-items: center;
+}
+
+.stat-box {
+  width: 80px;
+  height: 80px;
+  background: #d9d9d9ad;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-family: 'Caudex', serif;
+  font-weight: bold;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  position: relative;
+  border: 2px solid #333;
+}
+
+.stat-box.hex {
+  clip-path: polygon(
+    50% 0%,
+    93% 25%,
+    93% 75%,
+    50% 100%,
+    7% 75%,
+    7% 25%
+  );
+  border: 2px solid #333;
+}
+
+/* Wrapper for hexes + HP bar */
+.stats-hp-wrapper {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+/* Stack hex boxes vertically */
+.hex-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* HP bar */
+.hp-bar-container {
+  width: 40px;
+  height: 265px;
+  border: 2px solid #333;
+  border-radius: 6px;
+  background: transparent;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+}
+
+.hp-bar-fill {
+  width: 100%;
+  background: linear-gradient(180deg, #f00, #900);
+  border-radius: 4px 4px 0 0;
+  transition: height 0.3s ease;
+}
+
+.hp-bar-label {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: 'Caudex', serif;
+  font-weight: bold;
+  color: #000;
+  font-size: 14px;
+}
+
+/* Skills / Notes Box */
+.skills-box {
+  width: 160px;
+  height: 100px;
+  background: #D9D9D9;
+  padding: 10px 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  position: relative;
+  display: flex;
+  margin-right: 40px;
+}
+
+/* Tabs (kept in case you reuse) */
+.skills-tabs-container {
+  position: absolute;
+  top: 10px;
+  left: 95.4%;
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+  z-index: 13;
+}
+
+.skills-tab-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+  margin-right: 10px;
+}
+
+.skills-tab-btn {
+  writing-mode: vertical-rl;
+  transform: rotate(0deg);
+  background: #05512c;
+  color: #fff;
+  border: none;
+  border-radius: 0px 10px 10px 0px;
+  padding: 10px 6px;
+  cursor: pointer;
+  font-family: "Caudex", serif;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.skills-tab-btn.active {
+  background: #199a6a;
+  color: #000;
+  font-weight: bold;
+  padding: 25px 8px;
+}
+
+/* Content inside notes box */
+.skills-tab-content {
+  flex: 1;
+  padding: 5px;
+  overflow-y: auto;
+}
+
+.skills-tab-content h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-family: 'Caudex', serif;
+}
+
+.skills-tab-content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'Caudex', serif;
+}
+
+.skills-tab-content li {
+  margin: 3px 0;
+}
