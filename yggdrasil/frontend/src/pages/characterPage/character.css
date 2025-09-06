@@ -1,19 +1,25 @@
 .campaign-container {
-  position: relative;
+  position: absolute;         /* must be absolute/fixed for vertical centering */
   width: 1272px;
   height: 850px;
-  margin: auto;
-  top: 50%;
-  transform: translateY(2%);
+  margin: auto;               /* centers horizontally */
+  
+  top: 50%;                   /* push halfway down */
+  transform: translateY(-40%); /* pull up by half height */
+
   background-size: contain;
-  background-position: center;
+  background-position: center center;
   background-repeat: no-repeat;
+
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
   z-index: 3;
 }
+
+
+
 
 .campaign-wrapper {
   position: relative;
@@ -46,7 +52,6 @@
   max-width: 1400px;
   height: 97%;
   box-shadow: 0px 10px 40px rgba(0,0,0,0.5);
-
   overflow: hidden;
   z-index: 3;
 }
@@ -351,3 +356,51 @@
 .skills-tab-content li {
   margin: 3px 0;
 }
+
+
+/* top nav */
+
+
+/* Horizontal tab buttons for CharacterLeftP */
+.char-left-tab-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+
+  /* Use fixed positioning relative to the viewport */
+  position: fixed;      /* keeps tabs independent of page content */
+  top: 1.7%;           /* distance from top of viewport; adjust as needed */
+  left: 32.8%;            /* center horizontally */
+  transform: translateX(-50%);
+  z-index: 50;          /* above other elements */
+
+  border-radius: 10px;
+}
+
+.char-left-tab-btn {
+  background: #05512C;
+  color: #fff;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: 'Caudex', serif;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.char-left-tab-btn.active {
+  background: #199A6A;
+  color: #000;
+  font-weight: bold;
+  padding: 8px 15px;
+}
+
+.char-left-tab-content {
+  background: #f5f5f5;
+
+  border-radius: 0px 10px 10px 10px;
+
+}
+
+
