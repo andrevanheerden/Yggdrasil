@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import "../character.css";
 import rose from "../../../assets/images/rose.jpg"; // Portrait placeholder
 
-const BackgroundDes = () => {
+const ClassDes = () => {
   const [description, setDescription] = useState(
     "You have dedicated your life to the pursuit of knowledge—be it arcane, historical, natural, or philosophical. Whether you were trained at a grand university, mentored by a wise master, or self-taught in dusty corners of forgotten libraries, your mind is your greatest weapon. Others may swing swords or cast spells with flair, but you shape the world with reason, insight, and understanding."
   );
@@ -109,4 +109,4 @@ const BackgroundDes = () => {
   );
 };
 
-export default BackgroundDes;
+export default ClassDes;

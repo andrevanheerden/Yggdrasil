@@ -76,14 +76,14 @@
 }
 
 /* Flip only the background */
-.right-page::before {
+.page.right-page::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('../../assets/images/page.png'); /* set your right page background */
+  background: transparent;
   background-size: cover;
   background-position: center;
   transform: scaleX(-1); /* horizontal flip */
@@ -710,3 +710,204 @@ stroke: #000;
   font-weight: bold;
   padding: 25px 4px;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* inventory */
+
+/* HEADER */
+.inventory-header {
+  display: flex;
+  justify-content: center;   /* center the whole block */
+  align-items: center;       /* vertical align */
+  gap: 100px;                 /* space between text and image */
+  margin: 15px auto;
+
+}
+
+.inventory-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* center name + type */
+  text-align: center;
+  font-family: 'Caudex', serif;
+  color: #333;
+  margin-left: 100px;
+
+}
+
+.item-name {
+  font-size: 22px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.item-type {
+  font-size: 16px;
+  opacity: 0.8;
+  margin-top: 4px;
+  text-align: center;
+}
+
+/* Round portrait-style item image */
+.item-image {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;        /* round */
+  object-fit: cover;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+
+}
+
+
+
+
+/* ===== MIDDLE SECTION ===== */
+.inventory-middle {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 20px;
+  gap: 20px;
+}
+
+.inventory-description-box {
+  flex: 1;
+  height: 200px;
+  background: #d9d9d9;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  font-family: 'Caudex', serif;
+  font-size: 16px;
+  line-height: 1.4;
+  overflow-y: auto;
+}
+
+/* Damage Hexagons */
+.damage-container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.damage-hexagon {
+  width: 100px;
+  height: 100px;
+  background: #d9d9d9;
+  clip-path: polygon(
+    50% 0%,
+    93% 25%,
+    93% 75%,
+    50% 100%,
+    7% 75%,
+    7% 25%
+  );
+  border: 2px solid #333;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  font-family: 'Caudex', serif;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* ===== INVENTORY CONTAINER ===== */
+.inventory-container {
+  position: relative;            /* so we can position scrollbar inside */
+  margin: 20px;
+  background: #d9d9d9;
+  border-radius: 12px;
+  padding: 15px;
+  height: 300px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  overflow-y: auto;
+}
+
+/* ===== CUSTOM SCROLLBAR ===== */
+.inventory-container::-webkit-scrollbar {
+  width: 10px;
+  position: absolute;
+  
+}
+
+.inventory-container::-webkit-scrollbar-track {
+  background: #c2c2c2;
+  border-radius: 10px;
+  margin-top: 8px;   /* keeps it inset from top */
+  margin-bottom: 8px;/* inset from bottom */
+}
+
+.inventory-container::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 10px;
+
+}
+
+/* Move scrollbar slightly inward & center vertically */
+.inventory-container::-webkit-scrollbar {
+  width: 12px;
+  
+}
+
+.inventory-container::-webkit-scrollbar-thumb {
+  height: 95%; /* make it 95% height */
+  margin: auto; /* centers it vertically */
+  background: #666;
+  border-radius: 10px;
+  border: 2px solid #d9d9d9; /* creates inset look (pulls away from edge) */
+}
+
+
+
+
+.inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 80px);
+  grid-template-rows: repeat(4, 80px);
+  gap: 15px;
+  justify-content: center;
+
+}
+
+.inventory-slot {
+  width: 80px;
+  height: 80px;
+  background: #d9d9d9;
+  border: 2px solid #333;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.inventory-slot.active {
+  border: 3px solid #199a6a;
+}
+
+.inventory-slot.empty {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.inventory-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+

@@ -1,6 +1,7 @@
 import React from "react";
 import pageBg from "../../../assets/images/page.png"; 
 import "../character.css";
+import Inventory from "./inventory";
 
 
 const RightP = () => {
@@ -9,6 +10,7 @@ const RightP = () => {
       className="page right-page"
       style={{ backgroundImage: `url(${pageBg})` }}
     >
+      <Inventory />
 
 
     </div>
