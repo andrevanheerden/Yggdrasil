@@ -1,8 +1,7 @@
 import React from "react";
 import pageBg from "../../../assets/images/page.png"; 
 import "../character.css";
-import Inventory from "./inventory";
-
+import RightPageInventory from "./inventory"; // inventory component
 
 const RightP = () => {
   return (
@@ -10,11 +9,13 @@ const RightP = () => {
       className="page right-page"
       style={{ backgroundImage: `url(${pageBg})` }}
     >
-      <Inventory />
-
-
+      {/* Just render inventory; tabs moved inside */}
+      <RightPageInventory />
     </div>
   );
 };
 
 export default RightP;
+
+
+

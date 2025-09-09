@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "../character.css";
-import swordImg from "../../../assets/images/sword.jpg"; // Example item img
-import ringImg from "../../../assets/images/ring.jpg";  // Example item img
-
-
-
+import swordImg from "../../../assets/images/sword.jpg";
+import ringImg from "../../../assets/images/ring.jpg";
+import FullItemView from "./fullItemView"; // import your full item view
 
 const RightPageInventory = () => {
-  // Example items
   const [items] = useState([
     {
       id: 1,
@@ -29,17 +26,34 @@ const RightPageInventory = () => {
   ]);
 
   const [selectedItem, setSelectedItem] = useState(null);
+  const [activeTab, setActiveTab] = useState("inventory"); // NEW: active tab state
 
   useEffect(() => {
-    // Default select first item
     if (!selectedItem && items.length > 0) {
       setSelectedItem(items[0]);
     }
   }, [items, selectedItem]);
 
   return (
-    <div className="page right-page">
-      {selectedItem && (
+    <div className="page right-page" style={{ position: "relative" }}>
+      {/* Nav Tabs */}
+      <div className="right-page-tabs">
+        <button
+          className={`right-tab-btn ${activeTab === "inventory" ? "active" : ""}`}
+          onClick={() => setActiveTab("inventory")}
+        >
+          Inventory
+        </button>
+        <button
+          className={`right-tab-btn ${activeTab === "fullItemView" ? "active" : ""}`}
+          onClick={() => setActiveTab("fullItemView")}
+        >
+          Full Item View
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      {activeTab === "inventory" && selectedItem && (
         <>
           {/* Header */}
           <div className="inventory-header">
@@ -58,12 +72,9 @@ const RightPageInventory = () => {
 
           {/* Middle Section */}
           <div className="inventory-middle">
-            {/* Description */}
             <div className="inventory-description-box scroll-box">
               {selectedItem.description}
             </div>
-
-            {/* Damage Hexagons */}
             <div className="damage-container">
               {selectedItem.damage.slice(0, 3).map((dmg, i) => (
                 <div key={i} className="damage-hexagon">
@@ -79,20 +90,12 @@ const RightPageInventory = () => {
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className={`inventory-slot ${
-                    selectedItem?.id === item.id ? "active" : ""
-                  }`}
+                  className={`inventory-slot ${selectedItem?.id === item.id ? "active" : ""}`}
                   onClick={() => setSelectedItem(item)}
                 >
-                  <img
-                    src={item.image}
-                    alt={item.name}
-                    className="inventory-img"
-                  />
+                  <img src={item.image} alt={item.name} className="inventory-img" />
                 </div>
               ))}
-
-              {/* Empty slots */}
               {Array.from({ length: 16 - items.length }).map((_, i) => (
                 <div key={`empty-${i}`} className="inventory-slot empty"></div>
               ))}
@@ -100,6 +103,8 @@ const RightPageInventory = () => {
           </div>
         </>
       )}
+
+      {activeTab === "fullItemView" && <FullItemView item={selectedItem} />}
     </div>
   );
 };

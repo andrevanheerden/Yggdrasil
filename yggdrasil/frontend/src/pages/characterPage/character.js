@@ -49,7 +49,7 @@ function Character() {
       </div>
 
       {/* Book pages */}
-      <div className="campaign-container" style={{ backgroundImage: `url(${OPcover})` , marginTop: '20px' }}>
+      <div className="campaign-container" style={{ backgroundImage: `url(${OPcover})` , marginTop: '20px', overflow: 'visible'}}>
         <div className="top-block"></div>
         <div className="book-wrapper">
           <LeftP activeTab={activeTab} />  {/* renders CharacterSheet or tab content */}
