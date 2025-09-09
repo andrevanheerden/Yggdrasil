@@ -1,78 +1,79 @@
+// BackgroundDes.js
 import React, { useState } from "react";
 import "../character.css";
-import placeholderImg from "../../../assets/images/sword.jpg";
+import swordImg from "../../../assets/images/sword.jpg"; // Example item image
 
-const FullItemView = ({ item }) => {
-  // Default item if none provided
-  const currentItem = item || {
+const FullItemView = () => {
+  const [description, setDescription] = useState(
+    "Forged in shadow and quenched in the thirst of dying stars, the Sword of the Night drinks the light around it."
+  );
+
+  const [activeTab, setActiveTab] = useState("Abilities");
+
+  // Replace character info with item info
+  const item = {
     name: "Sword of the Night",
     type: "Weapon - Longsword",
-    image: placeholderImg,
-    stats: [
+    image: swordImg,
+    hexes: [
       { label: "Damage", bonus: "2d6 Slashing" },
       { label: "Cold", bonus: "1d4 Cold" },
     ],
     abilities: ["Glows in darkness", "Can pierce magical shields"],
-    description:
-      "Forged in shadow and quenched in the thirst of dying stars, the Sword of the Night drinks the light around it.",
   };
 
-const [description] = useState(currentItem.description || "");
-
-  const [activeTab, setActiveTab] = useState("Abilities");
-
   const tabs = {
-    Abilities: currentItem.abilities || [],
+    Abilities: item.abilities,
   };
 
   return (
-    <div className="page right-page">
+    <div className="page left-page">
       {/* Header */}
       <div className="background-header">
         <div className="background-character-info">
-          <div className="background-character-name">{currentItem.name}</div>
+          <div className="background-character-name">{item.name}</div>
           <div className="background-character-details">
-            <div className="background-character-background">{currentItem.type}</div>
+            <div className="background-character-background">{item.type}</div>
           </div>
         </div>
         <img
-          src={currentItem.image}
-          alt={currentItem.name}
+          src={item.image}
+          alt={item.name}
           className="background-portrait-img"
         />
       </div>
 
-      {/* Two-column layout */}
+      {/* Two-column layout: Description + Hexes/Abilities */}
       <div className="background-main-content">
-        {/* Left: Description */}
+        {/* Description */}
         <div className="background-description-box">
           <div className="background-description-title-inside">Description</div>
           <textarea
             value={description}
-            readOnly
+            onChange={(e) => setDescription(e.target.value)}
             className="background-description-textarea"
           />
         </div>
 
-        {/* Right: Stats Hexes + Abilities */}
+        {/* Right column: Hexes + Abilities */}
         <div className="background-right-column">
-          {/* Hex Stats */}
+          {/* Hexes */}
           <div className="background-hex-bonuses">
-            {(currentItem.stats || []).map((stat, idx) => (
-              <div key={idx} className="background-hex">
-                <div className="background-hex-bonus">{stat.bonus}</div>
-                <div className="background-hex-label">{stat.label}</div>
+            {item.hexes.map((hex, idx) => (
+              <div key={idx} className="damage-hexagon">
+                <div className="background-hex-bonus">{hex.bonus}</div>
+                <div className="background-hex-label">{hex.label}</div>
               </div>
             ))}
           </div>
 
-          {/* Abilities Tab */}
+          {/* Abilities */}
           <div className="background-skills-box">
             <div className="background-skills-content">
               <h3>{activeTab}</h3>
               <ul>
-                {(tabs[activeTab] || []).map((val, idx) => (
-                  <li key={idx}>{val}</li>
+                {tabs[activeTab].map((ability, idx) => (
+                  <li key={idx}>{ability}</li>
                 ))}
               </ul>
             </div>
