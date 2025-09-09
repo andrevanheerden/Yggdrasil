@@ -911,3 +911,49 @@ stroke: #000;
   border-radius: 10px;
 }
 
+
+
+
+
+
+/* ===== inventory side nav ===== */
+
+.inventory-nav-container {
+  border-radius: 0px 10px 10px 10px;
+}
+
+.inv-top-tab-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+
+  /* Use fixed positioning relative to the viewport */
+  position: fixed;      /* keeps tabs independent of page content */
+  top: 18%;           /* distance from top of viewport; adjust as needed */
+  left: 83.05%;            /* center horizontally */
+  transform: translateX(-50%) rotate(90deg);
+  z-index: 50;          /* above other elements */
+
+  border-radius: 10px;
+
+}
+
+.inv-top-tab-btn {
+  background: #05512C;
+  color: #fff;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: 'Caudex', serif;
+  font-size: 15px;
+  transition: all 0.3s ease;
+}
+
+.inv-top-tab-btn.active {
+  background: #199A6A;
+  color: #000;
+  font-weight: bold;
+  padding: 8px 15px;
+}
+
