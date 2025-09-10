@@ -72,29 +72,22 @@
   }
 }
 
-/* Blank page overlay */
 .blank-page {
   position: absolute;
   top: 50px;
   left: 50%;
-  width: 580px;    /* covers the whole book container */
+  width: 620px;
   height: 825px;
-  background-image: url(../../assets/images/page.png); /* or light gray for blur effect */
-  z-index: 30;
+  background-image: url(../../assets/images/page.png);
   transform-origin: left center;
   box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 
-/* Flip animation */
 .flip-animate {
   animation: flipRightPage 0.6s ease forwards;
 }
 
 @keyframes flipRightPage {
-  0% {
-    transform: rotateY(0deg);
-  }
-  100% {
-    transform: rotateY(-180deg);
-  }
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(-180deg); }
 }
