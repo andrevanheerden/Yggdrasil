@@ -72,9 +72,14 @@ const RightPageInventory = () => {
 
           {/* Middle Section */}
           <div className="inventory-middle">
-            <div className="inventory-description-box scroll-box">
-              {selectedItem.description}
-            </div>
+<div className="inventory-description-container">
+  
+  <div className="inventory-description-box">
+    <div className="inventory-description-title">Description</div>
+    {selectedItem.description}
+  </div>
+</div>
+
             <div className="damage-container">
               {selectedItem.damage.slice(0, 3).map((dmg, i) => (
                 <div key={i} className="damage-hexagon">

@@ -139,7 +139,17 @@ description: `You conjure a blazing orb of magical fire, which streaks from your
           {/* Middle Section */}
           <div className="inventory-middle">
 <div className="inventory-description-box">
-    <div className="description-title">Description</div>
+<div
+  className="description-title"
+  style={{
+    fontWeight: 'bold',
+    marginBottom: '8px',
+    fontSize: '18px'
+  }}
+>
+  Description
+</div>
+
   {selectedSpell.description}
 </div>
 

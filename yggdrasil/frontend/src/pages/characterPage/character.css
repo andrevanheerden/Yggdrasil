@@ -784,35 +784,37 @@ stroke: #000;
   gap: 20px;
 }
 
-.inventory-description-box {
-  background: #d9d9d9;
-  padding: 15px;
-  height: 200px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  font-family: 'Caudex', serif;
-  font-size: 16px;
-  line-height: 1.4em;
-  
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 9;  /* show exactly 9 lines */
-  
-  overflow: hidden;        /* hide everything else */
-  text-overflow: ellipsis;
-  word-break: break-word;
-
-  /* remove fixed height entirely */
-  flex: 1;
-  max-height: none;        /* optional, just to avoid conflict */
+.inventory-description-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* space between title and description box */
+  width: 70%; /* keep the same width as before */
 }
 
-.description-title {
-  font-family: 'Caudex', serif;
-  font-size: 18px;
+.inventory-description-title {
   font-weight: bold;
+  font-size: 18px;
   color: #333;
   margin-bottom: 10px;
+}
+
+.inventory-description-box {
+  background: #d9d9d9;
+  border-radius: 12px;
+  padding: 15px;
+  height: 200px; /* fixed height */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  
+  font-family: 'Caudex', serif;
+  font-size: 15px;
+  line-height: 1.4em;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 10; /* show exactly 9 lines */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
 }
 
 /* Damage Hexagons */
