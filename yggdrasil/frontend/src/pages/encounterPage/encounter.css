@@ -344,3 +344,36 @@
 .skills-tab-content li {
   margin: 3px 0;
 }
+
+
+
+/* === Encounter Left Tabs === */
+.encounter-left-tab-buttons {
+  position: fixed;
+  top: -2.6%;
+  left: 16.5%;
+  transform: translateX(-50%);
+  z-index: 120;
+  display: flex;
+  gap: 10px;
+}
+
+.encounter-left-tab-btn {
+  background: #05512C;
+  color: #fff;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: 'Caudex', serif;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  gap: 10px;
+}
+
+.encounter-left-tab-btn.active {
+  background: #199A6A;
+  color: #000;
+  font-weight: bold;
+  padding: 8px 15px;
+}
