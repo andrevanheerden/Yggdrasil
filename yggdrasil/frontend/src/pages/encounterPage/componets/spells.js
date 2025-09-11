@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import fireballImg from "../../../assets/images/fireball.jpg";
-import frostboltImg from "../../../assets/images/frostbolt.jpg";
-import mageHandImg from "../../../assets/images/magehand.jpg";
-import eldritchBlastImg from "../../../assets/images/eldritchblast.jpg";
-import minorIllusionImg from "../../../assets/images/minorillusion.jpg";
+import catImg from "../../../assets/images/cat.jpg";
+import catTraitsImg from "../../../assets/images/catTraits.jpg";
 import FullSpellView from "./fullSpellView"; // Make sure this exists
 
 const RightPageSpells = () => {
@@ -12,80 +9,26 @@ const RightPageSpells = () => {
   const [spells] = useState([
     {
       id: 1,
-      name: "Fireball",
-      spellClass: "Evocation",
-      level: 3,
-      image: fireballImg,
-description: `You conjure a blazing orb of magical fire, which streaks from your fingertip with incredible speed and precision toward a location you designate within range. Upon impact, the orb detonates in a roaring explosion, engulfing everything in a 20-foot-radius sphere in intense, searing flames. The fire spreads outward in a dazzling display of heat and light, consuming flammable materials and searing foes with relentless force. Each creature caught within the blast must endure the scorching damage, their senses overwhelmed by the brilliant flash and the acrid scent of burning. The sheer magnitude of the fireball leaves a lingering aura of heat, smoke, and ash, altering the battlefield and forcing enemies to scatter or risk devastating harm. Skilled casters can manipulate the trajectory and intensity of the spell, ensuring maximum effect while avoiding allies and delicate structures.`
-,
-      damage: ["8d6 Fire"],
-      effects: {
-        type: "Fire",
-        range: "150 feet",
-        area: "20-foot radius sphere",
-      },
+      name: "Summon Cat",
+      spellClass: "Conjuration",
+      level: 1,
+      image: catImg,
+      description: "You summon a small cat companion that can aid you in subtle ways.",
+      damage: ["None"],
+      effects: { type: "Conjuration", range: "30 feet", area: "Single cat" },
     },
     {
       id: 2,
-      name: "Frostbolt",
-      spellClass: "Evocation",
-      level: 1,
-      image: frostboltImg,
-      description:
-        "A shard of ice streaks toward your enemy, chilling them to the bone.",
-      damage: ["1d8 Cold"],
-      effects: {
-        type: "Cold",
-        range: "60 feet",
-        area: "Single target",
-      },
-    },
-    {
-      id: 3,
-      name: "Mage Hand",
-      spellClass: "Conjuration",
-      level: "Cantrip",
-      image: mageHandImg,
-      description:
-        "A spectral floating hand appears at a point you choose, capable of manipulating objects at a distance.",
-      damage: ["Utility"],
-      effects: {
-        type: "Utility",
-        range: "30 feet",
-        area: "Single object",
-      },
-    },
-    {
-      id: 4,
-      name: "Eldritch Blast",
-      spellClass: "Evocation",
-      level: "Cantrip",
-      image: eldritchBlastImg,
-      description:
-        "A beam of crackling energy streaks toward a creature within range.",
-      damage: ["1d10 Force"],
-      effects: {
-        type: "Force",
-        range: "120 feet",
-        area: "Single target",
-      },
-    },
-    {
-      id: 5,
-      name: "Minor Illusion",
-      spellClass: "Illusion",
-      level: "Cantrip",
-      image: minorIllusionImg,
-      description:
-        "You create a sound or an image of an object within range that lasts for the duration.",
-      damage: ["Utility"],
-      effects: {
-        type: "Illusion",
-        range: "30 feet",
-        area: "5-foot cube",
-      },
+      name: "Get Cat Traits",
+      spellClass: "Divination",
+      level: 2,
+      image: catTraitsImg,
+      description: "Temporarily grants you the keen senses and reflexes of a cat.",
+      damage: ["None"],
+      effects: { type: "Buff", range: "Self", area: "Personal" },
     },
   ]);
+
 
   const [selectedSpell, setSelectedSpell] = useState(null);
 

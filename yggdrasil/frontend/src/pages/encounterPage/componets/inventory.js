@@ -1,32 +1,43 @@
 import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import swordImg from "../../../assets/images/sword.jpg";
-import ringImg from "../../../assets/images/ring.jpg";
+import daggerImg from "../../../assets/images/dagger.jpg"; // placeholder for dagger
+import armorImg from "../../../assets/images/brokenArmor.jpg";   // placeholder for pouch
+import pouchImg from "../../../assets/images/pouch.jpg"; // placeholder for dagger
 import FullItemView from "./fullItemView"; // import your full item view
 
 const RightPageInventory = () => {
   const [items] = useState([
     {
-      id: 1,
-      name: "Sword of the Night",
-      type: "Weapon - Longsword",
-      image: swordImg,
+      id: "dagger",
+      name: "Crude Goblin Dagger",
+      type: "Weapon - Dagger",
+      image: daggerImg, // replace with a dagger image if you have one
       description:
-        "Forged in shadow and quenched in the thirst of dying stars, the Sword of the Night is a blade that drinks the light around it.",
-      damage: ["2d6 Slashing", "1d4 Cold"],
+        "A jagged dagger fashioned from scrap metal. It’s rusted and uneven, but still sharp enough to be dangerous.",
+      damage: ["1d4 Piercing"],
     },
     {
-      id: 2,
-      name: "Golden Ring",
-      type: "Accessory",
-      image: ringImg,
-      description: "An ornate golden ring, humming with a faint magical aura.",
+      id: "armor",
+      name: "Tattered Leather Armor",
+      type: "Armor - Light",
+      image: armorImg, // replace with an armor image if you have one
+      description:
+        "Patchwork leather armor held together with crude stitching. Offers minimal protection.",
+      damage: [],
+    },
+    {
+      id: "pouch",
+      name: "Small Coin Pouch",
+      type: "Misc - Currency",
+      image: pouchImg, // replace with a pouch/coin image if you have one
+      description:
+        "A small pouch containing a handful of copper coins. Likely stolen.",
       damage: [],
     },
   ]);
 
   const [selectedItem, setSelectedItem] = useState(null);
-  const [activeTab, setActiveTab] = useState("inventory"); // NEW: active tab state
+  const [activeTab, setActiveTab] = useState("inventory");
 
   useEffect(() => {
     if (!selectedItem && items.length > 0) {
@@ -72,13 +83,12 @@ const RightPageInventory = () => {
 
           {/* Middle Section */}
           <div className="inventory-middle">
-<div className="inventory-description-container">
-  
-  <div className="inventory-description-box">
-    <div className="inventory-description-title">Description</div>
-    {selectedItem.description}
-  </div>
-</div>
+            <div className="inventory-description-container">
+              <div className="inventory-description-box">
+                <div className="inventory-description-title">Description</div>
+                {selectedItem.description}
+              </div>
+            </div>
 
             <div className="damage-container">
               {selectedItem.damage.slice(0, 3).map((dmg, i) => (
@@ -95,7 +105,9 @@ const RightPageInventory = () => {
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className={`inventory-slot ${selectedItem?.id === item.id ? "active" : ""}`}
+                  className={`inventory-slot ${
+                    selectedItem?.id === item.id ? "active" : ""
+                  }`}
                   onClick={() => setSelectedItem(item)}
                 >
                   <img src={item.image} alt={item.name} className="inventory-img" />

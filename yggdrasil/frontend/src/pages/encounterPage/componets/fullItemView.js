@@ -1,25 +1,24 @@
 // BackgroundDes.js
 import React, { useState } from "react";
 import "../encounter.css";
-import swordImg from "../../../assets/images/sword.jpg"; // Example item image
+import daggerImg from "../../../assets/images/dagger.jpg"; // Goblin dagger image
 
 const FullItemView = () => {
   const [description, setDescription] = useState(
-    "Forged in shadow and quenched in the thirst of dying stars, the Sword of the Night drinks the light around it."
+    "A jagged dagger fashioned from scrap metal. It’s rusted and uneven, but still sharp enough to be dangerous."
   );
 
   const [activeTab, setActiveTab] = useState("Abilities");
 
-  // Replace character info with item info
+  // Goblin dagger item
   const item = {
-    name: "Sword of the Night",
-    type: "Weapon - Longsword",
-    image: swordImg,
+    name: "Crude Goblin Dagger",
+    type: "Weapon - Dagger",
+    image: daggerImg,
     hexes: [
-      { label: "Damage", bonus: "2d6 Slashing" },
-      { label: "Cold", bonus: "1d4 Cold" },
+      { label: "Damage", bonus: "1d4 Piercing" },
     ],
-    abilities: ["Glows in darkness", "Can pierce magical shields"],
+    abilities: ["Lightweight and easy to conceal", "Often coated with grime or poison"],
   };
 
   const tabs = {
