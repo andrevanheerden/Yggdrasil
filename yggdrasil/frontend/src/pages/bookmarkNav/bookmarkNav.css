@@ -75,19 +75,19 @@
 .blank-page {
   position: absolute;
   top: 50px;
-  left: 50%;
+  left: 17.7%;
   width: 620px;
   height: 825px;
   background-image: url(../../assets/images/page.png);
-  transform-origin: left center;
+  transform-origin: right center; /* flip starts from right instead of left */
   box-shadow: 0 0 15px rgba(0,0,0,0.3);
 }
 
 .flip-animate {
-  animation: flipRightPage 0.6s ease forwards;
+  animation: flipLeftPage 0.6s ease forwards;
 }
 
-@keyframes flipRightPage {
+@keyframes flipLeftPage {
   0% { transform: rotateY(0deg); }
-  100% { transform: rotateY(-180deg); }
+  100% { transform: rotateY(180deg); } /* rotate in the other direction */
 }

@@ -1,4 +1,3 @@
-
 .campaign-container {
   position: absolute;         /* must be absolute/fixed for vertical centering */
   width: 1272px;
@@ -6,7 +5,7 @@
   margin: auto;               /* centers horizontally */
   
   top: 50%;                   /* push halfway down */
-  transform: translateY(-50%); /* pull up by half height */
+  transform: translateY(-40%); /* pull up by half height */
 
   background-size: contain;
   background-position: center center;
@@ -15,11 +14,19 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
   z-index: 3;
 }
 
 
+
+
+.campaign-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
 /* Top block above left and right pages */
 .top-block {
@@ -36,6 +43,7 @@
     rgba(0, 0, 0, 0.05)    /* right light */
   );
   z-index: 5; /* above pages */
+
 }
 
 
@@ -45,7 +53,6 @@
   max-width: 1400px;
   height: 97%;
   box-shadow: 0px 10px 40px rgba(0,0,0,0.5);
-
   overflow: hidden;
   z-index: 3;
 }
@@ -56,7 +63,7 @@
   background-position: center;
   padding: 10px;
   overflow: visible;
-    z-index: 3;
+    z-index: 5;
 }
 
 
@@ -65,24 +72,28 @@
 
 .right-page {
   position: relative; /* needed for pseudo-element */
+  
 
-  overflow: hidden; /* make sure pseudo-element stays inside */
+    overflow: visible ;  /* allow child to go outside */
 }
 
+
 /* Flip only the background */
-.right-page::before {
+.page.right-page::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-image: url('../../assets/images/page.png'); /* set your right page background */
+  background: transparent;
   background-size: cover;
   background-position: center;
   transform: scaleX(-1); /* horizontal flip */
   z-index: -1; /* keep behind page content */
+  overflow: visible;
 }
+
 
 
 
@@ -145,10 +156,11 @@
 /* White boxes */
 /* White boxes */
 .white-box {
-  background-color: white;
-  padding: 10px 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    background: #d9d9d9;
+  padding: 15px;
+  height: 340px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   flex: 1;                 /* both boxes take equal width */
   display: flex;           /* enable flex layout */
   flex-direction: column;  /* stack children vertically */
@@ -164,11 +176,50 @@
   overflow: hidden; /* hide any overflowing content */
 }
 
-.description-container {
-  flex: 1;           /* fills remaining width */
-  height: 340px;     /* same height as players-container */
-  overflow: hidden;  /* hide overflow */
+.description-container p {
+  display: -webkit-box;        /* needed for line clamping */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;     /* adds "…" */
+  -webkit-line-clamp: 12;      /* number of visible lines */
+  line-height: 1.5em;          /* adjust based on your design */
 }
+
+/* Editable description box on CampaignPage */
+.campaign-page-description-textarea {
+  width: 95%;
+  height: 400px;        /* adjust as needed */
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  resize: none;         /* prevent resizing */
+  font-family: 'Caudex', serif;
+  font-size: 16px;
+  line-height: 1.5em;
+  background: #fff;
+  overflow-y: auto;
+}
+
+/* Cut-off description box (no scroll) */
+.campaign-page-description-box {
+  width: 95%;
+  height: 400px;          /* fixed height */
+  padding: 10px;
+
+
+  border-radius: 8px;
+  font-family: 'Caudex', serif;
+  font-size: 16px;
+  line-height: 1.5em;
+  
+  overflow: hidden;       /* clip overflow */
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 12; /* number of visible lines */
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
 
 /* Optional: make text wrap nicely inside the boxes */
 .players-container ul,
@@ -215,4 +266,164 @@
   font-family: 'Caudex', serif;
   font-size: 16px;
   line-height: 30px;     /* match line height to background lines */
+}
+
+
+/* right page tab nav */
+
+/* === Campaign Left Tabs === */
+.campaign-left-tab-buttons {
+  position: fixed;
+  top: -2.6%;
+  left: 16.5%;
+  transform: translateX(-50%);
+  z-index: 120;
+  display: flex;        /* <--- required for gap */
+  gap: 10px;            /* now works */
+}
+
+
+.campaign-left-tab-btn {
+  background: #05512C;
+  color: #fff;
+  border: none;
+  border-radius: 10px 10px 0 0;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: 'Caudex', serif;
+  font-size: 15px;
+  transition: all 0.3s ease;
+  gap : 10px;
+}
+
+.campaign-left-tab-btn.active {
+  background: #199A6A;
+  color: #000;
+  font-weight: bold;
+  padding: 8px 15px;
+}
+
+
+
+
+
+/* === Adventure Page Styles === */
+
+/* Page layout */
+.adventure-page {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  padding: 20px;
+  font-family: 'Caudex', serif;
+
+}
+
+/* Floating title */
+.adventure-title {
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Main content layout */
+.adventure-main {
+  flex-direction: column;
+  justify-content: center;  /* vertical content inside box */
+  align-items: center;      /* horizontal content inside box */
+  text-align: center;
+  align-items: flex-start;
+
+  height: calc(100% - 80px); /* leave space for title */
+  position: relative;
+}
+
+.adventure-description-box {
+  flex: 1;
+  width: 82.4%;
+  max-width: 540px;
+  height: 645px;       /* fixed height */
+  background: #d9d9d9;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  overflow: hidden;    /* clip overflow instead of scroll */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;  /* align content to top */
+  align-items: stretch;          /* stretch content to full width */
+  text-align: left;              /* optional: align text left */
+}
+
+
+/* Editable textarea */
+.adventure-textarea {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: transparent;
+  font-family: 'Caudex', serif;
+  font-size: 16px;
+  line-height: 1.5em;
+  resize: none;
+  outline: none;
+  overflow: hidden;   /* clip text */
+}
+
+/* Side buttons wrapper */
+.adventure-side-buttons-wrapper {
+  position: absolute;
+  top: 5%;
+  right: 5.5%;      /* outside the description box */
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+}
+
+/* Buttons container */
+.adventure-side-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Individual side buttons */
+.adventure-side-btn {
+  background: #05512C;
+  color: #fff;
+  border: none;
+  border-radius: 0px 10px 10px 0px;
+  padding: 10px 6px;
+  cursor: pointer;
+  font-family: 'Caudex', serif;
+  font-size: 15px;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transition: all 0.3s ease;
+}
+
+.adventure-side-btn:hover {
+  background: #199A6A;
+  color: #000;
+}
+
+.adventure-side-btn.active {
+  background: #199A6A;
+  color: #000;
+  font-weight: bold;
+}
+
+/* Optional: clamp text for Setting, Factions, Themes */
+.adventure-description-box p,
+.adventure-description-box ul {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 12;
+  -webkit-box-orient: vertical;
+  line-height: 1.5em;
 }
