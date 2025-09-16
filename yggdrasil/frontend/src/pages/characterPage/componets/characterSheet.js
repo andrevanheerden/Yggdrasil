@@ -21,61 +21,14 @@ ChartJS.register(
   Legend
 );
 
-// Reusable dropdown with "Add new" option
-const EditableDropdown = ({ options, value, onChange, placeholder }) => {
-  const [isCustom, setIsCustom] = useState(false);
-  const [customValue, setCustomValue] = useState("");
-
-  const handleChange = (e) => {
-    const selected = e.target.value;
-    if (selected === "custom") {
-      setIsCustom(true);
-      onChange(customValue);
-    } else {
-      setIsCustom(false);
-      onChange(selected);
-    }
-  };
-
-  return (
-    <>
-      {!isCustom ? (
-        <select
-          value={value}
-          onChange={handleChange}
-          className="dropdown-inline"
-        >
-          {options.map((opt, i) => (
-            <option key={i} value={opt}>
-              {opt}
-            </option>
-          ))}
-          <option value="custom">➕ Add new...</option>
-        </select>
-      ) : (
-        <input
-          type="text"
-          value={customValue}
-          onChange={(e) => {
-            setCustomValue(e.target.value);
-            onChange(e.target.value);
-          }}
-          placeholder={placeholder}
-          className="dropdown-inline"
-        />
-      )}
-    </>
-  );
-};
-
 const CharacterSheet = () => {
-  const [name, setName] = useState("Alex Black");
-  const [charClass, setCharClass] = useState("Shinobi");
-  const [race, setRace] = useState("Human");
-  const [background, setBackground] = useState("Scholar");
   const [activeTab, setActiveTab] = useState("Str");
 
   const character = {
+    name: "Alex Black",
+    class: "Shinobi",
+    race: "Human",
+    background: "Scholar",
     portrait: rose,
     ac: 19,
     level: 1,
@@ -160,31 +113,12 @@ const CharacterSheet = () => {
       {/* Header with portrait */}
       <div className="character-header-with-portrait">
         <div className="header-dropdowns">
-          <EditableDropdown
-            options={["Alex Black", "New Hero"]}
-            value={name}
-            onChange={setName}
-            placeholder="Enter name"
-          />
-          <EditableDropdown
-            options={["Shinobi", "Warrior", "Mage"]}
-            value={charClass}
-            onChange={setCharClass}
-            placeholder="Enter class"
-          />
+          {/* ✅ All static text now */}
+          <div className="static-info">{character.name}</div>
+          <div className="static-info">{character.class}</div>
           <div className="two-column-inline">
-            <EditableDropdown
-              options={["Human", "Elf", "Dwarf"]}
-              value={race}
-              onChange={setRace}
-              placeholder="Enter race"
-            />
-            <EditableDropdown
-              options={["Scholar", "Soldier", "Merchant"]}
-              value={background}
-              onChange={setBackground}
-              placeholder="Enter background"
-            />
+            <div className="static-info">{character.race}</div>
+            <div className="static-info">{character.background}</div>
           </div>
         </div>
 
@@ -231,35 +165,36 @@ const CharacterSheet = () => {
             </div>
           </div>
 
-<div className="skills-box white-box">
-  {/* Content inside */}
-  <div className="skills-tab-content">
-    <h3>{activeTab} Skills</h3>
-    <ul>
-      {skillsByAbility[activeTab].map((skill, idx) => (
-        <li key={idx}>
-          {skill.name} {skill.bonus}
-        </li>
-      ))}
-    </ul>
-  </div>
+          <div className="skills-box white-box">
+            {/* Content inside */}
+            <div className="skills-tab-content">
+              <h3>{activeTab} Skills</h3>
+              <ul>
+                {skillsByAbility[activeTab].map((skill, idx) => (
+                  <li key={idx}>
+                    {skill.name} {skill.bonus}
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-  {/* Tabs outside */}
-  <div className="skills-tabs-container">
-    <div className="skills-tab-buttons">
-      {Object.keys(skillsByAbility).map((ability) => (
-        <button
-          key={ability}
-          className={`skills-tab-btn ${activeTab === ability ? "active" : ""}`}
-          onClick={() => setActiveTab(ability)}
-        >
-          {ability}
-        </button>
-      ))}
-    </div>
-  </div>
-</div>
-
+            {/* Tabs outside */}
+            <div className="skills-tabs-container">
+              <div className="skills-tab-buttons">
+                {Object.keys(skillsByAbility).map((ability) => (
+                  <button
+                    key={ability}
+                    className={`skills-tab-btn ${
+                      activeTab === ability ? "active" : ""
+                    }`}
+                    onClick={() => setActiveTab(ability)}
+                  >
+                    {ability}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

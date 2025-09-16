@@ -7,7 +7,7 @@ import BookmarkNav from "../bookmarkNav/bookmarkNav";
 import "./character.css";
 
 function Character() {
-  const [activeTab, setActiveTab] = useState("characterSheet"); // default to CharacterSheet
+  const [activeTab, setActiveTab] = useState("character"); // default to Character Sheet
 
   return (
     <>
@@ -16,12 +16,20 @@ function Character() {
 
       {/* Top tabs above the book */}
       <div className="char-left-tab-buttons">
+
+                <button
+          className={`char-left-tab-btn ${activeTab === "characterList" ? "active" : ""}`}
+          onClick={() => setActiveTab("characterList")}
+        >
+          Character List
+        </button>
         <button
-          className={`char-left-tab-btn ${activeTab === "characterSheet" ? "active" : ""}`}
-          onClick={() => setActiveTab("characterSheet")}
+          className={`char-left-tab-btn ${activeTab === "character" ? "active" : ""}`}
+          onClick={() => setActiveTab("character")}
         >
           Character Sheet
         </button>
+
         <button
           className={`char-left-tab-btn ${activeTab === "desc" ? "active" : ""}`}
           onClick={() => setActiveTab("desc")}
@@ -49,10 +57,17 @@ function Character() {
       </div>
 
       {/* Book pages */}
-      <div className="campaign-container" style={{ backgroundImage: `url(${OPcover})` , marginTop: '20px', overflow: 'visible'}}>
+      <div
+        className="campaign-container"
+        style={{
+          backgroundImage: `url(${OPcover})`,
+          marginTop: "20px",
+          overflow: "visible",
+        }}
+      >
         <div className="top-block"></div>
         <div className="book-wrapper">
-          <LeftP activeTab={activeTab} />  {/* renders CharacterSheet or tab content */}
+          <LeftP activeTab={activeTab} />  
           <RightP />
         </div>
       </div>
@@ -61,6 +76,7 @@ function Character() {
 }
 
 export default Character;
+
 
 
 
