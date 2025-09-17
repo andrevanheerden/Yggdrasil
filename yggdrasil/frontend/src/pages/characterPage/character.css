@@ -1395,3 +1395,65 @@ stroke: #000;
   margin: 0 5px;
   width: 25px; height: 25px;
 }
+.character-name-input {
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid #333;
+  font-size: 24px;
+  font-weight: bold;
+  text-align: center;
+  padding: 5px;
+  margin-bottom: 15px;
+  color: #333;
+  width: 100%;
+}
+
+.character-name-input:focus {
+  outline: none;
+  border-bottom-color: #4a90e2;
+}
+
+.stats-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.character-main {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-section {
+  display: flex;
+  gap: 20px;
+}
+
+.skills-box {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.skills-tabs-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.skills-tab-buttons {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.right-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  flex: 1;
+}
+
+.skills-box {
+  width: 100%;
+}

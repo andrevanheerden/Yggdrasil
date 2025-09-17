@@ -38,6 +38,7 @@ const CreateCharacterSheet = () => {
   const [acBase, setAcBase] = useState(10);
   const [speed, setSpeed] = useState(30);
   const [selectedSkills, setSelectedSkills] = useState({});
+  const [characterName, setCharacterName] = useState("New Character");
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
@@ -93,14 +94,9 @@ const CreateCharacterSheet = () => {
   };
 
   const character = {
-    name: "New Character",
-    class: "Class",
-    race: "Race",
-    background: "Background",
-    portrait: pageBg,
-    ac: acBase,
+    name: characterName,
+    ac: acBase + getModifier(abilityScores.Dex),
     level: 1,
-    hp,
     speed,
   };
 
@@ -114,115 +110,148 @@ const CreateCharacterSheet = () => {
           backgroundPosition: "center",
         }}
       >
-        {/* Header with portrait */}
-        <div className="character-header-with-portrait">
-          <div className="header-dropdowns">
-            <div className="static-info">{character.name}</div>
-            <div className="static-info">{character.class}</div>
-            <div className="two-column-inline">
-              <div className="static-info">{character.race}</div>
-              <div className="static-info">{character.background}</div>
-            </div>
-          </div>
+        {/* Header with character name input */}
+        <div className="character-header">
+          <input
+            type="text"
+            value={characterName}
+            onChange={(e) => setCharacterName(e.target.value)}
+            className="character-name-input"
+            placeholder="Character Name"
+          />
         </div>
 
         <div className="character-main">
-          <div className="charts-column">
-            <div className="ability-chart white-box">
-              <Radar data={abilityData} options={chartOptions} />
+          <div className="top-section" style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
+            <div className="charts-column">
+              <div className="ability-chart white-box">
+                <Radar data={abilityData} options={chartOptions} />
+              </div>
+              <div className="saving-chart white-box">
+                <Radar data={savingData} options={chartOptions} />
+              </div>
             </div>
-            <div className="saving-chart white-box">
-              <Radar data={savingData} options={chartOptions} />
-            </div>
-          </div>
 
-<div className="portrait-column">
-  <div className="stats-hp-wrapper" style={{ display: "flex", gap: "20px" }}>
-    {/* Ability Scores Column */}
-    <div className="ability-input" style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-      {abilities.map((ab) => (
-        <div key={ab} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-          <strong>{ab}:</strong>
-          <button onClick={() => changeAbility(ab, -1)}>-</button>
-          <span>{abilityScores[ab]}</span>
-          <button onClick={() => changeAbility(ab, 1)}>+</button>
-        </div>
-      ))}
-    </div>
+            <div className="right-column" style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              <div className="stats-hp-wrapper" style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
+                {/* Ability Scores Column */}
+                <div className="ability-input" style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+                  {abilities.map((ab) => (
+                    <div key={ab} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                      <strong>{ab}:</strong>
+                      <button onClick={() => changeAbility(ab, -1)}>-</button>
+                      <span>{abilityScores[ab]}</span>
+                      <button onClick={() => changeAbility(ab, 1)}>+</button>
+                    </div>
+                  ))}
+                </div>
 
-    {/* Hex Stats Column */}
-    <div className="hex-stack" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-      <div className="stat-box hex">AC {acBase + getModifier(abilityScores.Dex)}</div>
-      <div className="stat-box hex">Level {character.level}</div>
-      <div className="stat-box hex">Speed {speed}</div>
-    </div>
-  </div>
-
-  {/* HP Bar */}
-  <div className="hp-bar-container" style={{ marginTop: "10px" }}>
-    <input
-      type="number"
-      value={hp.current}
-      onChange={(e) => setHp({ ...hp, current: +e.target.value })}
-      style={{ width: 50 }}
-    />
-    /
-    <input
-      type="number"
-      value={hp.max}
-      onChange={(e) => setHp({ ...hp, max: +e.target.value })}
-      style={{ width: 50 }}
-    />
-    <div
-      className="hp-bar-fill"
-      style={{ height: `${(hp.current / hp.max) * 100}%` }}
-    ></div>
-  </div>
-</div>
-
-
-            <div className="skills-box white-box">
-              <div className="skills-tab-content">
-                <h3>{activeTab} Skills</h3>
-                <ul>
-                  {initialSkills[activeTab].map((skill) => {
-                    const bonus =
-                      getModifier(abilityScores[activeTab]) +
-                      (selectedSkills[activeTab]?.includes(skill) ? 2 : 0);
-                    return (
-                      <li key={skill}>
-                        <input
-                          type="checkbox"
-                          checked={selectedSkills[activeTab]?.includes(skill) || false}
-                          onChange={() => toggleSkill(activeTab, skill)}
-                        />
-                        {skill} +{bonus}
-                      </li>
-                    );
-                  })}
-                </ul>
+                {/* Stats with HP Bar */}
+                <div className="stats-container" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <div className="stats-row" style={{ display: "flex", gap: "10px" }}>
+                    <div className="stat-box hex">AC {character.ac}</div>
+                    <div className="stat-box hex">Level {character.level}</div>
+                    <div className="stat-box hex">Speed {speed}</div>
+                  </div>
+                  
+                  {/* HP Bar */}
+                  <div className="hp-container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <div style={{ fontWeight: "bold", marginBottom: "5px" }}>HP</div>
+                    <div className="hp-bar-container" style={{ 
+                      width: "100%", 
+                      height: "20px", 
+                      backgroundColor: "#ddd", 
+                      borderRadius: "10px",
+                      position: "relative",
+                      overflow: "hidden"
+                    }}>
+                      <div
+                        className="hp-bar-fill"
+                        style={{ 
+                          height: "100%", 
+                          width: `${(hp.current / hp.max) * 100}%`,
+                          backgroundColor: hp.current > hp.max * 0.5 ? "#4caf50" : 
+                                          hp.current > hp.max * 0.25 ? "#ff9800" : "#f44336",
+                          transition: "width 0.3s ease"
+                        }}
+                      ></div>
+                      <div style={{
+                        position: "absolute",
+                        top: "0",
+                        left: "0",
+                        right: "0",
+                        bottom: "0",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#000",
+                        fontWeight: "bold",
+                        fontSize: "12px"
+                      }}>
+                        {hp.current} / {hp.max}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "5px", marginTop: "5px" }}>
+                      <input
+                        type="number"
+                        value={hp.current}
+                        onChange={(e) => setHp({ ...hp, current: +e.target.value })}
+                        style={{ width: "50px" }}
+                      />
+                      <span>/</span>
+                      <input
+                        type="number"
+                        value={hp.max}
+                        onChange={(e) => setHp({ ...hp, max: +e.target.value })}
+                        style={{ width: "50px" }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div className="skills-tabs-container" style={{ height: "200px" }}>
-                <div className="skills-tab-buttons">
-                  {abilities.map((ability) => (
-                    <button
-                      key={ability}
-                      className={`skills-tab-btn ${activeTab === ability ? "active" : ""}`}
-                      onClick={() => setActiveTab(ability)}
-                    >
-                      {ability}
-                    </button>
-                  ))}
+              {/* Skills Box - Now positioned directly under the ability scores and HP */}
+              <div className="skills-box white-box">
+                <div className="skills-tab-content">
+                  <h3>{activeTab} Skills</h3>
+                  <ul>
+                    {initialSkills[activeTab].map((skill) => {
+                      const bonus =
+                        getModifier(abilityScores[activeTab]) +
+                        (selectedSkills[activeTab]?.includes(skill) ? 2 : 0);
+                      return (
+                        <li key={skill}>
+                          <input
+                            type="checkbox"
+                            checked={selectedSkills[activeTab]?.includes(skill) || false}
+                            onChange={() => toggleSkill(activeTab, skill)}
+                          />
+                          {skill} +{bonus}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+
+                <div className="skills-tabs-container">
+                  <div className="skills-tab-buttons">
+                    {abilities.map((ability) => (
+                      <button
+                        key={ability}
+                        className={`skills-tab-btn ${activeTab === ability ? "active" : ""}`}
+                        onClick={() => setActiveTab(ability)}
+                      >
+                        {ability}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
-
-
           </div>
         </div>
       </div>
-
+    </div>
   );
 };
 
