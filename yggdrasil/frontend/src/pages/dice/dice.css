@@ -1,0 +1,116 @@
+/* === Base launcher & menu === */
+.dice-launcher {
+  position: fixed;
+  left: 7%;
+  bottom: 3%;
+  z-index: 1200;
+  display: flex;
+  flex-direction: column-reverse; /* menu above launcher button */
+  align-items: center;
+  gap: 6px;
+}
+
+.launcher-btn {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #1f1f1f, #0f0f0f);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.45),
+              inset 0 -4px 8px rgba(255,255,255,0.02);
+  border: 2px solid rgba(255,255,255,0.03);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.roll-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  background: linear-gradient(180deg, #e53935, #b71c1c); /* red gradient */
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+}
+
+
+/* === Vertical Dice Menu === */
+.menu {
+  width: 56px;
+
+  border-radius: 10px;
+  padding: 8px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+
+}
+.menu.visible {
+  display: flex;
+}
+
+.menu button {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  background: linear-gradient(180deg,#2a2a2a,#1a1a1a);
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  position: relative;
+}
+
+/* Dice selection badge */
+.menu button span {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #e53935;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === Popup (toast) === */
+.toast {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 1300;
+  max-width: 300px;
+  background: linear-gradient(180deg,#111,#1f1f1f);
+  border-radius: 10px;
+  padding: 14px;
+  box-shadow: 0 14px 44px rgba(0,0,0,0.5);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.toast-title {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 6px;
+}
+
+.toast-value {
+  font-size: 24px;
+  font-weight: 900;
+}
+
+.toast-actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+
+/* Removed clear button completely */

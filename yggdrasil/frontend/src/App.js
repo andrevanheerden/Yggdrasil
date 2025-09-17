@@ -7,6 +7,7 @@ import CreateCampaignPage from './pages/homePage/components/createCampaign';
 import Campaign from './pages/campaignPage/campaign';
 import Character from './pages/characterPage/character';
 import Encounter from './pages/encounterPage/encounter';
+import Dice from './pages/dice/dice'; // 👈 main dice manager
 
 function App() {
   return (
@@ -16,40 +17,22 @@ function App() {
         <div className="fog-img fog-img-first"></div>
         <div className="fog-img fog-img-second"></div>
       </div>
+      
       <Router>
         <Routes>
-          <Route 
-            path="/" 
-            element={<Navigate to="/login" />} 
-          />
-          <Route 
-            path="/login" 
-            element={<Login />} 
-          />
-          <Route 
-            path="/home" 
-            element={<Home />} 
-          />
-          <Route 
-            path="/create" 
-            element={<CreateCampaignPage />} 
-          />
-          <Route 
-            path="/campaign" 
-            element={<Campaign />} 
-          />
-          <Route 
-            path="/character" 
-            element={<Character />} 
-          />
-          <Route 
-            path="/encounter" 
-            element={<Encounter />} 
-          />
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/home" element={<Home />} />
+          <Route path="/create" element={<CreateCampaignPage />} />
+          <Route path="/campaign" element={<Campaign />} />
+          <Route path="/character" element={<Character />} />
+          <Route path="/encounter" element={<Encounter />} />
         </Routes>
+
+        {/* 👇 All dice controlled through Dice.jsx */}
+        <Dice />
       </Router>
     </div>
   );
 }
-
 export default App;
