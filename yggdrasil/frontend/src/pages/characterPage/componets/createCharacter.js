@@ -136,34 +136,50 @@ const CreateCharacterSheet = () => {
             </div>
           </div>
 
-          <div className="portrait-column">
-            <div className="stats-hp-wrapper">
-              <div className="hex-stack">
-                <div className="stat-box hex">AC {acBase + getModifier(abilityScores.Dex)}</div>
-                <div className="stat-box hex">Level {character.level}</div>
-                <div className="stat-box hex">Speed {speed}</div>
-              </div>
+<div className="portrait-column">
+  <div className="stats-hp-wrapper" style={{ display: "flex", gap: "20px" }}>
+    {/* Ability Scores Column */}
+    <div className="ability-input" style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
+      {abilities.map((ab) => (
+        <div key={ab} style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+          <strong>{ab}:</strong>
+          <button onClick={() => changeAbility(ab, -1)}>-</button>
+          <span>{abilityScores[ab]}</span>
+          <button onClick={() => changeAbility(ab, 1)}>+</button>
+        </div>
+      ))}
+    </div>
 
-              <div className="hp-bar-container">
-                <input
-                  type="number"
-                  value={hp.current}
-                  onChange={(e) => setHp({ ...hp, current: +e.target.value })}
-                  style={{ width: 50 }}
-                />
-                /
-                <input
-                  type="number"
-                  value={hp.max}
-                  onChange={(e) => setHp({ ...hp, max: +e.target.value })}
-                  style={{ width: 50 }}
-                />
-                <div
-                  className="hp-bar-fill"
-                  style={{ height: `${(hp.current / hp.max) * 100}%` }}
-                ></div>
-              </div>
-            </div>
+    {/* Hex Stats Column */}
+    <div className="hex-stack" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+      <div className="stat-box hex">AC {acBase + getModifier(abilityScores.Dex)}</div>
+      <div className="stat-box hex">Level {character.level}</div>
+      <div className="stat-box hex">Speed {speed}</div>
+    </div>
+  </div>
+
+  {/* HP Bar */}
+  <div className="hp-bar-container" style={{ marginTop: "10px" }}>
+    <input
+      type="number"
+      value={hp.current}
+      onChange={(e) => setHp({ ...hp, current: +e.target.value })}
+      style={{ width: 50 }}
+    />
+    /
+    <input
+      type="number"
+      value={hp.max}
+      onChange={(e) => setHp({ ...hp, max: +e.target.value })}
+      style={{ width: 50 }}
+    />
+    <div
+      className="hp-bar-fill"
+      style={{ height: `${(hp.current / hp.max) * 100}%` }}
+    ></div>
+  </div>
+</div>
+
 
             <div className="skills-box white-box">
               <div className="skills-tab-content">
@@ -187,7 +203,7 @@ const CreateCharacterSheet = () => {
                 </ul>
               </div>
 
-              <div className="skills-tabs-container">
+              <div className="skills-tabs-container" style={{ height: "200px" }}>
                 <div className="skills-tab-buttons">
                   {abilities.map((ability) => (
                     <button
@@ -202,20 +218,11 @@ const CreateCharacterSheet = () => {
               </div>
             </div>
 
-            <div className="ability-input">
-              {abilities.map((ab) => (
-                <div key={ab}>
-                  <strong>{ab}:</strong>
-                  <button onClick={() => changeAbility(ab, -1)}>-</button>
-                  <span>{abilityScores[ab]}</span>
-                  <button onClick={() => changeAbility(ab, 1)}>+</button>
-                </div>
-              ))}
-            </div>
+
           </div>
         </div>
       </div>
-    </div>
+
   );
 };
 
