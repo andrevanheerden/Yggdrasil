@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import "../character.css";
 import { Radar } from "react-chartjs-2";
 import pageBg from "../../../assets/images/page.png"; // Popup background
@@ -39,7 +39,24 @@ const CreateCharacterSheet = () => {
   const [speed] = useState(30);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [characterName, setCharacterName] = useState("New Character");
+  const [characterImage, setCharacterImage] = useState(null);
+  const fileInputRef = useRef(null);
   const [skillContainerHeight, setSkillContainerHeight] = useState(400); // Default height
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setCharacterImage(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const triggerFileInput = () => {
+    fileInputRef.current.click();
+  };
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
@@ -148,15 +165,47 @@ const CreateCharacterSheet = () => {
           backgroundPosition: "center",
         }}
       >
-        {/* Header with character name input */}
-        <div className="character-header">
+        {/* Header with character name input and image upload */}
+        <div className="character-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
           <input
             type="text"
             value={characterName}
             onChange={(e) => setCharacterName(e.target.value)}
             className="character-name-input"
             placeholder="Character Name"
+            style={{ width: "50%", marginBottom: 0 }}
           />
+          
+          <div className="character-image-upload" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+            <div 
+              className="character-image-preview" 
+              onClick={triggerFileInput}
+              style={{
+                width: "125px",
+                height: "125px",
+                borderRadius: "50%",
+                backgroundColor: "#ddd",
+                backgroundImage: characterImage ? `url(${characterImage})` : "none",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                cursor: "pointer",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                border: "2px solid #333",
+                marginBottom: "5px"
+              }}
+            >
+              {!characterImage && <span>Click to upload</span>}
+            </div>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              accept="image/*"
+              style={{ display: "none" }}
+            />
+          </div>
         </div>
 
         <div className="character-main">
@@ -247,41 +296,55 @@ const CreateCharacterSheet = () => {
               </div>
 
               {/* Skills Box with adjustable height */}
-              <div className="skills-box white-box" style={{ maxHeight: '400px' }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
-                  <h3>{activeTab} Skills</h3>
-
-                </div>
-                
-                <div className="skills-tab-content">
-                  <div style={{ marginBottom: "10px" }}>
-                    Selected Skills: {selectedSkills.length}/2
-                    {selectedSkills.length > 0 && `: ${selectedSkills.join(", ")}`}
-                  </div>
-                  <ul>
-                    {initialSkills[activeTab].map((skill) => {
-                      const ability = Object.keys(initialSkills).find(key => 
-                        initialSkills[key].includes(skill)
-                      );
-                      // Skill bonus = ability modifier + proficiency bonus (2) if selected
-                      const bonus = getModifier(abilityScores[ability]) + 
-                                   (selectedSkills.includes(skill) ? 2 : 0);
-                      const isSelected = selectedSkills.includes(skill);
-                      
-                      return (
-                        <li key={skill}>
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => toggleSkill(skill)}
-                            disabled={!isSelected && selectedSkills.length >= 2}
-                          />
-                          {skill} +{bonus}
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
+   <div className="skills-box white-box" style={{ width: '300px', maxHeight: '390px' }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5px" }}>
+          <h3>{activeTab} Skills</h3>
+        </div>
+        
+        <div className="skills-tab-content">
+          <div style={{ marginBottom: "5px" }}>
+            Selected Skills: {selectedSkills.length}/2
+            {selectedSkills.length > 0 && `: ${selectedSkills.join(", ")}`}
+          </div>
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {initialSkills[activeTab].map((skill) => {
+              const ability = Object.keys(initialSkills).find(key => 
+                initialSkills[key].includes(skill)
+              );
+              // Skill bonus = ability modifier + proficiency bonus (2) if selected
+              const bonus = getModifier(abilityScores[ability]) + 
+                           (selectedSkills.includes(skill) ? 2 : 0);
+              const isSelected = selectedSkills.includes(skill);
+              
+              return (
+                <li key={skill} style={{ 
+                  display: "flex", 
+                  justifyContent: "space-between", 
+                  alignItems: "center",
+                  marginBottom: "5px"
+                }}>
+                  <span>
+                    {skill} <strong style={{ marginLeft: "5px" }}>+{bonus}</strong>
+                  </span>
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => toggleSkill(skill)}
+                    disabled={!isSelected && selectedSkills.length >= 2}
+                    style={{
+                      width: "16px",
+                      height: "16px",
+                      cursor: "pointer",
+                      boxShadow: "none",
+                      border: "1px solid #ccc",
+                      borderRadius: "3px"
+                    }}
+                  />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
 
                 <div className="skills-tabs-container">
                   <div className="skills-tab-buttons">
