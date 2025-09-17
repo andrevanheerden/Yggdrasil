@@ -1313,3 +1313,117 @@ stroke: #000;
   color: #fff;
   border-color: #199a6a;
 }
+
+/* === class enegy === */
+/* Energy resource box */
+.energy-box {
+  width: 200px;
+  background: #d9d9d9;
+  padding: 12px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  text-align: center;
+  font-family: 'Caudex', serif;
+}
+
+.energy-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.energy-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.energy-level {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.energy-level-label {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.energy-circles {
+  display: flex;
+  gap: 4px;
+}
+
+.energy-circle {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #199a6a;
+  border: 1px solid #333;
+}
+
+
+/* craete character */
+
+.character-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center; /* centers horizontally */
+  align-items: flex-start; /* aligns to the top */
+  padding-top: 20px; /* optional spacing from top */
+  z-index: 1999;
+}
+
+
+.character-popup {
+  width: 80%;
+  max-width: 900px;
+  height: 90%;
+  background-size: cover;
+  background-position: center;
+  padding: 20px;
+  border-radius: 10px;
+  color: #000;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* prevent popup itself from scrolling */
+}
+
+.popup-content {
+  flex: 1; /* take remaining height after progress bar + buttons */
+  overflow-y: auto; /* scroll inside if content is too tall */
+  padding-right: 10px; /* optional: avoid scrollbar overlap with content */
+}
+
+
+.popup-progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #ccc;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.popup-progress-fill {
+  height: 100%;
+  background: #00f;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+}
+
+.ability-input {
+  margin-bottom: 10px;
+}

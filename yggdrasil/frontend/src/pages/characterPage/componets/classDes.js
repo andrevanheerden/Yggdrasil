@@ -13,15 +13,24 @@ const ClassDes = () => {
   const character = {
     name: "Alex Black",
     class: "Shinobi",
-
- 
     portrait: rose,
   };
 
-  const hexBonuses = [
-    { label: "Insight", bonus: "+2" },
-    { label: "History", bonus: "+2" },
-  ];
+  // Energy resource (replaces hex bonuses)
+  const energyResource = {
+    name: "Chakra Energy",
+    levels: {
+      1: 4,
+      2: 3,
+      3: 5,
+      4: 2,
+      5: 6,
+      6: 3,
+      7: 4,
+      8: 5,
+      9: 7,
+    },
+  };
 
   const toolProficiencies = ["Calligrapher's supplies"];
   const languages = ["Common", "Elvish"];
@@ -34,50 +43,56 @@ const ClassDes = () => {
   return (
     <div className="page left-page">
       {/* Header */}
-{/* Header */}
-<div className="background-header">
-  <div className="background-character-info">
-    <div className="background-character-name">{character.name}</div>
-    {/* Remove class and race */}
-    <div className="background-character-details">
-      <div className="background-character-background">{character.class}</div>
-    </div>
-  </div>
-  <img
-    src={character.portrait}
-    alt="Portrait"
-    className="background-portrait-img"
-  />
-</div>
+      <div className="background-header">
+        <div className="background-character-info">
+          <div className="background-character-name">{character.name}</div>
+          {/* Remove class and race */}
+          <div className="background-character-details">
+            <div className="background-character-background">
+              {character.class}
+            </div>
+          </div>
+        </div>
+        <img
+          src={character.portrait}
+          alt="Portrait"
+          className="background-portrait-img"
+        />
+      </div>
 
-
-      {/* Two-column layout: Description + Hexes/Skills */}
+      {/* Two-column layout: Description + Right column */}
       <div className="background-main-content">
-{/* Description */}
-<div className="background-description-box">
-  <div className="background-description-title-inside">Description</div>
-  <textarea
-    value={description}
-    onChange={(e) => setDescription(e.target.value)}
-    className="background-description-textarea"
-  />
-</div>
+        {/* Description */}
+        <div className="background-description-box">
+          <div className="background-description-title-inside">Description</div>
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="background-description-textarea"
+          />
+        </div>
 
-
-        {/* Right column: Hexes + Tools/Languages */}
+        {/* Right column: Energy Resource + Tools/Languages */}
         <div className="background-right-column">
-          {/* Hex bonuses */}
-          <div className="background-hex-bonuses">
-            {hexBonuses.map((hex, idx) => (
-              <div key={idx} className="background-hex">
-                <div className="background-hex-bonus">{hex.bonus}</div>
-                <div className="background-hex-label">{hex.label}</div>
-              </div>
-            ))}
+          {/* Energy Resource Box */}
+          <div className="energy-box">
+            <h3 className="energy-title">{energyResource.name}</h3>
+            <div className="energy-levels">
+              {Object.entries(energyResource.levels).map(([level, count]) => (
+                <div key={level} className="energy-level">
+                  <span className="energy-level-label">Lv {level}</span>
+                  <div className="energy-circles">
+                    {Array.from({ length: count }).map((_, idx) => (
+                      <div key={idx} className="energy-circle"></div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* Tools / Languages */}
-          <div className="background-skills-box">
+          <div className="background-skills-box" style={{ height: "282px" }}>
             <div className="background-skills-content">
               <h3>{activeTab}</h3>
               <ul>

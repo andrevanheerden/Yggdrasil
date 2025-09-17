@@ -51,17 +51,18 @@ const CharacterList = ({ onSelectCharacter, onCreateCharacter }) => {
       </div>
 
       {/* ➕ Create New Character */}
-      <div
-        className="encounter-box create-new"
-        onClick={() => onCreateCharacter && onCreateCharacter()}
-      >
-        <div className="encounter-img-container">
-          <div className="encounter-img placeholder">+</div>
-        </div>
-        <div className="encounter-info">
-          <div className="encounter-name">Create New Character</div>
-        </div>
-      </div>
+<div
+  className="encounter-box create-new"
+  onClick={() => onCreateCharacter && onCreateCharacter()}
+>
+  <div className="encounter-img-container">
+    <div className="encounter-img placeholder">+</div>
+  </div>
+  <div className="encounter-info">
+    <div className="encounter-name">Create New Character</div>
+  </div>
+</div>
+
     </div>
   );
 };

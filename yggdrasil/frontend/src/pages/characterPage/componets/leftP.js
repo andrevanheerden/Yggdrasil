@@ -8,14 +8,13 @@ import ClassDes from "./classDes";
 import RaceDes from "./raceDes";
 import CharacterList from "./characterList";
 
-const LeftP = ({ activeTab }) => {
-  return (   
+const LeftP = ({ activeTab, onCreateCharacter }) => {
+  return (
     <div className="page left-page" style={{ backgroundImage: `url(${pageBg})` }}>
-      
-      {/* Optional: Always visible Character Sheet at the top */}
-      {activeTab === "characterList" && <CharacterList />}
+      {activeTab === "characterList" && (
+        <CharacterList onCreateCharacter={onCreateCharacter} />
+      )}
 
-      {/* Tab content controlled by parent */}
       <div className="char-left-tab-content">
         {activeTab === "character" && <CharacterSheet />}
         {activeTab === "desc" && <CharacterDes />}
@@ -28,6 +27,3 @@ const LeftP = ({ activeTab }) => {
 };
 
 export default LeftP;
-
-
-

@@ -4,10 +4,20 @@ import LeftP from "./componets/leftP";
 import RightP from "./componets/rightP";
 import Navbar from "../homePage/components/Navbar";
 import BookmarkNav from "../bookmarkNav/bookmarkNav";
+import CreateCharacterPopup from "./componets/createCharacter"; // import popup
 import "./character.css";
 
 function Character() {
   const [activeTab, setActiveTab] = useState("character"); // default to Character Sheet
+  const [showPopup, setShowPopup] = useState(false); // popup visibility
+
+  // called when user clicks "Create New Character" in CharacterList
+  const handleOpenPopup = () => setShowPopup(true);
+  const handleClosePopup = () => setShowPopup(false);
+  const handleCreateCharacter = (newCharacter) => {
+    console.log("Character created:", newCharacter);
+    setShowPopup(false);
+  };
 
   return (
     <>
@@ -16,8 +26,7 @@ function Character() {
 
       {/* Top tabs above the book */}
       <div className="char-left-tab-buttons">
-
-                <button
+        <button
           className={`char-left-tab-btn ${activeTab === "characterList" ? "active" : ""}`}
           onClick={() => setActiveTab("characterList")}
         >
@@ -29,7 +38,6 @@ function Character() {
         >
           Character Sheet
         </button>
-
         <button
           className={`char-left-tab-btn ${activeTab === "desc" ? "active" : ""}`}
           onClick={() => setActiveTab("desc")}
@@ -67,15 +75,24 @@ function Character() {
       >
         <div className="top-block"></div>
         <div className="book-wrapper">
-          <LeftP activeTab={activeTab} />  
+          <LeftP activeTab={activeTab} onCreateCharacter={handleOpenPopup} />  
           <RightP />
         </div>
       </div>
+
+      {/* Popup renders at top level so it’s above everything */}
+      {showPopup && (
+        <CreateCharacterPopup
+          onClose={handleClosePopup}
+          onCreate={handleCreateCharacter}
+        />
+      )}
     </>
   );
 }
 
 export default Character;
+
 
 
 
