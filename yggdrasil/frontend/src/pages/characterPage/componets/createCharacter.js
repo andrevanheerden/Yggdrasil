@@ -35,10 +35,11 @@ const CreateCharacterSheet = () => {
     Cha: 10,
   });
   const [hp, setHp] = useState({ current: 10, max: 10 });
-  const [acBase, setAcBase] = useState(10);
-  const [speed, setSpeed] = useState(30);
-  const [selectedSkills, setSelectedSkills] = useState({});
+  const [acBase] = useState(10);
+  const [speed] = useState(30);
+  const [selectedSkills, setSelectedSkills] = useState([]);
   const [characterName, setCharacterName] = useState("New Character");
+  const [skillContainerHeight, setSkillContainerHeight] = useState(400); // Default height
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
@@ -51,15 +52,35 @@ const CreateCharacterSheet = () => {
     });
   };
 
-  const toggleSkill = (ability, skill) => {
-    const current = selectedSkills[ability] || [];
-    let newSelected = [...current];
-    if (current.includes(skill)) {
-      newSelected = newSelected.filter((s) => s !== skill);
-    } else {
-      if (current.length < 2) newSelected.push(skill);
-    }
-    setSelectedSkills((prev) => ({ ...prev, [ability]: newSelected }));
+  const changeHp = (type, delta) => {
+    setHp((prev) => {
+      if (type === "current") {
+        let newCurrent = prev.current + delta;
+        // Ensure current HP doesn't go below 0 or above max
+        newCurrent = Math.max(0, Math.min(newCurrent, prev.max));
+        return { ...prev, current: newCurrent };
+      } else {
+        let newMax = prev.max + delta;
+        // Ensure max HP doesn't go below 1
+        newMax = Math.max(1, newMax);
+        // Adjust current HP if it would exceed new max
+        const newCurrent = Math.min(prev.current, newMax);
+        return { current: newCurrent, max: newMax };
+      }
+    });
+  };
+
+  const toggleSkill = (skill) => {
+    setSelectedSkills((prev) => {
+      if (prev.includes(skill)) {
+        return prev.filter((s) => s !== skill);
+      } else {
+        if (prev.length < 2) {
+          return [...prev, skill];
+        }
+        return prev;
+      }
+    });
   };
 
   const abilityData = {
@@ -89,7 +110,24 @@ const CreateCharacterSheet = () => {
   };
 
   const chartOptions = {
-    scales: { r: { angleLines: { display: true }, suggestedMin: 0, suggestedMax: 20 } },
+    scales: { 
+      r: { 
+        angleLines: { display: true }, 
+        suggestedMin: 0, 
+        suggestedMax: 20 
+      } 
+    },
+    plugins: { legend: { display: false } },
+  };
+
+  const savingThrowOptions = {
+    scales: { 
+      r: { 
+        angleLines: { display: true }, 
+        suggestedMin: -5, 
+        suggestedMax: 10 
+      } 
+    },
     plugins: { legend: { display: false } },
   };
 
@@ -128,7 +166,7 @@ const CreateCharacterSheet = () => {
                 <Radar data={abilityData} options={chartOptions} />
               </div>
               <div className="saving-chart white-box">
-                <Radar data={savingData} options={chartOptions} />
+                <Radar data={savingData} options={savingThrowOptions} />
               </div>
             </div>
 
@@ -154,9 +192,22 @@ const CreateCharacterSheet = () => {
                     <div className="stat-box hex">Speed {speed}</div>
                   </div>
                   
-                  {/* HP Bar */}
+                  {/* HP Bar with separate current and max controls */}
                   <div className="hp-container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <div style={{ fontWeight: "bold", marginBottom: "5px" }}>HP</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "5px", marginBottom: "5px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <strong>Current HP:</strong>
+                        <button onClick={() => changeHp("current", -1)}>-</button>
+                        <span>{hp.current}</span>
+                        <button onClick={() => changeHp("current", 1)}>+</button>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                        <strong>Max HP:</strong>
+                        <button onClick={() => changeHp("max", -1)}>-</button>
+                        <span>{hp.max}</span>
+                        <button onClick={() => changeHp("max", 1)}>+</button>
+                      </div>
+                    </div>
                     <div className="hp-bar-container" style={{ 
                       width: "100%", 
                       height: "20px", 
@@ -191,40 +242,39 @@ const CreateCharacterSheet = () => {
                         {hp.current} / {hp.max}
                       </div>
                     </div>
-                    <div style={{ display: "flex", gap: "5px", marginTop: "5px" }}>
-                      <input
-                        type="number"
-                        value={hp.current}
-                        onChange={(e) => setHp({ ...hp, current: +e.target.value })}
-                        style={{ width: "50px" }}
-                      />
-                      <span>/</span>
-                      <input
-                        type="number"
-                        value={hp.max}
-                        onChange={(e) => setHp({ ...hp, max: +e.target.value })}
-                        style={{ width: "50px" }}
-                      />
-                    </div>
                   </div>
                 </div>
               </div>
 
-              {/* Skills Box - Now positioned directly under the ability scores and HP */}
-              <div className="skills-box white-box">
-                <div className="skills-tab-content">
+              {/* Skills Box with adjustable height */}
+              <div className="skills-box white-box" style={{ maxHeight: '400px' }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                   <h3>{activeTab} Skills</h3>
+
+                </div>
+                
+                <div className="skills-tab-content">
+                  <div style={{ marginBottom: "10px" }}>
+                    Selected Skills: {selectedSkills.length}/2
+                    {selectedSkills.length > 0 && `: ${selectedSkills.join(", ")}`}
+                  </div>
                   <ul>
                     {initialSkills[activeTab].map((skill) => {
-                      const bonus =
-                        getModifier(abilityScores[activeTab]) +
-                        (selectedSkills[activeTab]?.includes(skill) ? 2 : 0);
+                      const ability = Object.keys(initialSkills).find(key => 
+                        initialSkills[key].includes(skill)
+                      );
+                      // Skill bonus = ability modifier + proficiency bonus (2) if selected
+                      const bonus = getModifier(abilityScores[ability]) + 
+                                   (selectedSkills.includes(skill) ? 2 : 0);
+                      const isSelected = selectedSkills.includes(skill);
+                      
                       return (
                         <li key={skill}>
                           <input
                             type="checkbox"
-                            checked={selectedSkills[activeTab]?.includes(skill) || false}
-                            onChange={() => toggleSkill(activeTab, skill)}
+                            checked={isSelected}
+                            onChange={() => toggleSkill(skill)}
+                            disabled={!isSelected && selectedSkills.length >= 2}
                           />
                           {skill} +{bonus}
                         </li>
