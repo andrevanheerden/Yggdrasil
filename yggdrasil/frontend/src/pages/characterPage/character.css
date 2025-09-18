@@ -1568,3 +1568,41 @@ stroke: #000;
     right: 15px;
   }
 }
+
+/* create character des */
+
+.dm-notes-container {
+  width: 100%;
+  max-width: 600px;   /* adjust width to fit your page layout */
+  margin: 20px auto;  /* center horizontally */
+
+
+
+
+  display: flex;
+  flex-direction: column;
+}
+
+.dm-notes-title {
+  text-align: center;
+  font-family: 'Caudex', serif;
+  margin-bottom: 10px;
+}
+
+.dm-notes-textarea {
+  width: 95%;
+  height: 700px;        /* fixed height */
+  background: repeating-linear-gradient(
+      to bottom,
+      #ffffff70,
+      #ffffff70 29px,
+      #ccc 30px
+  ); /* horizontal lines */
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 10px;
+  resize: none;          /* prevent resizing */
+  font-family: 'Caudex', serif;
+  font-size: 16px;
+  line-height: 30px;     /* match line height to background lines */
+}
