@@ -6,10 +6,9 @@ import EncounterSheet from "./encounterSheet";
 import EncounterDes from "./encounterDes";
 import Races from "./raceDes";
 import EncounterList from "./encounterList";
-
-const LeftP = () => {
-  const [activeTab, setActiveTab] = useState("encounters"); // first tab
-  const [selectedEncounter, setSelectedEncounter] = useState(null); // store clicked encounter
+const LeftP = ({ onCreateEncounter, onSelectEncounter }) => {
+  const [activeTab, setActiveTab] = useState("encounters");
+  const [selectedEncounter, setSelectedEncounter] = useState(null);
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -18,8 +17,10 @@ const LeftP = () => {
           <EncounterList
             onSelectEncounter={(enc) => {
               setSelectedEncounter(enc);
-              setActiveTab("sheet"); // go to sheet after click
+              setActiveTab("sheet");
+              if (onSelectEncounter) onSelectEncounter(enc); // notify parent
             }}
+            onCreateEncounter={onCreateEncounter} // ✅ pass down popup handler
           />
         );
       case "sheet":
@@ -29,7 +30,12 @@ const LeftP = () => {
       case "races":
         return selectedEncounter ? <Races encounter={selectedEncounter} /> : null;
       default:
-        return <EncounterList onSelectEncounter={(enc) => setSelectedEncounter(enc)} />;
+        return (
+          <EncounterList
+            onSelectEncounter={(enc) => setSelectedEncounter(enc)}
+            onCreateEncounter={onCreateEncounter} // fallback
+          />
+        );
     }
   };
 

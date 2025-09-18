@@ -4,44 +4,11 @@ import goblinImg from "../../../assets/images/goblin.jpg";
 import orcImg from "../../../assets/images/orc.jpg";
 import elfImg from "../../../assets/images/elf.jpg";
 
-const EncounterList = ({ onSelectEncounter }) => {
+const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
   const [encounters] = useState([
-    { 
-      id: 1, 
-      name: "Grik Nok", 
-      race: "Goblin", 
-      level: 3, 
-      image: goblinImg,
-      ac: 15,
-      hp: { current: 19, max: 25 },
-      speed: 30,
-      abilityScores: [12, 14, 11, 8, 10, 9],
-      savingThrows: [2, 4, 2, -1, 0, -1],
-    },
-    { 
-      id: 2, 
-      name: "Throg", 
-      race: "Orc", 
-      level: 5, 
-      image: orcImg,
-      ac: 17,
-      hp: { current: 40, max: 50 },
-      speed: 30,
-      abilityScores: [16, 12, 15, 8, 10, 9],
-      savingThrows: [3, 1, 3, -1, 0, -1],
-    },
-    { 
-      id: 3, 
-      name: "Lyria", 
-      race: "Elf", 
-      level: 4, 
-      image: elfImg,
-      ac: 14,
-      hp: { current: 28, max: 32 },
-      speed: 35,
-      abilityScores: [10, 16, 12, 14, 13, 12],
-      savingThrows: [0, 3, 1, 2, 1, 1],
-    },
+    { id: 1, name: "Grik Nok", race: "Goblin", level: 3, image: goblinImg, ac: 15, hp: { current: 19, max: 25 }, speed: 30 },
+    { id: 2, name: "Throg", race: "Orc", level: 5, image: orcImg, ac: 17, hp: { current: 40, max: 50 }, speed: 30 },
+    { id: 3, name: "Lyria", race: "Elf", level: 4, image: elfImg, ac: 14, hp: { current: 28, max: 32 }, speed: 35 },
   ]);
 
   return (
@@ -65,8 +32,11 @@ const EncounterList = ({ onSelectEncounter }) => {
           </div>
         ))}
 
-        {/* === Add Encounter Box === */}
-        <div className="encounter-box add-encounter-box">
+        {/* === Add Encounter Box (opens popup) === */}
+        <div
+          className="encounter-box add-encounter-box"
+          onClick={() => onCreateEncounter && onCreateEncounter()}
+        >
           <div className="encounter-img-container">
             <div className="add-plus">+</div>
           </div>
@@ -81,3 +51,4 @@ const EncounterList = ({ onSelectEncounter }) => {
 };
 
 export default EncounterList;
+
