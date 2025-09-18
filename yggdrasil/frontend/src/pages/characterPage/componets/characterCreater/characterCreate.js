@@ -4,6 +4,7 @@ import pageBg from "../../../../assets/images/page.png";
 import CharacterSheetCreater from "./characterSheetCreater";
 import CharacterDesCreater from "./characterDesCreater";
 import BackgroundCreation from "./backgroundCreater"; // ✅ Background page
+import RaceCreation from "./raceCreater"; // ✅ Race page
 
 import {
   Chart as ChartJS,
@@ -51,6 +52,7 @@ const CharacterCreate = ({ onClose }) => {
   const [characterName, setCharacterName] = useState("New Character");
   const [characterImage, setCharacterImage] = useState(null);
   const [backgroundName, setBackgroundName] = useState(""); // ✅ background name
+  const [raceName, setRaceName] = useState(""); // ✅ race name
   const [currentPage, setCurrentPage] = useState("stats"); 
   const fileInputRef = useRef(null);
   const [progress, setProgress] = useState(25);
@@ -156,6 +158,9 @@ const CharacterCreate = ({ onClose }) => {
     } else if (currentPage === "description") {
       setCurrentPage("background");
       setProgress(75);
+    } else if (currentPage === "background") {
+      setCurrentPage("race"); // ✅ new race page
+      setProgress(90);
     } else {
       setProgress(100);
       alert("Character creation complete!");
@@ -169,6 +174,9 @@ const CharacterCreate = ({ onClose }) => {
     } else if (currentPage === "background") {
       setCurrentPage("description");
       setProgress(50);
+    } else if (currentPage === "race") {
+      setCurrentPage("background");
+      setProgress(75);
     } else {
       setProgress(0);
     }
@@ -269,15 +277,23 @@ const CharacterCreate = ({ onClose }) => {
           />
         ) : currentPage === "description" ? (
           <CharacterDesCreater />
-        ) : (
+        ) : currentPage === "background" ? (
           <BackgroundCreation
             initialSkills={initialSkills}
             selectedSkills={selectedSkills}
             toggleSkill={toggleSkill}
             backgroundName={backgroundName}
-            setBackgroundName={setBackgroundName} // ✅ keep track of background name
+            setBackgroundName={setBackgroundName}
           />
-        )}
+        ) : currentPage === "race" ? (
+          <RaceCreation
+            initialSkills={initialSkills}
+            selectedSkills={selectedSkills}
+            toggleSkill={toggleSkill}
+            raceName={raceName}
+            setRaceName={setRaceName}
+          />
+        ) : null}
       </div>
 
       <button className="nav-arrow right" onClick={handleNext}>▶</button>

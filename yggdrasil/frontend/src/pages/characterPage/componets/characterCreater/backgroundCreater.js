@@ -101,7 +101,7 @@ const [toolsArray, setToolsArray] = useState([""]);
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {/* Skills Box */}
           <div className="skills-box white-box3" style={{ width: "200px", height: "380px" }}>
-            <h3>{abilityLabels[activeTab]} Skills</h3>
+            <h3>Background Skills</h3>
             <div className="skills-tab-content">
               <div style={{ marginBottom: "5px" }}>
                 Selected Skills: {selectedSkills.length}/2
