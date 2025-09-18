@@ -1364,6 +1364,12 @@ stroke: #000;
 }
 
 
+
+
+
+
+
+
 /* craete character */
 .character-popup-overlay {
   position: fixed;
@@ -1570,39 +1576,19 @@ stroke: #000;
 }
 
 /* create character des */
-
-.dm-notes-container {
-  width: 100%;
-  max-width: 600px;   /* adjust width to fit your page layout */
-  margin: 20px auto;  /* center horizontally */
-
-
-
-
-  display: flex;
-  flex-direction: column;
-}
-
-.dm-notes-title {
+/* Textarea styled as container */
+.character-description-textarea {
+  width: 300px;
+  height: 250px;
+  background: #D9D9D9;
+  padding: 10px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
   text-align: center;
   font-family: 'Caudex', serif;
-  margin-bottom: 10px;
-}
-
-.dm-notes-textarea {
-  width: 95%;
-  height: 700px;        /* fixed height */
-  background: repeating-linear-gradient(
-      to bottom,
-      #ffffff70,
-      #ffffff70 29px,
-      #ccc 30px
-  ); /* horizontal lines */
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  resize: none;          /* prevent resizing */
-  font-family: 'Caudex', serif;
   font-size: 16px;
-  line-height: 30px;     /* match line height to background lines */
+  resize: none;
+  outline: none;
+  margin: 20px auto; /* center horizontally with spacing */
+  display: block;
 }
