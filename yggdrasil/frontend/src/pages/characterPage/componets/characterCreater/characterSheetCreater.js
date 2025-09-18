@@ -107,7 +107,7 @@ const CharacterSheetCreater = ({
                       <span>
                         {skill} <strong style={{ marginLeft: "5px" }}>+{bonus}</strong>
                       </span>
-                      <input type="checkbox" checked={isSelected} onChange={() => toggleSkill(skill)} disabled={!isSelected && selectedSkills.length >= 2} />
+                      <input type="checkbox"  checked={isSelected} onChange={() => toggleSkill(skill)} disabled={!isSelected && selectedSkills.length >= 2} />
                     </li>
                   );
                 })}

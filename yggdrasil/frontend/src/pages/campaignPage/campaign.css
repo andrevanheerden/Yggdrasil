@@ -427,3 +427,16 @@
   -webkit-box-orient: vertical;
   line-height: 1.5em;
 }
+.white-box2 {
+    background: #d9d9d9;
+  padding: 15px;
+  height: 340px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  flex: 1;                 /* both boxes take equal width */
+  display: flex;           /* enable flex layout */
+  flex-direction: column;  /* stack children vertically */
+  align-items: center;     /* center horizontally */
+
+  text-align: center;      /* center text */
+}
