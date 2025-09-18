@@ -5,6 +5,7 @@ import CharacterSheetCreater from "./characterSheetCreater";
 import CharacterDesCreater from "./characterDesCreater";
 import BackgroundCreation from "./backgroundCreater"; // ✅ Background page
 import RaceCreation from "./raceCreater"; // ✅ Race page
+import ClassCreation from "./classCreater"; // ✅ Class page
 
 import {
   Chart as ChartJS,
@@ -53,9 +54,10 @@ const CharacterCreate = ({ onClose }) => {
   const [characterImage, setCharacterImage] = useState(null);
   const [backgroundName, setBackgroundName] = useState(""); // ✅ background name
   const [raceName, setRaceName] = useState(""); // ✅ race name
+  const [className, setClassName] = useState(""); // ✅ class name
   const [currentPage, setCurrentPage] = useState("stats"); 
   const fileInputRef = useRef(null);
-  const [progress, setProgress] = useState(25);
+  const [progress, setProgress] = useState(20); // Adjusted initial progress
 
   // Image upload
   const handleImageUpload = (e) => {
@@ -154,15 +156,17 @@ const CharacterCreate = ({ onClose }) => {
   const handleNext = () => {
     if (currentPage === "stats") {
       setCurrentPage("description");
-      setProgress(50);
+      setProgress(40);
     } else if (currentPage === "description") {
       setCurrentPage("background");
-      setProgress(75);
+      setProgress(60);
     } else if (currentPage === "background") {
-      setCurrentPage("race"); // ✅ new race page
-      setProgress(90);
-    } else {
+      setCurrentPage("race");
+      setProgress(80);
+    } else if (currentPage === "race") {
+      setCurrentPage("class"); // ✅ new class page
       setProgress(100);
+    } else if (currentPage === "class") {
       alert("Character creation complete!");
     }
   };
@@ -170,13 +174,16 @@ const CharacterCreate = ({ onClose }) => {
   const handlePrev = () => {
     if (currentPage === "description") {
       setCurrentPage("stats");
-      setProgress(25);
+      setProgress(20);
     } else if (currentPage === "background") {
       setCurrentPage("description");
-      setProgress(50);
+      setProgress(40);
     } else if (currentPage === "race") {
       setCurrentPage("background");
-      setProgress(75);
+      setProgress(60);
+    } else if (currentPage === "class") {
+      setCurrentPage("race");
+      setProgress(80);
     } else {
       setProgress(0);
     }
@@ -292,6 +299,14 @@ const CharacterCreate = ({ onClose }) => {
             toggleSkill={toggleSkill}
             raceName={raceName}
             setRaceName={setRaceName}
+          />
+        ) : currentPage === "class" ? (
+          <ClassCreation
+            initialSkills={initialSkills}
+            selectedSkills={selectedSkills}
+            toggleSkill={toggleSkill}
+            className={className}
+            setClassName={setClassName}
           />
         ) : null}
       </div>

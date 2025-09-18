@@ -12,7 +12,21 @@ const ClassCreation = ({
   const [toolsArray, setToolsArray] = useState([""]);
   const [profTab, setProfTab] = useState("Languages");
 
-  // Default skill list
+  // Energy system states
+  const [energyName, setEnergyName] = useState("");
+  const [hasLevels, setHasLevels] = useState(false);
+  const [amountOfLevels, setAmountOfLevels] = useState(6);
+
+  // Always keep 12 levels
+  const defaultLevels = Array.from({ length: 12 }, (_, i) => ({
+    level: i + 1,
+    amountReceive: 1,
+    energyLevel: "Ⅰ",
+  }));
+  const [levels, setLevels] = useState(defaultLevels);
+
+  const [energyTab, setEnergyTab] = useState("Settings"); // Energy tabs
+
   const defaultSkills = {
     Strength: ["Athletics"],
     Dexterity: ["Acrobatics", "Sleight of Hand", "Stealth"],
@@ -21,14 +35,48 @@ const ClassCreation = ({
     Wisdom: ["Insight", "Perception", "Survival"],
     Charisma: ["Deception", "Performance", "Persuasion"],
   };
-
   const skills = Object.keys(initialSkills).length > 0 ? initialSkills : defaultSkills;
   const abilities = Object.keys(skills);
   const abilityLabels = { Str: "STR", Dex: "DEX", Con: "CON", Int: "INT", Wis: "WIS", Cha: "CHA" };
   const [activeTab, setActiveTab] = useState(abilities[0]);
   const [abilityScores] = useState(abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {}));
-  
+
   const getModifier = (score) => Math.floor((score - 10) / 2);
+
+  // Handle level changes
+  const handleLevelChange = (index, field, value) => {
+    const newLevels = [...levels];
+    if (field === "amountReceive") {
+      const newValue = Math.min(parseInt(value) || 0, amountOfLevels); // cap by amountOfLevels
+      newLevels[index][field] = newValue;
+    } else if (field === "energyLevel") {
+      newLevels[index][field] = value;
+    }
+    setLevels(newLevels);
+  };
+
+  // Update the maximum level amount
+  const handleAmountOfLevelsChange = (value) => {
+    const newAmount = Math.max(1, parseInt(value) || 1);
+    setAmountOfLevels(newAmount);
+  };
+
+  // Handle checkbox toggle: remove or restore energyLevel
+  const handleHasLevelsChange = (checked) => {
+    setHasLevels(checked);
+    if (!checked) {
+      // Remove energyLevel from all levels
+      const newLevels = levels.map((lvl) => ({ ...lvl, energyLevel: "" }));
+      setLevels(newLevels);
+    } else {
+      // Restore default energyLevel if empty
+      const newLevels = levels.map((lvl) => ({
+        ...lvl,
+        energyLevel: lvl.energyLevel || "Ⅰ",
+      }));
+      setLevels(newLevels);
+    }
+  };
 
   return (
     <div className="character-main">
@@ -88,68 +136,146 @@ const ClassCreation = ({
 
         {/* Right Column */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Skills Box */}
-          <div className="skills-box white-box3" style={{ width: "200px", height: "380px" }}>
-            <h3>{abilityLabels[activeTab]} Skills</h3>
-            <div className="skills-tab-content">
-              <div style={{ marginBottom: "5px" }}>
-                Selected Skills: {selectedSkills.length}/2
-                {selectedSkills.length > 0 && `: ${selectedSkills.join(", ")}`}
+          {/* Energy System Box with Tabs */}
+          <div className="energy-box white-box3" style={{ width: "200px", height: "380px" }}>
+            <h3>Energy System</h3>
+
+            {/* Energy Tabs Container */}
+            <div className="skills-tabs-container3">
+              <div className="skills-tab-buttons3">
+                <button
+                  className={`skills-tab-btn3 ${energyTab === "Settings" ? "active" : ""}`}
+                  onClick={() => setEnergyTab("Settings")}
+                >
+                  Settings
+                </button>
+                <button
+                  className={`skills-tab-btn ${energyTab === "Levels" ? "active" : ""}`}
+                  onClick={() => setEnergyTab("Levels")}
+                >
+                  Levels
+                </button>
               </div>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                {skills[activeTab]?.map((skill) => {
-                  const ability = abilities.find((ab) => skills[ab].includes(skill));
-                  const bonus = getModifier(abilityScores[ability]) + (selectedSkills.includes(skill) ? 2 : 0);
-                  const isSelected = selectedSkills.includes(skill);
-                  return (
-                    <li
-                      key={skill}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      <span>
-                        {skill} <strong style={{ marginLeft: "5px" }}>+{bonus}</strong>
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleSkill && toggleSkill(skill)}
-                        disabled={!isSelected && selectedSkills.length >= 2}
-                      />
-                    </li>
-                  );
-                })}
-              </ul>
             </div>
 
-            {/* Ability Tabs */}
-            <div className="skills-tabs-container">
-              <div className="skills-tab-buttons">
-                {abilities.map((ability) => (
-                  <button
-                    key={ability}
-                    className={`skills-tab-btn ${activeTab === ability ? "active" : ""}`}
-                    onClick={() => setActiveTab(ability)}
-                  >
-                    {abilityLabels[ability]}
-                  </button>
-                ))}
-              </div>
+            {/* Tab Content */}
+            <div className="skills-tab-content">
+              {energyTab === "Settings" && (
+                <div>
+                  <div style={{ marginBottom: "15px" }}>
+                    <div style={{ marginBottom: "10px" }}>
+                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
+                        Energy Name
+                      </label>
+                      <input
+                        type="text"
+                        value={energyName}
+                        onChange={(e) => setEnergyName(e.target.value)}
+                        placeholder="Enter energy name"
+                        style={{
+                          width: "100%",
+                          padding: "5px",
+                          borderRadius: "5px",
+                          border: "1px solid #ccc",
+                          fontFamily: "'Caudex', serif",
+                          fontSize: "14px",
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ marginBottom: "10px" }}>
+                      <label style={{ display: "flex", alignItems: "center", fontSize: "14px" }}>
+                        <input
+                          type="checkbox"
+                          checked={hasLevels}
+                          onChange={(e) => handleHasLevelsChange(e.target.checked)}
+                          style={{ marginRight: "5px" }}
+                        />
+                        Remove Energy Levels
+                      </label>
+                    </div>
+
+                    <div>
+                      <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
+                        Maximum amount per level
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="20"
+                        value={amountOfLevels}
+                        onChange={(e) => handleAmountOfLevelsChange(e.target.value)}
+                        style={{
+                          width: "100%",
+                          padding: "5px",
+                          borderRadius: "5px",
+                          border: "1px solid #ccc",
+                          fontFamily: "'Caudex', serif",
+                          fontSize: "14px",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {energyTab === "Levels" && (
+                <div>
+                  <h4 style={{ margin: "10px 0", fontSize: "16px" }}>LEVEL</h4>
+                  <div style={{ maxHeight: "250px", overflowY: "auto" }}>
+                    {levels.map((levelData, index) => (
+                      <div key={levelData.level} style={{ marginBottom: "8px", fontSize: "14px" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
+                          <span>lv{levelData.level}</span>
+                          <div style={{ display: "flex", alignItems: "center" }}>
+                            <span style={{ marginRight: "5px" }}>Amount receive:</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max={amountOfLevels}
+                              value={levelData.amountReceive}
+                              onChange={(e) => handleLevelChange(index, "amountReceive", e.target.value)}
+                              style={{
+                                width: "40px",
+                                padding: "2px",
+                                borderRadius: "3px",
+                                border: "1px solid #ccc",
+                                fontFamily: "'Caudex', serif",
+                                fontSize: "12px",
+                              }}
+                            />
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center" }}>
+                          <span style={{ marginRight: "5px" }}>Energy level:</span>
+                          <select
+                            value={levelData.energyLevel}
+                            onChange={(e) => handleLevelChange(index, "energyLevel", e.target.value)}
+                            style={{
+                              padding: "2px",
+                              borderRadius: "3px",
+                              border: "1px solid #ccc",
+                              fontFamily: "'Caudex', serif",
+                              fontSize: "12px",
+                            }}
+                          >
+                            <option value="Ⅰ">Ⅰ</option>
+                            <option value="Ⅱ">Ⅱ</option>
+                            <option value="Ⅲ">Ⅲ</option>
+                          </select>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
           {/* Languages & Tools Box */}
-          <div
-            className="skills-box white-box2"
-            style={{ width: "200px", height: "500px" }}
-          >
+          <div className="skills-box white-box2" style={{ width: "200px", height: "500px" }}>
             <h3>Proficiencies</h3>
 
-            {/* Tabs container */}
             <div className="skills-tabs-container2">
               <div className="skills-tab-buttons2">
                 <button
@@ -167,7 +293,6 @@ const ClassCreation = ({
               </div>
             </div>
 
-            {/* Tab content */}
             <div className="skills-tab-content2">
               {profTab === "Languages" && (
                 <div>
@@ -178,7 +303,7 @@ const ClassCreation = ({
                       value={lang}
                       onChange={(e) => {
                         const newArr = [...languagesArray];
-                        newArr[index] = e.target.value.slice(0, 20); // limit 20 chars
+                        newArr[index] = e.target.value.slice(0, 20);
                         setLanguagesArray(newArr);
                       }}
                       placeholder="Type language..."
@@ -222,7 +347,7 @@ const ClassCreation = ({
                       value={tool}
                       onChange={(e) => {
                         const newArr = [...toolsArray];
-                        newArr[index] = e.target.value.slice(0, 20); // limit 20 chars
+                        newArr[index] = e.target.value.slice(0, 20);
                         setToolsArray(newArr);
                       }}
                       placeholder="Type tool..."

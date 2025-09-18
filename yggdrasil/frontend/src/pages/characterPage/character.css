@@ -1685,3 +1685,72 @@ stroke: #000;
 .skills-tab-content2 li {
   margin: 3px 0;
 }
+
+
+
+
+
+
+/* Tabs container inside skills box */
+.skills-tabs-container3 {
+  position: absolute;
+  top: 140px;
+  right: 28px; /* outside to the right */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10;
+}
+
+/* Tab buttons */
+.skills-tab-buttons3 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+}
+
+.skills-tab-btn3 {
+  writing-mode: vertical-rl; /* text runs vertically */
+  transform: rotate(0deg);  /* upright text */
+  background: #05512c;
+  color: #fff;
+  border: none;
+  border-radius: 0px 10px 10px 0px;
+  padding: 10px 6px;
+  cursor: pointer;
+  font-family: "Caudex", serif;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.skills-tab-btn3.active {
+  background: #199a6a;
+  color: #000;
+  font-weight: bold;
+  padding: 25px 8px;
+}
+
+/* Content inside the box */
+.skills-tab-content3 {
+  flex: 1;
+  padding: 5px;
+  overflow-y: auto;
+}
+
+.skills-tab-content3 h3 {
+  margin: 0 0 5px;
+  font-size: 18px;
+  font-family: 'Caudex', serif;
+}
+
+.skills-tab-content3 ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-family: 'Caudex', serif;
+}
+
+.skills-tab-content3 li {
+  margin: 3px 0;
+}
