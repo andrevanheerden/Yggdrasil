@@ -129,7 +129,7 @@ const CharacterSheet = () => {
         />
       </div>
 
-      <div className="character-main">
+      <div className="character-main2">
         {/* Charts */}
         <div className="charts-column">
           <div className="ability-chart white-box">

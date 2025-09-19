@@ -157,7 +157,7 @@
 }
 
 /* === Character Main === */
-.character-main {
+.character-main2 {
   display: flex;
   gap: 10px;
   margin-bottom: 20px;
@@ -1419,11 +1419,6 @@ stroke: #000;
   border-bottom-color: #4a90e2;
 }
 
-.stats-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 15px;
-}
 
 .character-main {
   display: flex;
