@@ -1,39 +1,86 @@
-import React, { useState } from "react";
-import "../campaign.css"; // ✅ uses same popup styling as campaign description
-import pageBg from "../../../assets/images/page.png"; // parchment-style background
+import React, { useState, useEffect } from "react";
+import "../campaign.css";
+import pageBg from "../../../assets/images/page.png";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
-const CreateCampaignInfo = ({ onClose }) => {
-  const [campaignName, setCampaignName] = useState("New Campaign");
+const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignName }) => {
+  const navigate = useNavigate(); // ✅ Move useNavigate inside component
+
+  const [campaignName, setCampaignName] = useState(initialCampaignName || "New Campaign");
   const [description, setDescription] = useState("");
   const [setting, setSetting] = useState("");
-  const [factions, setFactions] = useState([{ name: "", role: "" }]);
+  const [factions, setFactions] = useState([{ name: "", role: "Player" }]);
   const [themes, setThemes] = useState([""]);
+  const [mapFile, setMapFile] = useState(null);
   const [activeTab, setActiveTab] = useState("Description");
+  const [loading, setLoading] = useState(false);
 
-  // Add/remove faction rows
-  const addFaction = () => setFactions([...factions, { name: "", role: "" }]);
+  useEffect(() => {
+    if (initialCampaignName) setCampaignName(initialCampaignName);
+  }, [initialCampaignName]);
 
-  const updateFaction = (index, field, value) => {
+  // Factions
+  const addFaction = () => setFactions([...factions, { name: "", role: "Player" }]);
+  const updateFaction = (i, field, value) => {
     const updated = [...factions];
-    updated[index][field] = value;
+    updated[i][field] = value;
     setFactions(updated);
   };
+  const removeFaction = (i) => setFactions(factions.filter((_, idx) => idx !== i));
 
-  const removeFaction = (index) => {
-    setFactions(factions.filter((_, i) => i !== index));
-  };
-
-  // Add/remove theme rows
+  // Themes
   const addTheme = () => setThemes([...themes, ""]);
-
-  const updateTheme = (index, value) => {
+  const updateTheme = (i, val) => {
     const updated = [...themes];
-    updated[index] = value;
+    updated[i] = val;
     setThemes(updated);
   };
+  const removeTheme = (i) => setThemes(themes.filter((_, idx) => idx !== i));
 
-  const removeTheme = (index) => {
-    setThemes(themes.filter((_, i) => i !== index));
+  // Map file
+  const handleMapUpload = (e) => {
+    if (e.target.files && e.target.files[0]) setMapFile(e.target.files[0]);
+  };
+
+  // Submit campaign
+  const handleSubmit = async () => {
+    if (!campaignName) return alert("Campaign name is required");
+
+    const formData = new FormData();
+    formData.append("campaign_name", campaignName);
+    formData.append("cover_color", coverColor || "");
+    formData.append("description", description || "");
+    formData.append("setting", setting || "");
+    if (coverImage) formData.append("cover_img", coverImage);
+    if (mapFile) formData.append("map_img", mapFile);
+    formData.append("factions", JSON.stringify(factions || []));
+    formData.append("themes", JSON.stringify(themes || []));
+
+    try {
+      setLoading(true);
+      const res = await axios.post(
+        "http://localhost:5000/api/campaigns/create",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // ✅ send JWT
+          },
+        }
+      );
+
+      alert("Campaign created successfully!");
+
+      // ✅ Redirect to new campaign page
+      const campaignId = res.data.campaign_id;
+      navigate(`/campaign/${campaignId}`);
+    } catch (err) {
+      console.error("Error creating campaign:", err.response?.data || err.message);
+      alert(err.response?.data?.error || "Error creating campaign");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -46,12 +93,10 @@ const CreateCampaignInfo = ({ onClose }) => {
           backgroundPosition: "center",
         }}
       >
-        {/* Exit button (X) */}
-        <button className="exit-x-btn" onClick={onClose}>
-          ✖
+        <button className="exit-x-btn" onClick={handleSubmit} disabled={loading}>
+          {loading ? "Submitting..." : "Submit"}
         </button>
 
-        {/* Floating title input */}
         <input
           type="text"
           value={campaignName}
@@ -61,7 +106,6 @@ const CreateCampaignInfo = ({ onClose }) => {
         />
 
         <div className="adventure-main2">
-          {/* Editable content */}
           <div className="adventure-description-box2">
             {activeTab === "Description" && (
               <textarea
@@ -71,7 +115,6 @@ const CreateCampaignInfo = ({ onClose }) => {
                 placeholder="Write the campaign description here..."
               />
             )}
-
             {activeTab === "Setting" && (
               <textarea
                 value={setting}
@@ -80,7 +123,6 @@ const CreateCampaignInfo = ({ onClose }) => {
                 placeholder="Describe the world, tone, and setting..."
               />
             )}
-
             {activeTab === "Factions" && (
               <div className="factions-container">
                 {factions.map((f, i) => (
@@ -88,18 +130,14 @@ const CreateCampaignInfo = ({ onClose }) => {
                     <input
                       type="text"
                       value={f.name}
-                      onChange={(e) =>
-                        updateFaction(i, "name", e.target.value)
-                      }
+                      onChange={(e) => updateFaction(i, "name", e.target.value)}
                       placeholder="Faction Name"
                       className="faction-input"
                     />
                     <input
                       type="text"
                       value={f.role}
-                      onChange={(e) =>
-                        updateFaction(i, "role", e.target.value)
-                      }
+                      onChange={(e) => updateFaction(i, "role", e.target.value)}
                       placeholder="Faction Role"
                       className="faction-input"
                     />
@@ -109,7 +147,6 @@ const CreateCampaignInfo = ({ onClose }) => {
                 <button onClick={addFaction}>+ Add Faction</button>
               </div>
             )}
-
             {activeTab === "Themes" && (
               <div className="themes-container">
                 {themes.map((theme, i) => (
@@ -118,7 +155,7 @@ const CreateCampaignInfo = ({ onClose }) => {
                       type="text"
                       value={theme}
                       onChange={(e) => updateTheme(i, e.target.value)}
-                      placeholder="Theme (e.g. Betrayal, Hope, Destiny)"
+                      placeholder="Theme"
                       className="theme-input"
                     />
                     <button onClick={() => removeTheme(i)}>✖</button>
@@ -127,17 +164,26 @@ const CreateCampaignInfo = ({ onClose }) => {
                 <button onClick={addTheme}>+ Add Theme</button>
               </div>
             )}
+            {activeTab === "Map" && (
+              <div className="map-upload-container">
+                <input type="file" accept="image/*" onChange={handleMapUpload} />
+                {mapFile && (
+                  <img
+                    src={URL.createObjectURL(mapFile)}
+                    alt="Campaign Map Preview"
+                    style={{ marginTop: "10px", maxWidth: "100%" }}
+                  />
+                )}
+              </div>
+            )}
           </div>
 
-          {/* Side buttons for navigation */}
           <div className="adventure-side-buttons-wrapper">
             <div className="adventure-side-buttons">
-              {["Description", "Setting", "Factions", "Themes"].map((tab) => (
+              {["Description", "Setting", "Factions", "Themes", "Map"].map((tab) => (
                 <button
                   key={tab}
-                  className={`adventure-side-btn ${
-                    activeTab === tab ? "active" : ""
-                  }`}
+                  className={`adventure-side-btn ${activeTab === tab ? "active" : ""}`}
                   onClick={() => setActiveTab(tab)}
                 >
                   {tab}
@@ -152,4 +198,3 @@ const CreateCampaignInfo = ({ onClose }) => {
 };
 
 export default CreateCampaignInfo;
-

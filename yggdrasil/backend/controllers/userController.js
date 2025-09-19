@@ -1,150 +1,84 @@
-const userModel = require('../models/userModel');
-const { JWT_SECRET, JWT_EXPIRES_IN } = require('../config/auth');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const { createUser, findUserByEmail, findUserByUsername } = require("../models/userModel");
+const pool = require("../config/db");
 
-module.exports = {
-  async signup(req, res) {
-    const { name, email, password, confirmPassword, role } = req.body;
-    
-    // Validation
-    if (!name || !email || !password || !confirmPassword) {
-      return res.status(400).json({ error: 'All fields are required' });
-    }
-    
-    if (password !== confirmPassword) {
-      return res.status(400).json({ error: 'Passwords do not match' });
-    }
-    
-    try {
-      // Check if user exists
-      const existingUser = await userModel.findByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({ error: 'Email already registered' });
-      }
+// Generate a random user_id like AAA-000-001
+function generateUserId() {
+  const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const randomLetter = () => letters[Math.floor(Math.random() * letters.length)];
+  const randomNumber = () => String(Math.floor(Math.random() * 1000)).padStart(3, "0");
+  return `${randomLetter()}${randomLetter()}${randomLetter()}-${randomNumber()}-${randomNumber()}`;
+}
 
-      // Create user
-      const user = await userModel.create({
-        name,
-        email,
-        password,
-        role: role || 'player'
-      });
+// Ensure unique user_id
+async function generateUniqueUserId() {
+  let user_id;
+  let exists = true;
+  while (exists) {
+    user_id = generateUserId();
+    const [rows] = await pool.query("SELECT user_id FROM users WHERE user_id = ?", [user_id]);
+    exists = rows.length > 0;
+  }
+  return user_id;
+}
 
-      // Generate token
-      const token = jwt.sign(
-        { id: user.id, name: user.name, email: user.email, role: user.role },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
-      );
+// Signup
+const signup = async (req, res) => {
+  try {
+    const { username, email, password } = req.body;
 
-      res.status(201).json({
-        message: 'User created successfully',
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          profileimg: user.profileimg
-        },
-        token
-      });
-    } catch (err) {
-      console.error('Signup error:', err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
+    if (!username || !email || !password)
+      return res.status(400).json({ error: "All fields are required" });
 
-  async login(req, res) {
-    const { email, password } = req.body;
-    
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password required' });
-    }
+    if (password.length < 6 || password.length > 12)
+      return res.status(400).json({ error: "Password must be between 6 and 12 characters" });
 
-    try {
-      const user = await userModel.findByEmail(email);
-      if (!user) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
+    if (await findUserByEmail(email)) return res.status(400).json({ error: "Email already registered" });
+    if (await findUserByUsername(username)) return res.status(400).json({ error: "Username already taken" });
 
-      const passwordMatch = await bcrypt.compare(password, user.password);
-      if (!passwordMatch) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-      }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user_id = await generateUniqueUserId();
 
-      const token = jwt.sign(
-        { 
-          id: user.id, 
-          name: user.name, 
-          email: user.email, 
-          role: user.role 
-        },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRES_IN }
-      );
+    await createUser({ user_id, username, email, password: hashedPassword, profile_img: null });
 
-      res.json({
-        message: 'Login successful',
-        user: {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-          role: user.role,
-          profileimg: user.profileimg,
-          campaign_id: user.campaign_id
-        },
-        token
-      });
-    } catch (err) {
-      console.error('Login error:', err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
-
-  async getProfile(req, res) {
-    try {
-      const user = await userModel.findById(req.user.id);
-      if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      res.json(user);
-    } catch (err) {
-      console.error('Profile error:', err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
-
-  async updateProfileImage(req, res) {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: 'No image uploaded' });
-      }
-      
-      const imagePath = `/uploads/${req.file.filename}`;
-      const user = await userModel.updateProfileImage(req.user.id, imagePath);
-      
-      res.json({
-        message: 'Profile image updated successfully',
-        user
-      });
-    } catch (err) {
-      console.error('Profile image error:', err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
-
-  async assignCampaign(req, res) {
-    const { campaignId } = req.body;
-    
-    try {
-      const user = await userModel.assignToCampaign(req.user.id, campaignId);
-      res.json({
-        message: 'Campaign assigned successfully',
-        user
-      });
-    } catch (err) {
-      console.error('Campaign assignment error:', err);
-      res.status(500).json({ error: 'Internal server error' });
-    }
+    res.status(201).json({ message: "User registered successfully", user_id });
+  } catch (error) {
+    console.error("Signup error:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
+
+// Login
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ error: "Email and password are required" });
+
+    const user = await findUserByEmail(email);
+    if (!user) return res.status(400).json({ error: "Invalid credentials" });
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(400).json({ error: "Invalid credentials" });
+
+    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+    res.json({ message: "Login successful", token, user });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+// Get current user
+const getCurrentUser = async (req, res) => {
+  try {
+    const user_id = req.user.user_id;
+    const user = await pool.query("SELECT * FROM users WHERE user_id = ?", [user_id]);
+    res.json(user[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { signup, login, getCurrentUser };

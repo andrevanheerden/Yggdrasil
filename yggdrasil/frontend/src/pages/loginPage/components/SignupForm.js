@@ -1,14 +1,51 @@
-import React from 'react';
+import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify'; // ✅ import toast
 import '../Login.css';
 
 const SignupForm = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // No data collection, just navigate to home
-    navigate('/home');
+
+    if (!formData.username || !formData.email || !formData.password) {
+      toast.error("All fields are required");
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match");
+      return;
+    }
+
+    if (formData.password.length < 6 || formData.password.length > 12) {
+      toast.error("Password must be between 6 and 12 characters long");
+      return;
+    }
+
+    try {
+      await axios.post('http://localhost:5000/api/users/signup', {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password
+      });
+      toast.success("Signup successful!");
+      navigate('/home');
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Signup failed');
+    }
   };
 
   return (
@@ -21,6 +58,8 @@ const SignupForm = () => {
           id="signup-username"
           name="username"
           placeholder="Choose a username"
+          value={formData.username}
+          onChange={handleChange}
           required
         />
       </div>
@@ -31,6 +70,8 @@ const SignupForm = () => {
           id="signup-email"
           name="email"
           placeholder="Enter your email"
+          value={formData.email}
+          onChange={handleChange}
           required
         />
       </div>
@@ -40,8 +81,11 @@ const SignupForm = () => {
           type="password"
           id="signup-password"
           name="password"
-          placeholder="Create a password"
+          placeholder="Create a password (6-12 characters)"
+          value={formData.password}
+          onChange={handleChange}
           required
+          autoComplete="new-password"
         />
       </div>
       <div className="form-group">
@@ -51,18 +95,19 @@ const SignupForm = () => {
           id="signup-confirm-password"
           name="confirmPassword"
           placeholder="Confirm your password"
+          value={formData.confirmPassword}
+          onChange={handleChange}
           required
+          autoComplete="new-password"
         />
       </div>
-      <button 
-        type="submit" 
-        className="submit-btn"
-      >
-        Sign Up
-      </button>
+      <button type="submit" className="submit-btn">Sign Up</button>
     </form>
   );
 };
 
 export default SignupForm;
+
+
+
 

@@ -3,18 +3,23 @@ import coverImg from "../../../assets/images/cover.png";
 import campaignImg2 from "../../../assets/images/Logo.png"; // default "create" image
 import "../Home.css";
 import Navbar from "./Navbar";
-import { useNavigate } from "react-router-dom";
+import CreateCampaignInfo from "../../campaignPage/componets/createCampaignInfo";
 
 const CreateCampaign = () => {
-  const navigate = useNavigate();
-
   const [title, setTitle] = useState("Create a Campaign");
   const [color, setColor] = useState("#2a6ca6");
-  const [image, setImage] = useState(campaignImg2);
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState(campaignImg2);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const userId = localStorage.getItem("user_id"); // logged-in user ID
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
-    if (file) setImage(URL.createObjectURL(file));
+    if (file) {
+      setImageFile(file); // store actual file for submission
+      setImagePreview(URL.createObjectURL(file)); // preview in book
+    }
   };
 
   return (
@@ -33,7 +38,7 @@ const CreateCampaign = () => {
             <img
               className="book-campaign-img"
               style={{ maxHeight: "350px", maxWidth: "100%" }}
-              src={image}
+              src={imagePreview}
               alt="Campaign"
             />
           </div>
@@ -41,7 +46,7 @@ const CreateCampaign = () => {
           <div className="book-color-block" style={{ background: color }} />
         </div>
 
-        {/* Control Panel (styled like notepad) */}
+        {/* Control Panel */}
         <div className="notepad-panel">
           <div className="form-wrapper">
             <div className="login-form">
@@ -74,29 +79,33 @@ const CreateCampaign = () => {
 
               <button
                 className="submit-btn"
-                onClick={() =>
-                  navigate("/Campaign", {
-                    state: {
-                      openPopup: true, // ✅ tell the campaign page to open the popup
-                      title,
-                      color,
-                      image,
-                    },
-                  })
-                }
+                onClick={() => setShowPopup(true)}
                 style={{ cursor: "pointer" }}
               >
-                Create Campaign
+                Next: Campaign Details
               </button>
             </div>
           </div>
         </div>
+
+        {/* Popup for additional campaign info */}
+        {showPopup && (
+          <CreateCampaignInfo
+            coverImage={imageFile} // pass the actual file
+            coverColor={color}
+            onClose={() => setShowPopup(false)}
+            creatorUserId={userId}
+            initialCampaignName={title} // ✅ pass title to popup
+          />
+        )}
       </div>
     </>
   );
 };
 
 export default CreateCampaign;
+
+
 
 
 
