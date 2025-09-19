@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import coverImg from "../../../assets/images/cover.png";
 import campaignImg2 from "../../../assets/images/Logo.png"; // default "create" image
-import { useNavigate } from "react-router-dom";
 import "../Home.css";
-import Navbar from "./Navbar"; // Capitalized
+import Navbar from "./Navbar";
+import { useNavigate } from "react-router-dom";
 
 const CreateCampaign = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const CreateCampaign = () => {
 
   return (
     <>
-      <Navbar /> {/* Correct JSX usage */}
+      <Navbar />
       <div className="create-campaign-page">
         {/* Book Preview */}
         <div
@@ -74,7 +74,16 @@ const CreateCampaign = () => {
 
               <button
                 className="submit-btn"
-                onClick={() => navigate("/Campaign")}
+                onClick={() =>
+                  navigate("/Campaign", {
+                    state: {
+                      openPopup: true, // ✅ tell the campaign page to open the popup
+                      title,
+                      color,
+                      image,
+                    },
+                  })
+                }
                 style={{ cursor: "pointer" }}
               >
                 Create Campaign
@@ -88,6 +97,7 @@ const CreateCampaign = () => {
 };
 
 export default CreateCampaign;
+
 
 
 
