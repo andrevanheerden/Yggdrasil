@@ -229,5 +229,85 @@ box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0
 
 
 
+/*leave campaing*/
+.book-menu {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+}
 
+.book-menu-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(180deg,#2a2a2a,#1a1a1a);
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+.book-menu-dropdown {
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg,#2a2a2a,#1a1a1a);
+  border-radius: 10px;
+  padding: 6px 0;
+  margin-top: 4px;
+  gap: 6px;
+  min-width: 120px;
+}
+
+.book-menu-dropdown button {
+  background: linear-gradient(180deg,#2a2a2a,#1a1a1a);
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.book-menu-dropdown button:hover {
+  background: linear-gradient(180deg,#3a3a3a,#2a2a2a);
+}
+
+/* Toast override for confirmation */
+.toast {
+  background: linear-gradient(180deg,#111,#1f1f1f);
+  border-radius: 10px;
+  padding: 14px;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.toast-title {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.toast-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.toast-actions .roll-btn {
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(180deg,#28a745,#1e7e34);
+  color: white;
+}
+
+.toast-actions .roll-btn[style] {
+  background: linear-gradient(180deg,#e53935,#b71c1c) !important;
+}
