@@ -108,28 +108,36 @@ const invitePlayerToCampaign = async (req, res) => {
   }
 };
 
-// Delete campaign (only for admin/creator)
+// Delete campaign (only for admin/creator) - Option 1
 const deleteCampaignController = async (req, res) => {
   try {
     const { campaign_id } = req.params;
     const userId = req.user.user_id;
-    
-    // Check if user is the creator of this campaign
+
+    // Check if campaign exists
     const campaigns = await getCampaigns();
     const campaign = campaigns.find(c => c.campaign_id === campaign_id);
-    
+
     if (!campaign) {
       return res.status(404).json({ error: "Campaign not found" });
     }
-    
+
+    // Check if user is the creator/admin
     if (campaign.creator_user_id !== userId) {
       return res.status(403).json({ error: "Only the campaign creator can delete this campaign" });
     }
-    
+
+    // Delete all roles linked to this campaign first
+    await pool.query("DELETE FROM campaign_roles WHERE campaign_id = ?", [campaign_id]);
+    console.log(`Deleted roles for campaign ${campaign_id}`);
+
+    // Now delete the campaign
     await deleteCampaignModel(campaign_id);
-    res.json({ message: "Campaign deleted successfully" });
+    console.log(`Deleted campaign ${campaign_id}`);
+
+    res.json({ message: "Campaign and its roles deleted successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("Error deleting campaign:", err);
     res.status(500).json({ error: err.message });
   }
 };
