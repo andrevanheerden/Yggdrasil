@@ -260,6 +260,7 @@ box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0
   margin-top: 4px;
   gap: 6px;
   min-width: 120px;
+  height: 100%;
 }
 
 .book-menu-dropdown button {
