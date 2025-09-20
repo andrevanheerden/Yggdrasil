@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify'; // ✅ import toast
+import { toast } from 'react-toastify';
 import '../Login.css';
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -14,19 +15,47 @@ const LoginForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!formData.email || !formData.password) {
       toast.error("Email and password are required");
       return;
     }
 
     try {
+      setLoading(true);
+
+      // 1️⃣ Login and get token
       const res = await axios.post('http://localhost:5000/api/users/login', formData);
-      localStorage.setItem('token', res.data.token);
+      const token = res.data.token;
+      if (!token) throw new Error("No token received from login");
+      localStorage.setItem('token', token);
       toast.success("Login successful!");
+
+      // 2️⃣ Fetch logged-in user
+      const meRes = await axios.get('http://localhost:5000/api/users/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      // 3️⃣ Extract user_id
+      const userData = meRes.data;
+      const userId = userData.user_id || userData.id;
+      if (!userId) {
+        console.error("Cannot find user_id in /me response", userData);
+        toast.error("Failed to retrieve user ID.");
+        setLoading(false);
+        return;
+      }
+
+      localStorage.setItem('user_id', userId);
+      console.log("Logged-in user ID:", userId);
+
+      // 4️⃣ Navigate to home
       navigate('/home');
+
     } catch (err) {
+      console.error("Login error:", err.response?.data || err.message);
       toast.error(err.response?.data?.error || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -43,6 +72,7 @@ const LoginForm = () => {
           value={formData.email}
           onChange={handleChange}
           required
+          autoComplete="username"
         />
       </div>
       <div className="form-group">
@@ -55,13 +85,18 @@ const LoginForm = () => {
           value={formData.password}
           onChange={handleChange}
           required
+          autoComplete="current-password"
         />
       </div>
-      <button type="submit" className="submit-btn">Log In</button>
+      <button type="submit" className="submit-btn" disabled={loading}>
+        {loading ? "Logging in..." : "Log In"}
+      </button>
     </form>
   );
 };
 
 export default LoginForm;
+
+
 
 

@@ -1,6 +1,7 @@
-const { createCampaign, getCampaigns } = require("../models/campaignModel");
+const { createCampaign, getCampaigns, deleteCampaign: deleteCampaignModel, removePlayerFromCampaign } = require("../models/campaignModel");
 const { addCampaignRole } = require("../models/campaignRoleModel");
 const cloudinary = require("cloudinary").v2;
+const pool = require("../config/db");
 
 // Cloudinary config
 cloudinary.config({
@@ -95,7 +96,8 @@ const invitePlayerToCampaign = async (req, res) => {
       const currentPlayers = campaign.player_ids ? JSON.parse(campaign.player_ids) : [];
       if (!currentPlayers.includes(user_id)) {
         currentPlayers.push(user_id);
-        await createCampaign.updatePlayerIds(campaign_id, JSON.stringify(currentPlayers));
+        // This function doesn't exist yet - you'll need to implement it
+        // await updatePlayerIds(campaign_id, JSON.stringify(currentPlayers));
       }
     }
 
@@ -106,5 +108,82 @@ const invitePlayerToCampaign = async (req, res) => {
   }
 };
 
-module.exports = { createNewCampaign, fetchCampaigns, invitePlayerToCampaign };
+// Delete campaign (only for admin/creator)
+const deleteCampaignController = async (req, res) => {
+  try {
+    const { campaign_id } = req.params;
+    const userId = req.user.user_id;
+    
+    // Check if user is the creator of this campaign
+    const campaigns = await getCampaigns();
+    const campaign = campaigns.find(c => c.campaign_id === campaign_id);
+    
+    if (!campaign) {
+      return res.status(404).json({ error: "Campaign not found" });
+    }
+    
+    if (campaign.creator_user_id !== userId) {
+      return res.status(403).json({ error: "Only the campaign creator can delete this campaign" });
+    }
+    
+    await deleteCampaignModel(campaign_id);
+    res.json({ message: "Campaign deleted successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
+// Leave campaign (for players)
+const leaveCampaign = async (req, res) => {
+  try {
+    const { campaign_id } = req.params;
+    const userId = req.user.user_id;
+    
+    // Check if user is a player in this campaign
+    const campaigns = await getCampaigns();
+    const campaign = campaigns.find(c => c.campaign_id === campaign_id);
+    
+    if (!campaign) {
+      return res.status(404).json({ error: "Campaign not found" });
+    }
+    
+    const playerIds = campaign.player_ids ? JSON.parse(campaign.player_ids) : [];
+    
+    if (!playerIds.includes(userId)) {
+      return res.status(400).json({ error: "You are not a player in this campaign" });
+    }
+    
+    await removePlayerFromCampaign(campaign_id, userId);
+    res.json({ message: "You have left the campaign" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+// Get roles for a specific campaign
+const getCampaignRoles = async (req, res) => {
+  try {
+    const { campaign_id } = req.params;
+    
+    const [rows] = await pool.query(
+      "SELECT * FROM campaign_roles WHERE campaign_id = ?",
+      [campaign_id]
+    );
+    
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { 
+  createNewCampaign, 
+  fetchCampaigns, 
+  invitePlayerToCampaign, 
+  deleteCampaign: deleteCampaignController, 
+  leaveCampaign,
+  getCampaignRoles
+};

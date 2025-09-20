@@ -74,11 +74,24 @@ const login = async (req, res) => {
 const getCurrentUser = async (req, res) => {
   try {
     const user_id = req.user.user_id;
-    const user = await pool.query("SELECT * FROM users WHERE user_id = ?", [user_id]);
-    res.json(user[0]);
+    const [rows] = await pool.query("SELECT * FROM users WHERE user_id = ?", [user_id]);
+
+    if (!rows[0]) return res.status(404).json({ error: "User not found" });
+
+    // Send only what you need, including user_id at top level
+    const user = {
+      user_id: rows[0].user_id,
+      username: rows[0].username,
+      email: rows[0].email,
+      profile_img: rows[0].profile_img || null
+    };
+
+    res.json(user);
   } catch (err) {
+    console.error("Get current user error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
 
 module.exports = { signup, login, getCurrentUser };
