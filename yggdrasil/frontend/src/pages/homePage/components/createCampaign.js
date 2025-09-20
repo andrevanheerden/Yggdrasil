@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import coverImg from "../../../assets/images/cover.png";
-import campaignImg2 from "../../../assets/images/Logo.png"; // default "create" image
+import campaignImg2 from "../../../assets/images/Logo.png";
 import "../Home.css";
 import Navbar from "./Navbar";
 import CreateCampaignInfo from "../../campaignPage/componets/createCampaignInfo";
+import { toast } from "react-toastify";
 
 const CreateCampaign = () => {
   const [title, setTitle] = useState("Create a Campaign");
@@ -12,13 +13,14 @@ const CreateCampaign = () => {
   const [imagePreview, setImagePreview] = useState(campaignImg2);
   const [showPopup, setShowPopup] = useState(false);
 
-  const userId = localStorage.getItem("user_id"); // logged-in user ID
+  const userId = localStorage.getItem("user_id");
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFile(file); // store actual file for submission
-      setImagePreview(URL.createObjectURL(file)); // preview in book
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      toast.info("Campaign image selected!");
     }
   };
 
@@ -88,14 +90,14 @@ const CreateCampaign = () => {
           </div>
         </div>
 
-        {/* Popup for additional campaign info */}
+        {/* Popup */}
         {showPopup && (
           <CreateCampaignInfo
-            coverImage={imageFile} // pass the actual file
+            coverImage={imageFile}
             coverColor={color}
             onClose={() => setShowPopup(false)}
             creatorUserId={userId}
-            initialCampaignName={title} // ✅ pass title to popup
+            initialCampaignName={title}
           />
         )}
       </div>
@@ -104,6 +106,7 @@ const CreateCampaign = () => {
 };
 
 export default CreateCampaign;
+
 
 
 

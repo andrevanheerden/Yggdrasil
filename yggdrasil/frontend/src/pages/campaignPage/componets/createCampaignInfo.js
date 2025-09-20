@@ -3,9 +3,10 @@ import "../campaign.css";
 import pageBg from "../../../assets/images/page.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignName }) => {
-  const navigate = useNavigate(); // ✅ Move useNavigate inside component
+  const navigate = useNavigate();
 
   const [campaignName, setCampaignName] = useState(initialCampaignName || "New Campaign");
   const [description, setDescription] = useState("");
@@ -45,7 +46,10 @@ const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignNa
 
   // Submit campaign
   const handleSubmit = async () => {
-    if (!campaignName) return alert("Campaign name is required");
+    if (!campaignName) {
+      toast.error("Campaign name is required");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("campaign_name", campaignName);
@@ -65,19 +69,18 @@ const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignNa
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // ✅ send JWT
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
 
-      alert("Campaign created successfully!");
+      toast.success("Campaign created successfully!");
 
-      // ✅ Redirect to new campaign page
       const campaignId = res.data.campaign_id;
       navigate(`/campaign/${campaignId}`);
     } catch (err) {
       console.error("Error creating campaign:", err.response?.data || err.message);
-      alert(err.response?.data?.error || "Error creating campaign");
+      toast.error(err.response?.data?.error || "Error creating campaign");
     } finally {
       setLoading(false);
     }
@@ -198,3 +201,4 @@ const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignNa
 };
 
 export default CreateCampaignInfo;
+
