@@ -272,7 +272,7 @@ const BookCenterWrapper = () => {
               campaignImg={c.cover_img || campaignImg2}
               blockColor={c.cover_color || "#a65c2a"}
               lineColor={c.cover_color || "#a65c2a"}
-              onClick={() => navigate(`/campaign/${c.campaign_id}`)}
+              onClick={() => navigate("/campaign")}
               showMenu={true} // Always show the menu
               onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
               onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
