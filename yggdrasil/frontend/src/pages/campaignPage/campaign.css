@@ -357,6 +357,7 @@
 }
 
 
+
 /* Editable textarea */
 .adventure-textarea {
   width: 100%;
@@ -423,7 +424,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
-  -webkit-line-clamp: 12;
+
   -webkit-box-orient: vertical;
   line-height: 1.5em;
 }

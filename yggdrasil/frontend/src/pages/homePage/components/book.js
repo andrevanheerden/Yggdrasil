@@ -127,7 +127,7 @@ const BookCenterWrapper = () => {
         const token = localStorage.getItem("token");
         const uid = localStorage.getItem("user_id");
 
-              console.log("Logged-in user ID:", uid); // <-- Added console log
+
 
         if (!token) {
           toast.error("No token found. Please log in.", { autoClose: 3000, toastId: "no-token" });
