@@ -1,57 +1,71 @@
-import React, { useState } from "react";
-import "../campaign.css"; // renamed CSS file
+import React, { useState, useEffect } from "react";
+import "../campaign.css"; 
+import axios from "axios";
 
 const CampaignDescription = () => {
-  const campaignName = "Aydir";
-
-  const data = {
-    Description: `The realm of Aydir has stood for centuries, its history written in the stones of ruined fortresses and whispered in the songs of traveling bards. Long ago, the land was divided into warring kingdoms, until the High Council forged a fragile unity that endures to this day. Yet beneath the polished surface of order, shadows gather.
-
-In the north, an ancient power stirs in the frostbitten peaks, where cults devoted to forgotten gods seek to awaken slumbering titans. In the bustling cities of the south, political intrigue twists the ambitions of nobles and guildmasters, each vying for control of trade and influence. Between these forces lies a land scarred by old wars, rich with lost secrets, and alive with opportunities for those bold enough to seize them.
-
-The adventurers find themselves drawn into Aydir’s tangled web of destiny — whether by fate, prophecy, or their own ambition. Their choices will shape not only their survival, but the very future of kingdoms. Will they become champions of the people, or pawns of powers far greater than themselves?`,
-    Setting: "Medieval high fantasy, filled with political intrigue, ancient ruins, and magical secrets.",
-    Factions: [
-      { name: "The High Council of Aydir", role: "Ruling body that struggles to maintain unity." },
-      { name: "The Frostborn Cult", role: "Worshippers of old gods who seek to awaken ancient titans." },
-      { name: "The Guild of Coin", role: "A merchant guild pulling strings in southern cities." },
-    ],
-    Themes: ["Destiny vs Free Will", "Political Intrigue", "Ancient Powers Awakening"],
-  };
-
+  const [campaign, setCampaign] = useState(null);
   const [activeTab, setActiveTab] = useState("Description");
-  const [descriptionText, setDescriptionText] = useState(data.Description);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCampaign = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const campaignId = localStorage.getItem("selectedCampaignId");
+        if (!campaignId) return;
+
+        const res = await axios.get("http://localhost:5000/api/campaigns", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const found = res.data.find((c) => c.campaign_id === campaignId);
+        setCampaign(found || null);
+      } catch (err) {
+        console.error("Error loading campaign description:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCampaign();
+  }, []);
+
+  if (loading) return <p>Loading campaign...</p>;
+  if (!campaign) return <p>Campaign not found.</p>;
 
   return (
     <div className="adventure-page">
       {/* Floating title */}
-      <h1 className="adventure-title">{campaignName}</h1>
+      <h1 className="adventure-title">{campaign.campaign_name}</h1>
 
       <div className="adventure-main">
         {/* Description Container */}
         <div className="adventure-description-box">
           {activeTab === "Description" && (
-            <textarea
-              value={descriptionText}
-              onChange={(e) => setDescriptionText(e.target.value)}
-              className="adventure-textarea"
-            />
+            <p>{campaign.description}</p>
           )}
-          {activeTab === "Setting" && <p>{data.Setting}</p>}
+
+          {activeTab === "Setting" && (
+            <p>{campaign.setting}</p>
+          )}
+
           {activeTab === "Factions" && (
             <ul>
-              {data.Factions.map((f, i) => (
-                <li key={i}>
-                  <strong>{f.name}</strong>: {f.role}
-                </li>
-              ))}
+              {campaign.factions &&
+                JSON.parse(campaign.factions).map((f, i) => (
+                  <li key={i}>
+                    <strong>{f.name}</strong>: {f.role}
+                  </li>
+                ))}
             </ul>
           )}
+
           {activeTab === "Themes" && (
             <ul>
-              {data.Themes.map((theme, i) => (
-                <li key={i}>{theme}</li>
-              ))}
+              {campaign.themes &&
+                JSON.parse(campaign.themes).map((t, i) => (
+                  <li key={i}>{t}</li>
+                ))}
             </ul>
           )}
         </div>
@@ -59,10 +73,12 @@ The adventurers find themselves drawn into Aydir’s tangled web of destiny — 
         {/* Side buttons */}
         <div className="adventure-side-buttons-wrapper">
           <div className="adventure-side-buttons">
-            {Object.keys(data).map((tab) => (
+            {["Description", "Setting", "Factions", "Themes"].map((tab) => (
               <button
                 key={tab}
-                className={`adventure-side-btn ${activeTab === tab ? "active" : ""}`}
+                className={`adventure-side-btn ${
+                  activeTab === tab ? "active" : ""
+                }`}
                 onClick={() => setActiveTab(tab)}
               >
                 {tab}
@@ -70,9 +86,10 @@ The adventurers find themselves drawn into Aydir’s tangled web of destiny — 
             ))}
           </div>
         </div>
-      </div> {/* end of adventure-main */}
-    </div> /* end of adventure-page */
+      </div>
+    </div>
   );
 };
 
 export default CampaignDescription;
+

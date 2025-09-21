@@ -266,17 +266,21 @@ const BookCenterWrapper = () => {
           const showLeave = c.isPlayer && !c.isCreator;
 
           return (
-            <Book
-              key={c.campaign_id}
-              title={c.campaign_name}
-              campaignImg={c.cover_img || campaignImg2}
-              blockColor={c.cover_color || "#a65c2a"}
-              lineColor={c.cover_color || "#a65c2a"}
-              onClick={() => navigate("/campaign")}
-              showMenu={true} // Always show the menu
-              onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
-              onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
-            />
+<Book
+  key={c.campaign_id}
+  title={c.campaign_name}
+  campaignImg={c.cover_img || campaignImg2}
+  blockColor={c.cover_color || "#a65c2a"}
+  lineColor={c.cover_color || "#a65c2a"}
+  onClick={() => {
+    localStorage.setItem("selectedCampaignId", c.campaign_id); // save the ID
+    navigate("/campaign");
+  }}
+  showMenu={true}
+  onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
+  onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
+/>
+
           );
         })}
       </div>
