@@ -1,19 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import coverImg from "../../../assets/images/cover.png";
 import campaignImg2 from "../../../assets/images/Logo.png";
 import "../Home.css";
 import Navbar from "./Navbar";
-import CreateCampaignInfo from "../../campaignPage/componets/createCampaignInfo";
+import EditCampaignInfo from "../../campaignPage/componets/EditCampaignInfo";
 import { toast } from "react-toastify";
+import axios from "axios";
 
-const CreateCampaign = () => {
-  const [title, setTitle] = useState("Create a Campaign");
+const EditCampaign = () => {
+  const [title, setTitle] = useState("Edit Campaign");
   const [color, setColor] = useState("#2a6ca6");
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(campaignImg2);
   const [showPopup, setShowPopup] = useState(false);
 
-  const userId = localStorage.getItem("user_id");
+const campaignId = (localStorage.getItem("editCampaignId") || "").split(":")[0];
+
+
+
+  useEffect(() => {
+    if (!campaignId) return;
+
+    const fetchCampaign = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:5000/api/campaigns", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const campaign = res.data.find((c) => c.campaign_id === campaignId);
+        if (campaign) {
+          setTitle(campaign.campaign_name);
+          setColor(campaign.cover_color || "#2a6ca6");
+          setImagePreview(campaign.cover_img || campaignImg2);
+          setShowPopup(true);
+        }
+      } catch (err) {
+        console.error("Error loading campaign for edit:", err);
+        toast.error("Failed to load campaign data.");
+      }
+    };
+
+    fetchCampaign();
+  }, [campaignId]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files?.[0];
@@ -35,17 +63,14 @@ const CreateCampaign = () => {
         >
           <div className="book-vertical-line" style={{ background: color }} />
           <div className="book-title">{title}</div>
-
           <div className="book-campaign-img-wrapper">
             <img
-              className="book-campaign-img2"
+              className="book-campaign-img"
               style={{ maxHeight: "350px", maxWidth: "100%" }}
               src={imagePreview}
               alt="Campaign"
             />
           </div>
-
-          <div className="book-color-block" style={{ background: color }} />
         </div>
 
         {/* Control Panel */}
@@ -92,12 +117,12 @@ const CreateCampaign = () => {
 
         {/* Popup */}
         {showPopup && (
-          <CreateCampaignInfo
+          <EditCampaignInfo
             coverImage={imageFile}
             coverColor={color}
             onClose={() => setShowPopup(false)}
-            creatorUserId={userId}
             initialCampaignName={title}
+            editCampaignId={campaignId}
           />
         )}
       </div>
@@ -105,12 +130,4 @@ const CreateCampaign = () => {
   );
 };
 
-export default CreateCampaign;
-
-
-
-
-
-
-
-
+export default EditCampaign;

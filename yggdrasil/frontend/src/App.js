@@ -10,6 +10,7 @@ import Campaign from './pages/campaignPage/campaign';
 import Character from './pages/characterPage/character';
 import Encounter from './pages/encounterPage/encounter';
 import Dice from './pages/dice/dice'; // 👈 main dice manager
+import EditCampaign from "./pages/homePage/components/EditCampaign";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="/campaign" element={<Campaign />} />
           <Route path="/character" element={<Character />} />
           <Route path="/encounter" element={<Encounter />} />
+          <Route path="/edit-campaign" element={<EditCampaign />} />
         </Routes>
 
         {/* 👇 All dice controlled through Dice.jsx */}

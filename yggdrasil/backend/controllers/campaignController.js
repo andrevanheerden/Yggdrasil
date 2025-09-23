@@ -195,3 +195,56 @@ module.exports = {
   leaveCampaign,
   getCampaignRoles
 };
+
+
+// Update existing campaign
+const updateCampaign = async (req, res) => {
+  try {
+    const { campaign_id } = req.params;
+    const { campaign_name, cover_color, description, setting, factions, themes } = req.body;
+
+    const campaigns = await getCampaigns();
+    const campaign = campaigns.find(c => c.campaign_id === campaign_id);
+
+    if (!campaign) return res.status(404).json({ error: "Campaign not found" });
+
+    // Optional: Only creator can edit
+    if (campaign.creator_user_id !== req.user.user_id) {
+      return res.status(403).json({ error: "Only the creator can edit this campaign" });
+    }
+
+    let coverImgUrl = campaign.cover_img;
+    if (req.files?.cover_img) {
+      const upload = await cloudinary.uploader.upload(req.files.cover_img.tempFilePath);
+      coverImgUrl = upload.secure_url;
+    }
+
+    let mapImgUrl = campaign.map_img;
+    if (req.files?.map_img) {
+      const upload = await cloudinary.uploader.upload(req.files.map_img.tempFilePath);
+      mapImgUrl = upload.secure_url;
+    }
+
+    await pool.query(
+      `UPDATE campaigns SET campaign_name=?, cover_img=?, cover_color=?, description=?, setting=?, factions=?, themes=?, map_img=? WHERE campaign_id=?`,
+      [
+        campaign_name,
+        coverImgUrl,
+        cover_color,
+        description,
+        setting,
+        factions,
+        themes,
+        mapImgUrl,
+        campaign_id
+      ]
+    );
+
+    res.json({ message: "Campaign updated successfully" });
+  } catch (err) {
+    console.error("Error updating campaign:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports.updateCampaign = updateCampaign;
