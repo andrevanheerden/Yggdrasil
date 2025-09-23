@@ -6,7 +6,7 @@ import axios from "axios";
 import '../Home.css';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LoadingScreen from '../../loading popup/loadingScreen'; // <-- Loading screen import
+import LoadingScreen from '../../loadingPopup/loadingScreen'; // <-- Loading screen import
 
 /* --- Base Book Component --- */
 const Book = ({ title, campaignImg, blockColor, lineColor, onClick, showMenu, onDelete, onLeave }) => {

@@ -4,7 +4,7 @@ import pageBg from "../../../assets/images/page.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import LoadingScreen from "../../loading popup/loadingScreen"; // <-- Import LoadingScreen
+import LoadingScreen from "../../loadingPopup/loadingScreen"; // <-- Import LoadingScreen
 
 const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignName }) => {
   const navigate = useNavigate();

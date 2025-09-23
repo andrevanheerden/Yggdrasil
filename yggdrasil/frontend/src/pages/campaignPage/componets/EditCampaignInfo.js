@@ -4,7 +4,7 @@ import pageBg from "../../../assets/images/page.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import LoadingScreen from "../../loading popup/loadingScreen";
+import LoadingScreen from "../../loadingPopup/loadingScreen";
 
 const EditCampaignInfo = ({ editCampaignId }) => {
   const navigate = useNavigate();

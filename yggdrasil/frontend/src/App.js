@@ -1,16 +1,25 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify'; // ✅ Import ToastContainer
-import 'react-toastify/dist/ReactToastify.css';   // ✅ Import Toastify CSS
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './App.css';
+
 import Login from './pages/loginPage/Login';
 import Home from './pages/homePage/Home';
 import CreateCampaignPage from './pages/homePage/components/createCampaign';
 import Campaign from './pages/campaignPage/campaign';
 import Character from './pages/characterPage/character';
 import Encounter from './pages/encounterPage/encounter';
-import Dice from './pages/dice/dice'; // 👈 main dice manager
+import Dice from './pages/dice/dice';
 import EditCampaign from "./pages/homePage/components/EditCampaign";
+
+// Wrapper to conditionally render Dice
+function DiceWrapper() {
+  const location = useLocation();
+  // Only show dice on these paths
+  const showDice = !['/login', '/signup'].includes(location.pathname);
+  return showDice ? <Dice /> : null;
+}
 
 function App() {
   return (
@@ -20,7 +29,7 @@ function App() {
         <div className="fog-img fog-img-first"></div>
         <div className="fog-img fog-img-second"></div>
       </div>
-      
+
       <Router>
         <Routes>
           <Route path="/" element={<Navigate to="/login" />} />
@@ -33,11 +42,10 @@ function App() {
           <Route path="/edit-campaign" element={<EditCampaign />} />
         </Routes>
 
-        {/* 👇 All dice controlled through Dice.jsx */}
-        <Dice />
+        {/* Dice only shows on allowed pages */}
+        <DiceWrapper />
       </Router>
 
-      {/* 👇 Toast notifications container, put it at root */}
       <ToastContainer 
         position="top-right"
         autoClose={3000}
@@ -55,4 +63,5 @@ function App() {
 }
 
 export default App;
+
 
