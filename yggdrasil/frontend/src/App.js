@@ -12,6 +12,7 @@ import Character from './pages/characterPage/character';
 import Encounter from './pages/encounterPage/encounter';
 import Dice from './pages/dice/dice';
 import EditCampaign from "./pages/homePage/components/EditCampaign";
+import Profile from "./pages/profilepage/profile"
 
 // Wrapper to conditionally render Dice
 function DiceWrapper() {
@@ -40,6 +41,7 @@ function App() {
           <Route path="/character" element={<Character />} />
           <Route path="/encounter" element={<Encounter />} />
           <Route path="/edit-campaign" element={<EditCampaign />} />
+          <Route path='/profile' element={<Profile />} />
         </Routes>
 
         {/* Dice only shows on allowed pages */}

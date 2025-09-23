@@ -2,6 +2,17 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { createUser, findUserByEmail, findUserByUsername } = require("../models/userModel");
 const pool = require("../config/db");
+const cloudinary = require("cloudinary").v2;
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+// Cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Generate a random user_id like AAA-000-001
 function generateUserId() {
@@ -23,7 +34,7 @@ async function generateUniqueUserId() {
   return user_id;
 }
 
-// Signup
+// =================== SIGNUP ===================
 const signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -49,7 +60,7 @@ const signup = async (req, res) => {
   }
 };
 
-// Login
+// =================== LOGIN ===================
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -70,7 +81,7 @@ const login = async (req, res) => {
   }
 };
 
-// Get current user
+// =================== GET CURRENT USER ===================
 const getCurrentUser = async (req, res) => {
   try {
     const user_id = req.user.user_id;
@@ -78,12 +89,11 @@ const getCurrentUser = async (req, res) => {
 
     if (!rows[0]) return res.status(404).json({ error: "User not found" });
 
-    // Send only what you need, including user_id at top level
     const user = {
       user_id: rows[0].user_id,
       username: rows[0].username,
       email: rows[0].email,
-      profile_img: rows[0].profile_img || null
+      profile_img: rows[0].profile_img || null,
     };
 
     res.json(user);
@@ -93,5 +103,44 @@ const getCurrentUser = async (req, res) => {
   }
 };
 
+// =================== UPDATE CURRENT USER ===================
+const updateCurrentUser = async (req, res) => {
+  try {
+    const user_id = req.user.user_id;
+    const { username } = req.body;
+    let profile_img = null;
 
-module.exports = { signup, login, getCurrentUser };
+    // Check if a file was uploaded
+    if (req.files && req.files.profile_img) {
+      const file = req.files.profile_img;
+
+      // Upload to Cloudinary
+      const uploadResult = await cloudinary.uploader.upload(file.tempFilePath, {
+        folder: "profiles", // optional folder
+      });
+
+      profile_img = uploadResult.secure_url;
+    }
+
+    // Update DB
+    await pool.query(
+      "UPDATE users SET username = ?, profile_img = IFNULL(?, profile_img) WHERE user_id = ?",
+      [username, profile_img, user_id]
+    );
+
+    // Return updated user
+    const [rows] = await pool.query(
+      "SELECT user_id, username, email, profile_img FROM users WHERE user_id = ?",
+      [user_id]
+    );
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("Update user error:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+module.exports = { signup, login, getCurrentUser, updateCurrentUser };
+
