@@ -74,23 +74,26 @@ const MyProfile = () => {
   return (
     <div
       className="profile-page-container"
-      style={{
-        position: "absolute",
-        top: "48%",
-        left: "50%",
-        transform: "translate(-50%, -50%)",
-        zIndex: 200,
-        background: "#000000a2",
-        borderRadius: "12px",
-        padding: "20px",
-        boxShadow: "0 2px 8px #0001",
-        height: "90vh",
-        width: "94vw",
-        display: "flex",
-        flexDirection: "column",
-        color: "white",
-        alignItems: "center",
-      }}
+style={{
+  position: "absolute",
+  top: "48%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  zIndex: 200,
+  background: "rgba(0, 0, 0, 0.5)", // semi-transparent background
+  backdropFilter: "blur(5px)",      // <-- adds the blur
+  WebkitBackdropFilter: "blur(10px)", // for Safari support
+  borderRadius: "12px",
+  padding: "20px",
+  boxShadow: "0 2px 8px #0001",
+  height: "90vh",
+  width: "94vw",
+  display: "flex",
+  flexDirection: "column",
+  color: "white",
+  alignItems: "center",
+}}
+
     >
       <h2 className="profile-title">My Profile</h2>
 

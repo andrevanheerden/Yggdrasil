@@ -19,21 +19,23 @@ const Navbar = () => {
         >
           🏠
         </div>
-<div
-  className="nav-icon"
-  onClick={() => navigate('/profile')}
-  style={{ cursor: 'pointer' }}
->
-  👤
-</div>
-
         <div
           className="nav-icon"
-          onClick={() => navigate('/settings')}
+          onClick={() => navigate('/profile')}
           style={{ cursor: 'pointer' }}
         >
-          ⚙️
+          👤
         </div>
+
+        {/* Replace settings with messages */}
+        <div
+          className="nav-icon"
+          onClick={() => navigate('/messages')}
+          style={{ cursor: 'pointer' }}
+        >
+          💬
+        </div>
+
         <div
           className="nav-icon"
           onClick={() => navigate('/login')}
@@ -47,4 +49,5 @@ const Navbar = () => {
 };
 
 export default Navbar;
+
 
