@@ -283,6 +283,7 @@ box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0
   padding: 14px;
   color: white;
   border: 1px solid rgba(255,255,255,0.04);
+  background-color: #1a1a1a;
 }
 
 .toast-title {
@@ -304,7 +305,7 @@ box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0
   border: none;
   cursor: pointer;
   background: linear-gradient(180deg,#28a745,#1e7e34);
-  color: white;
+  color: rgb(0, 0, 0);
 }
 
 .toast-actions .roll-btn[style] {

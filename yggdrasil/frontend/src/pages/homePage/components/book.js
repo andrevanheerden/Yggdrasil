@@ -182,18 +182,51 @@ const BookCenterWrapper = () => {
     }, 1500);
   };
 
-  const confirmAction = (message, onConfirm) => {
-    const toastId = toast.info(
-      <div>
-        {message}
-        <div style={{ marginTop: "10px" }}>
-          <button onClick={() => { toast.dismiss(toastId); onConfirm(); }} style={{ marginRight: "10px", background: "green", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px" }}>✅</button>
-          <button onClick={() => toast.dismiss(toastId)} style={{ background: "red", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px" }}>❌</button>
-        </div>
-      </div>,
-      { autoClose: false }
-    );
-  };
+const confirmAction = (message, onConfirm) => {
+  const toastId = toast.info(
+    <div>
+      {message}
+      <div style={{ marginTop: "10px" }}>
+        <button
+          onClick={() => { toast.dismiss(toastId); onConfirm(); }}
+          style={{
+            marginRight: "10px",
+            background: "transparent",
+            color: "white",
+            border: "none",
+            padding: "4px 8px",
+            borderRadius: "4px"
+          }}
+        >
+          ✅
+        </button>
+        <button
+          onClick={() => toast.dismiss(toastId)}
+          style={{
+            background: "transparent",
+            color: "white",
+            border: "none",
+            padding: "4px 8px",
+            borderRadius: "4px"
+          }}
+        >
+          ❌
+        </button>
+      </div>
+    </div>,
+    {
+      autoClose: false,
+      style: { 
+        backgroundColor: "#222", // dark background
+        color: "#fff",           // white text
+        border: "1px solid #555",
+        borderRadius: "8px",
+        boxShadow: "0 4px 12px rgba(0,0,0,0.5)"
+      }
+    }
+  );
+};
+
 
   const handleDeleteCampaign = async (campaignId) => {
     confirmAction("Are you sure you want to delete this campaign?", async () => {
