@@ -44,7 +44,7 @@ const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignNa
     if (e.target.files && e.target.files[0]) setMapFile(e.target.files[0]);
   };
 
-  // Submit campaign
+  // Submit campaign - UPDATED TO MATCH BOOKWRAPPER NAVIGATION
   const handleSubmit = async () => {
     if (!campaignName) {
       toast.error("Campaign name is required");
@@ -77,7 +77,11 @@ const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignNa
       toast.success("Campaign created successfully!");
 
       const campaignId = res.data.campaign_id;
-      navigate(`/campaign/${campaignId}`);
+      
+      // Use the same navigation approach as BookCenterWrapper
+      localStorage.setItem("selectedCampaignId", campaignId);
+      navigate("/campaign"); // This matches your BookCenterWrapper navigation
+      
     } catch (err) {
       console.error("Error creating campaign:", err.response?.data || err.message);
       toast.error(err.response?.data?.error || "Error creating campaign");
@@ -96,9 +100,41 @@ const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignNa
           backgroundPosition: "center",
         }}
       >
-        <button className="exit-x-btn" onClick={handleSubmit} disabled={loading}>
-          {loading ? "Submitting..." : "Submit"}
+        {/* Submit Button */}
+        <button 
+          className="exit-x-btn" 
+          onClick={handleSubmit} 
+          disabled={loading}
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "10px",
+            zIndex: 10
+          }}
+        >
+          {loading ? "Creating..." : "Submit"}
         </button>
+
+        {/* Close Button */}
+        {onClose && (
+          <button 
+            className="close-btn" 
+            onClick={onClose}
+            style={{
+              position: "absolute",
+              top: "10px",
+              left: "10px",
+              zIndex: 10,
+              background: "transparent",
+              border: "none",
+              color: "#fff",
+              fontSize: "16px",
+              cursor: "pointer"
+            }}
+          >
+            ✖ Close
+          </button>
+        )}
 
         <input
           type="text"
