@@ -127,8 +127,6 @@ const BookCenterWrapper = () => {
         const token = localStorage.getItem("token");
         const uid = localStorage.getItem("user_id");
 
-
-
         if (!token) {
           toast.error("No token found. Please log in.", { autoClose: 3000, toastId: "no-token" });
           return;
@@ -145,11 +143,11 @@ const BookCenterWrapper = () => {
             try {
               // Check if user is the creator
               const isCreator = String(campaign.creator_user_id) === String(uid);
-              
+
               // Check if user is a player by looking at player_ids
               const playerIds = campaign.player_ids ? JSON.parse(campaign.player_ids) : [];
               const isPlayer = playerIds.includes(uid);
-              
+
               // Also check the campaign_roles table for admin role
               let isAdmin = false;
               try {
@@ -162,7 +160,7 @@ const BookCenterWrapper = () => {
               } catch (err) {
                 console.error("Error fetching roles:", err);
               }
-              
+
               return {
                 ...campaign,
                 isCreator,
@@ -256,37 +254,40 @@ const BookCenterWrapper = () => {
   };
 
   return (
-    <>
-      <div className="book-center-wrapper">
-        <CreateCampaignBook />
-        {campaigns.map((c) => {
-          // Show delete button if user is creator OR admin
-          const showDelete = c.isCreator || c.isAdmin;
-          // Show leave button if user is a player but NOT the creator
-          const showLeave = c.isPlayer && !c.isCreator;
+    <div className="books-outer-container">
+      {/* inner scroll area so the outer border remains fixed while grid scrolls */}
+      <div className="books-inner-scroll">
+        <div className="book-center-wrapper">
+          <CreateCampaignBook />
+          {campaigns.map((c) => {
+            // Show delete button if user is creator OR admin
+            const showDelete = c.isCreator || c.isAdmin;
+            // Show leave button if user is a player but NOT the creator
+            const showLeave = c.isPlayer && !c.isCreator;
 
-          return (
-<Book
-  key={c.campaign_id}
-  title={c.campaign_name}
-  campaignImg={c.cover_img || campaignImg2}
-  blockColor={c.cover_color || "#a65c2a"}
-  lineColor={c.cover_color || "#a65c2a"}
-  onClick={() => {
-    localStorage.setItem("selectedCampaignId", c.campaign_id); // save the ID
-    navigate("/campaign");
-  }}
-  showMenu={true}
-  onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
-  onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
-/>
-
-          );
-        })}
+            return (
+              <Book
+                key={c.campaign_id}
+                title={c.campaign_name}
+                campaignImg={c.cover_img || campaignImg2}
+                blockColor={c.cover_color || "#a65c2a"}
+                lineColor={c.cover_color || "#a65c2a"}
+                onClick={() => {
+                  localStorage.setItem("selectedCampaignId", c.campaign_id); // save the ID
+                  navigate("/campaign");
+                }}
+                showMenu={true}
+                onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
+                onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
+              />
+            );
+          })}
+        </div>
       </div>
       <ToastContainer position="top-right" />
-    </>
+    </div>
   );
 };
 
 export default BookCenterWrapper;
+

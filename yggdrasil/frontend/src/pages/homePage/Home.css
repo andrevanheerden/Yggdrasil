@@ -101,20 +101,7 @@ box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0
   z-index: 1;
 }
 
-/* Center the book container horizontally and vertically */
-.book-center-wrapper {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  justify-items: start;
-  align-items: start;
-  width: 90vw;
 
-  margin-left: 220px;
-  overflow-y: auto; /* Only the books/grid scrolls */
-  position: relative;
-  z-index: 2;
-  background: transparent; /* No new background added */
-}
 
 .book-campaign-img-wrapper {
   position: relative;
@@ -313,3 +300,72 @@ box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0
 .toast-actions .roll-btn[style] {
   background: linear-gradient(180deg,#e53935,#b71c1c) !important;
 }
+
+
+
+
+
+.books-outer-container {
+  /* full viewport block with solid border that wraps the books grid */
+  width: 94vw;               /* slightly less than full viewport width */
+  height: 100vh;              /* full viewport height */
+  background: transparent;    /* transparent background */
+  border: 3px solid rgba(255, 255, 255, 0); /* solid, high-contrast border */
+  box-sizing: border-box;
+  padding: 20px 0px 0px 0px;              /* spacing between border and grid */
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;  /* align the grid to the right side */
+  overflow: hidden;           /* keep outer border fixed */
+  position: relative;
+  z-index: 1;
+  margin-left: 6%;
+}
+
+.books-inner-scroll {
+  width: calc(100% - 40px);   /* account for padding */
+  height: calc(100% - 40px);
+  overflow-y: auto;           /* grid scrolls inside the bordered container */
+  overflow-x: hidden;
+}
+
+.book-center-wrapper {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* always 3 per row */
+  gap: 24px;
+  justify-items: center;
+  align-content: flex-start;
+  width: 90vw;
+  padding: 0px 0px;
+  overflow-y: auto; /* Only the books/grid scrolls */
+  position: relative;
+  z-index: 2;
+  background: transparent; /* No new background added */
+}
+
+/* Optional: make book-container center nicely inside the grid */
+.book-container {
+  margin: 0;
+}
+
+.books-inner-scroll::-webkit-scrollbar {
+  width: 12px;
+  position: absolute;
+}
+
+.books-inner-scroll::-webkit-scrollbar-track {
+  background: #c2c2c2;
+  border-radius: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.books-inner-scroll::-webkit-scrollbar-thumb {
+  height: 95%;
+  margin: auto;
+  background: #666;
+  border-radius: 10px;
+  border: 2px solid #d9d9d9;
+}
+
+
