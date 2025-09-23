@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import LoadingScreen from '../../loading popup/loadingScreen'; // Import the loading screen
 import '../Login.css';
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -22,6 +24,7 @@ const LoginForm = () => {
 
     try {
       setLoading(true);
+      setShowLoadingScreen(true); // Show loading screen
 
       // 1️⃣ Login and get token
       const res = await axios.post('http://localhost:5000/api/users/login', formData);
@@ -42,61 +45,65 @@ const LoginForm = () => {
         console.error("Cannot find user_id in /me response", userData);
         toast.error("Failed to retrieve user ID.");
         setLoading(false);
+        setShowLoadingScreen(false);
         return;
       }
 
       localStorage.setItem('user_id', userId);
       console.log("Logged-in user ID:", userId);
 
-      // 4️⃣ Navigate to home
-      navigate('/home');
+      // Add a small delay to show the loading screen
+      setTimeout(() => {
+        // 4️⃣ Navigate to home
+        navigate('/home');
+      }, 3000);
 
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);
       toast.error(err.response?.data?.error || 'Login failed');
+      setShowLoadingScreen(false);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form className="login-form" onSubmit={handleSubmit}>
-      <h2 className="subtitle">Log In</h2>
-      <div className="form-group">
-        <label htmlFor="login-email">Email</label>
-        <input
-          type="email"
-          id="login-email"
-          name="email"
-          placeholder="Enter your email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          autoComplete="username"
-        />
-      </div>
-      <div className="form-group">
-        <label htmlFor="login-password">Password</label>
-        <input
-          type="password"
-          id="login-password"
-          name="password"
-          placeholder="Enter your password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          autoComplete="current-password"
-        />
-      </div>
-      <button type="submit" className="submit-btn" disabled={loading}>
-        {loading ? "Logging in..." : "Log In"}
-      </button>
-    </form>
+    <>
+      <LoadingScreen isVisible={showLoadingScreen} />
+      <form className="login-form" onSubmit={handleSubmit}>
+        <h2 className="subtitle">Log In</h2>
+        <div className="form-group">
+          <label htmlFor="login-email">Email</label>
+          <input
+            type="email"
+            id="login-email"
+            name="email"
+            placeholder="Enter your email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            autoComplete="username"
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="login-password">Password</label>
+          <input
+            type="password"
+            id="login-password"
+            name="password"
+            placeholder="Enter your password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            autoComplete="current-password"
+          />
+        </div>
+        <button type="submit" className="submit-btn" disabled={loading}>
+          {loading ? "Logging in..." : "Log In"}
+        </button>
+      </form>
+    </>
   );
 };
 
 export default LoginForm;
-
-
-
-
