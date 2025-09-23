@@ -6,6 +6,7 @@ import axios from "axios";
 import '../Home.css';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import LoadingScreen from '../../loading popup/loadingScreen'; // <-- Loading screen import
 
 /* --- Base Book Component --- */
 const Book = ({ title, campaignImg, blockColor, lineColor, onClick, showMenu, onDelete, onLeave }) => {
@@ -120,6 +121,7 @@ const CreateCampaignBook = () => {
 const BookCenterWrapper = () => {
   const navigate = useNavigate();
   const [campaigns, setCampaigns] = useState([]);
+  const [loadingCampaign, setLoadingCampaign] = useState(false);
 
   useEffect(() => {
     const fetchCampaigns = async () => {
@@ -128,54 +130,33 @@ const BookCenterWrapper = () => {
         const uid = localStorage.getItem("user_id");
 
         if (!token) {
-          toast.error("No token found. Please log in.", { autoClose: 3000, toastId: "no-token" });
+          toast.error("No token found. Please log in.", { autoClose: 3000 });
           return;
         }
 
-        // Fetch campaigns where user is involved
         const res = await axios.get("http://localhost:5000/api/campaigns/my", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        // For each campaign, check if user is creator or player to determine permissions
         const campaignsWithPermissions = await Promise.all(
           res.data.map(async (campaign) => {
+            const isCreator = String(campaign.creator_user_id) === String(uid);
+            const playerIds = campaign.player_ids ? JSON.parse(campaign.player_ids) : [];
+            const isPlayer = playerIds.includes(uid);
+
+            let isAdmin = false;
             try {
-              // Check if user is the creator
-              const isCreator = String(campaign.creator_user_id) === String(uid);
-
-              // Check if user is a player by looking at player_ids
-              const playerIds = campaign.player_ids ? JSON.parse(campaign.player_ids) : [];
-              const isPlayer = playerIds.includes(uid);
-
-              // Also check the campaign_roles table for admin role
-              let isAdmin = false;
-              try {
-                const rolesRes = await axios.get(
-                  `http://localhost:5000/api/campaigns/${campaign.campaign_id}/roles`,
-                  { headers: { Authorization: `Bearer ${token}` } }
-                );
-                const userRole = rolesRes.data.find(role => role.user_id === uid);
-                isAdmin = userRole && userRole.role === 'admin';
-              } catch (err) {
-                console.error("Error fetching roles:", err);
-              }
-
-              return {
-                ...campaign,
-                isCreator,
-                isPlayer,
-                isAdmin
-              };
+              const rolesRes = await axios.get(
+                `http://localhost:5000/api/campaigns/${campaign.campaign_id}/roles`,
+                { headers: { Authorization: `Bearer ${token}` } }
+              );
+              const userRole = rolesRes.data.find(role => role.user_id === uid);
+              isAdmin = userRole && userRole.role === 'admin';
             } catch (err) {
-              console.error("Error processing campaign:", err);
-              return {
-                ...campaign,
-                isCreator: false,
-                isPlayer: false,
-                isAdmin: false
-              };
+              console.error("Error fetching roles:", err);
             }
+
+            return { ...campaign, isCreator, isPlayer, isAdmin };
           })
         );
 
@@ -183,36 +164,34 @@ const BookCenterWrapper = () => {
 
       } catch (err) {
         console.error("Error fetching campaigns:", err.response?.data || err.message);
-        toast.error("Failed to load campaigns.", { autoClose: 3000, toastId: "campaign-load-error" });
+        toast.error("Failed to load campaigns.", { autoClose: 3000 });
       }
     };
 
     fetchCampaigns();
   }, []);
 
+  const openCampaign = (campaignId) => {
+    setLoadingCampaign(true);
+    localStorage.setItem("selectedCampaignId", campaignId);
+
+    // simulate loading
+    setTimeout(() => {
+      setLoadingCampaign(false);
+      navigate("/campaign");
+    }, 1500);
+  };
+
   const confirmAction = (message, onConfirm) => {
     const toastId = toast.info(
       <div>
         {message}
         <div style={{ marginTop: "10px" }}>
-          <button
-            style={{ marginRight: "10px", background: "green", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px" }}
-            onClick={() => {
-              toast.dismiss(toastId);
-              onConfirm();
-            }}
-          >
-            ✅
-          </button>
-          <button
-            style={{ background: "red", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px" }}
-            onClick={() => toast.dismiss(toastId)}
-          >
-            ❌
-          </button>
+          <button onClick={() => { toast.dismiss(toastId); onConfirm(); }} style={{ marginRight: "10px", background: "green", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px" }}>✅</button>
+          <button onClick={() => toast.dismiss(toastId)} style={{ background: "red", color: "white", border: "none", padding: "4px 8px", borderRadius: "4px" }}>❌</button>
         </div>
       </div>,
-      { autoClose: false, toastId: `confirm-${Math.random()}` } // unique id
+      { autoClose: false }
     );
   };
 
@@ -223,13 +202,11 @@ const BookCenterWrapper = () => {
         await axios.delete(`http://localhost:5000/api/campaigns/${campaignId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        setCampaigns(campaigns.filter((c) => c.campaign_id !== campaignId));
-        toast.success("Campaign deleted successfully!", { autoClose: 3000, toastId: `delete-${campaignId}` });
-
+        setCampaigns(campaigns.filter(c => c.campaign_id !== campaignId));
+        toast.success("Campaign deleted successfully!");
       } catch (err) {
-        console.error("Delete error:", err.response?.data || err.message);
-        toast.error("Failed to delete campaign.", { autoClose: 3000 });
+        console.error(err);
+        toast.error("Failed to delete campaign.");
       }
     });
   };
@@ -238,56 +215,49 @@ const BookCenterWrapper = () => {
     confirmAction("Do you want to leave this campaign?", async () => {
       try {
         const token = localStorage.getItem("token");
-        await axios.post(
-          `http://localhost:5000/api/campaigns/${campaignId}/leave`,
-          {},
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        setCampaigns(campaigns.filter((c) => c.campaign_id !== campaignId));
-        toast.success("You left the campaign.", { autoClose: 3000, toastId: `leave-${campaignId}` });
+        await axios.post(`http://localhost:5000/api/campaigns/${campaignId}/leave`, {}, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setCampaigns(campaigns.filter(c => c.campaign_id !== campaignId));
+        toast.success("You left the campaign.");
       } catch (err) {
-        console.error("Leave error:", err.response?.data || err.message);
-        toast.error("Failed to leave campaign.", { autoClose: 3000 });
+        console.error(err);
+        toast.error("Failed to leave campaign.");
       }
     });
   };
 
   return (
-    <div className="books-outer-container">
-      {/* inner scroll area so the outer border remains fixed while grid scrolls */}
-      <div className="books-inner-scroll">
-        <div className="book-center-wrapper">
-          <CreateCampaignBook />
-          {campaigns.map((c) => {
-            // Show delete button if user is creator OR admin
-            const showDelete = c.isCreator || c.isAdmin;
-            // Show leave button if user is a player but NOT the creator
-            const showLeave = c.isPlayer && !c.isCreator;
+    <>
+      <LoadingScreen isVisible={loadingCampaign} />
+      <div className="books-outer-container">
+        <div className="books-inner-scroll">
+          <div className="book-center-wrapper">
+            <CreateCampaignBook />
+            {campaigns.map(c => {
+              const showDelete = c.isCreator || c.isAdmin;
+              const showLeave = c.isPlayer && !c.isCreator;
 
-            return (
-              <Book
-                key={c.campaign_id}
-                title={c.campaign_name}
-                campaignImg={c.cover_img || campaignImg2}
-                blockColor={c.cover_color || "#a65c2a"}
-                lineColor={c.cover_color || "#a65c2a"}
-                onClick={() => {
-                  localStorage.setItem("selectedCampaignId", c.campaign_id); // save the ID
-                  navigate("/campaign");
-                }}
-                showMenu={true}
-                onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
-                onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
-              />
-            );
-          })}
+              return (
+                <Book
+                  key={c.campaign_id}
+                  title={c.campaign_name}
+                  campaignImg={c.cover_img || campaignImg2}
+                  blockColor={c.cover_color || "#a65c2a"}
+                  lineColor={c.cover_color || "#a65c2a"}
+                  onClick={() => openCampaign(c.campaign_id)}
+                  showMenu={true}
+                  onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
+                  onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
+                />
+              );
+            })}
+          </div>
         </div>
+        <ToastContainer position="top-right" />
       </div>
-      <ToastContainer position="top-right" />
-    </div>
+    </>
   );
 };
 
 export default BookCenterWrapper;
-

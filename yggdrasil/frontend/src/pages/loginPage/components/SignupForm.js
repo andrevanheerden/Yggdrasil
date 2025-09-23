@@ -51,7 +51,7 @@ const SignupForm = () => {
       // Add a small delay to show the loading screen
       setTimeout(() => {
         navigate('/home');
-      }, 1000);
+      }, 3000);
       
     } catch (err) {
       toast.error(err.response?.data?.error || 'Signup failed');

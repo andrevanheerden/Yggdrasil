@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../dice.css";
+import diceRollSound from "../../../assets/sound/rollSound.mp3"; // <-- import your sound
 
 const DICE_TYPES = [
   { label: "D4", sides: 4 },
@@ -16,7 +17,9 @@ export default function DiceRoller() {
   const [selectedDice, setSelectedDice] = useState({});
   const [results, setResults] = useState([]);
 
-  // Increment or add dice
+  // Create audio object
+  const diceSound = new Audio(diceRollSound);
+
   const addDie = (label) => {
     const totalDice = Object.values(selectedDice).reduce((a, b) => a + b, 0);
     if (totalDice >= 6) return; // max 6 dice
@@ -27,6 +30,10 @@ export default function DiceRoller() {
   };
 
   const rollDice = () => {
+    // Play sound
+    diceSound.currentTime = 0;
+    diceSound.play();
+
     const newResults = [];
     for (const [label, count] of Object.entries(selectedDice)) {
       const sides = DICE_TYPES.find((d) => d.label === label).sides;
@@ -38,7 +45,6 @@ export default function DiceRoller() {
     setSelectedDice({}); // reset selection
   };
 
-  // Hide results popup after 5 seconds
   useEffect(() => {
     if (results.length === 0) return;
     const timer = setTimeout(() => setResults([]), 5000);

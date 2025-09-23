@@ -343,10 +343,7 @@ box-shadow: 6px 6px 10px 4px rgba(0, 0, 0, 0.30), 6px 6px 20px 11px rgba(0, 0, 0
   background: transparent; /* No new background added */
 }
 
-/* Optional: make book-container center nicely inside the grid */
-.book-container {
-  margin: 0;
-}
+
 
 .books-inner-scroll::-webkit-scrollbar {
   width: 12px;
