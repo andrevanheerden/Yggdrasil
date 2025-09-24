@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import profileIMG from "../../../assets/images/profile.jpg";
 import "../profile.css";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const MyProfile = () => {
   const [editMode, setEditMode] = useState(false);
@@ -10,8 +12,8 @@ const MyProfile = () => {
     profile_img: null,
     user_id: "",
   });
-  const [previewPic, setPreviewPic] = useState(""); 
-  const [profileFile, setProfileFile] = useState(null); 
+  const [previewPic, setPreviewPic] = useState("");
+  const [profileFile, setProfileFile] = useState(null);
   const [invites, setInvites] = useState([]); // store campaign invites
 
   // Fetch current user
@@ -25,6 +27,7 @@ const MyProfile = () => {
         setUser(res.data);
       } catch (err) {
         console.error("Failed to fetch user:", err);
+        toast.error("Failed to fetch user data.", { autoClose: 3000 });
       }
     };
     fetchUser();
@@ -41,6 +44,7 @@ const MyProfile = () => {
         setInvites(res.data || []);
       } catch (err) {
         console.error("Failed to fetch invites:", err);
+        toast.error("Failed to load invites.", { autoClose: 3000 });
       }
     };
     fetchInvites();
@@ -63,9 +67,7 @@ const MyProfile = () => {
       const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("username", user.username);
-      if (profileFile) {
-        formData.append("profile_img", profileFile);
-      }
+      if (profileFile) formData.append("profile_img", profileFile);
 
       const res = await axios.put("http://localhost:5000/api/users/me", formData, {
         headers: {
@@ -78,29 +80,51 @@ const MyProfile = () => {
       setEditMode(false);
       setPreviewPic("");
       setProfileFile(null);
+      toast.success("Profile updated successfully!", { autoClose: 3000 });
     } catch (err) {
       console.error("Failed to update user:", err);
+      toast.error("Failed to update profile.", { autoClose: 3000 });
     }
   };
 
-  // Respond to invite
-  const handleInviteResponse = async (invite_id, accept) => {
-    try {
-      const token = localStorage.getItem("token");
-      await axios.post(
-        "http://localhost:5000/api/invites/respond",
-        { invite_id, accept },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+const handleInviteResponse = async (invite_id, accept) => {
+  try {
+    const token = localStorage.getItem("token");
+    const invite = invites.find((i) => i.invite_id === invite_id);
+    if (!invite) throw new Error("Invite not found");
 
-      setInvites((prev) =>
-        prev.filter((invite) => invite.invite_id !== invite_id)
-      );
-      alert(accept ? "Invite accepted!" : "Invite declined.");
-    } catch (err) {
-      console.error("Failed to respond to invite:", err);
+    await axios.post(
+      "http://localhost:5000/api/invites/respond",
+      { invite_id, accept },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    setInvites((prev) => prev.filter((i) => i.invite_id !== invite_id));
+    toast.success(
+      accept
+        ? `You have accepted the invite to ${invite.campaign_name}!`
+        : `You have declined the invite to ${invite.campaign_name}.`,
+      { autoClose: 3000 }
+    );
+
+    if (accept) {
+      // REFRESH campaigns in Book.js after accepting
+      const campaignsRes = await axios.get("http://localhost:5000/api/campaigns/my", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      localStorage.setItem("myCampaigns", JSON.stringify(campaignsRes.data));
+      window.dispatchEvent(new Event("campaignsUpdated")); // optional: trigger re-render if needed
     }
-  };
+
+  } catch (err) {
+    console.error("Failed to respond to invite:", err);
+    toast.error(
+      `Failed to ${accept ? "accept" : "decline"} the invite. Please try again.`,
+      { autoClose: 3000 }
+    );
+  }
+};
+
 
   return (
     <div
@@ -125,6 +149,7 @@ const MyProfile = () => {
         alignItems: "center",
       }}
     >
+      <ToastContainer position="top-right" />
       <h2 className="profile-title">My Profile</h2>
 
       <div className="profile-header" style={{ justifyContent: "center" }}>
@@ -139,9 +164,7 @@ const MyProfile = () => {
               <input
                 type="text"
                 value={user.username}
-                onChange={(e) =>
-                  setUser({ ...user, username: e.target.value })
-                }
+                onChange={(e) => setUser({ ...user, username: e.target.value })}
                 className="profile-input"
               />
               <div style={{ marginTop: "5px", fontSize: "14px", color: "#ccc" }}>
@@ -212,6 +235,7 @@ const MyProfile = () => {
 };
 
 export default MyProfile;
+
 
 
 

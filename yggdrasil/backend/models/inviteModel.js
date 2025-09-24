@@ -37,16 +37,36 @@ const getInviteById = async (invite_id) => {
   return rows[0];
 };
 
-// Update invite status (pending -> accepted or rejected)
-const updateInviteStatus = async (invite_id, status) => {
+// Update invite status and optionally add user to campaign players
+const updateInviteStatus = async (invite_id, status, user_id) => {
   if (!["accepted", "rejected"].includes(status)) {
     throw new Error("Status must be 'accepted' or 'rejected'");
   }
 
+  // First update invite status
   const [result] = await pool.query(
     `UPDATE campaign_invites SET status = ? WHERE invite_id = ?`,
     [status, invite_id]
   );
+
+  // If accepted, add user to campaign player_ids
+  if (status === "accepted") {
+    const invite = await getInviteById(invite_id);
+    const [campaignRows] = await pool.query(
+      "SELECT player_ids FROM campaigns WHERE campaign_id = ?",
+      [invite.campaign_id]
+    );
+
+    let players = JSON.parse(campaignRows[0].player_ids || "[]");
+    if (!players.includes(user_id)) {
+      players.push(user_id);
+      await pool.query(
+        "UPDATE campaigns SET player_ids = ? WHERE campaign_id = ?",
+        [JSON.stringify(players), invite.campaign_id]
+      );
+    }
+  }
+
   return result;
 };
 
@@ -56,3 +76,4 @@ module.exports = {
   getInviteById,
   updateInviteStatus
 };
+

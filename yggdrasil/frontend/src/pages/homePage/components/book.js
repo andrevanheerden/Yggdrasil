@@ -124,53 +124,73 @@ const BookCenterWrapper = () => {
   const [loadingCampaign, setLoadingCampaign] = useState(false);
 
   /* --- Fetch campaigns on load --- */
-  useEffect(() => {
-    const fetchCampaigns = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const uid = localStorage.getItem("user_id");
+useEffect(() => {
+  const fetchCampaigns = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const uid = localStorage.getItem("user_id");
 
-        if (!token) {
-          toast.error("No token found. Please log in.", { autoClose: 3000 });
-          return;
-        }
-
-        const res = await axios.get("http://localhost:5000/api/campaigns/my", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        const campaignsWithPermissions = await Promise.all(
-          res.data.map(async (campaign) => {
-            const isCreator = String(campaign.creator_user_id) === String(uid);
-            const playerIds = campaign.player_ids ? JSON.parse(campaign.player_ids) : [];
-            const isPlayer = playerIds.includes(uid);
-
-            let isAdmin = false;
-            try {
-              const rolesRes = await axios.get(
-                `http://localhost:5000/api/campaigns/${campaign.campaign_id}/roles`,
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-              const userRole = rolesRes.data.find(role => role.user_id === uid);
-              isAdmin = userRole && userRole.role === 'admin';
-            } catch (err) {
-              console.error("Error fetching roles:", err);
-            }
-
-            return { ...campaign, isCreator, isPlayer, isAdmin };
-          })
-        );
-
-        setCampaigns(campaignsWithPermissions);
-
-      } catch (err) {
-        console.error("Error fetching campaigns:", err.response?.data || err.message);
-        toast.error("Failed to load campaigns.", { autoClose: 3000 });
+      if (!token) {
+        toast.error("No token found. Please log in.", { autoClose: 3000 });
+        return;
       }
-    };
 
-    fetchCampaigns();
-  }, []);
+      // Fetch campaigns from API
+      const res = await axios.get("http://localhost:5000/api/campaigns/my", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      // Include any locally saved campaigns from accepted invites
+      const savedCampaigns = JSON.parse(localStorage.getItem("myCampaigns")) || [];
+      const allCampaigns = [...res.data, ...savedCampaigns];
+
+      const campaignsWithPermissions = await Promise.all(
+        allCampaigns.map(async (campaign) => {
+          const isCreator = String(campaign.creator_user_id) === String(uid);
+
+          let isPlayer = false;
+          let isAdmin = false;
+
+          try {
+            // Get roles for this campaign
+            const rolesRes = await axios.get(
+              `http://localhost:5000/api/campaigns/${campaign.campaign_id}/roles`,
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            // Look for current user in roles
+            rolesRes.data.forEach(role => {
+              if (role.user_id === uid) {
+                if (role.role === "admin") isAdmin = true;
+                else if (role.role === "player") isPlayer = true;
+              }
+            });
+          } catch (err) {
+            console.error("Error fetching campaign roles:", err);
+          }
+
+          return { ...campaign, isCreator, isPlayer, isAdmin };
+        })
+      );
+
+      // Remove duplicates by campaign_id
+      const uniqueCampaigns = Array.from(new Map(campaignsWithPermissions.map(c => [c.campaign_id, c])).values());
+
+      setCampaigns(uniqueCampaigns);
+
+      localStorage.removeItem("myCampaigns");
+    } catch (err) {
+      console.error("Error fetching campaigns:", err.response?.data || err.message);
+      toast.error("Failed to load campaigns.", { autoClose: 3000 });
+    }
+  };
+
+  fetchCampaigns();
+}, []);
+
+
+
+
 
   /* --- Open campaign and save data --- */
 const openCampaign = (campaignId) => {
@@ -273,37 +293,41 @@ const openCampaign = (campaignId) => {
     });
   };
 
-  return (
-    <>
-      <LoadingScreen isVisible={loadingCampaign} />
-      <div className="books-outer-container">
-        <div className="books-inner-scroll">
-          <div className="book-center-wrapper">
-            <CreateCampaignBook />
-            {campaigns.map(c => {
-              const showDelete = c.isCreator || c.isAdmin;
-              const showLeave = c.isPlayer && !c.isCreator;
+return (
+  <>
+    <LoadingScreen isVisible={loadingCampaign} />
+    <div className="books-outer-container">
+      <div className="books-inner-scroll">
+        <div className="book-center-wrapper">
+          <CreateCampaignBook />
+          {/*
+            Remove duplicate campaigns by campaign_id before rendering
+          */}
+          {Array.from(new Map(campaigns.map(c => [c.campaign_id, c])).values()).map(c => {
+            const showDelete = c.isCreator || c.isAdmin;
+            const showLeave = c.isPlayer && !c.isCreator;
 
-              return (
-                <Book
-                  key={c.campaign_id}
-                  title={c.campaign_name}
-                  campaignImg={c.cover_img || campaignImg2}
-                  blockColor={c.cover_color || "#a65c2a"}
-                  lineColor={c.cover_color || "#a65c2a"}
-                  onClick={() => openCampaign(c.campaign_id)}
-                  showMenu={true}
-                  onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
-                  onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
-                />
-              );
-            })}
-          </div>
+            return (
+              <Book
+                key={c.campaign_id}
+                title={c.campaign_name}
+                campaignImg={c.cover_img || campaignImg2}
+                blockColor={c.cover_color || "#a65c2a"}
+                lineColor={c.cover_color || "#a65c2a"}
+                onClick={() => openCampaign(c.campaign_id)}
+                showMenu={true}
+                onDelete={showDelete ? () => handleDeleteCampaign(c.campaign_id) : null}
+                onLeave={showLeave ? () => handleLeaveCampaign(c.campaign_id) : null}
+              />
+            );
+          })}
         </div>
-        <ToastContainer position="top-right" />
       </div>
-    </>
-  );
+      <ToastContainer position="top-right" />
+    </div>
+  </>
+);
+
 };
 
 export default BookCenterWrapper;
