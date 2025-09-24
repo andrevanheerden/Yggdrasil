@@ -1,0 +1,143 @@
+/* List container for messages */
+
+.messages-container {
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px #0001;
+  height: 85vh;
+  width: 60vw;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  align-items: center;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;           /* full width of container */
+  gap: 15px;
+  height: 100%;          /* full height of messages container */
+  padding-right: 12px;   /* space for scrollbar */
+  overflow-y: auto;      /* vertical scroll */
+  box-sizing: content-box; /* scrollbar doesn't cover content */
+}
+
+/* Scrollbar styling */
+.messages-list::-webkit-scrollbar {
+  width: 12px;
+}
+
+.messages-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.messages-list::-webkit-scrollbar-thumb {
+  background: rgba(100, 100, 100, 0.6);
+  border-radius: 10px;
+  border: 2px solid transparent; /* space between thumb and content */
+  background-clip: padding-box;
+}
+
+
+
+/* Individual message box */
+.message-item {
+  padding: 15px 20px;
+  width: 90%;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: white;
+
+  /* Center horizontally */
+  margin: 0 auto;
+}
+
+/* Type-based colors */
+.message-error {
+  background-color: #b43122; /* red */
+  box-shadow: 0 4px 12px rgba(231, 76, 60, 0.5);
+}
+
+.message-review {
+  background-color: #24a359; /* green */
+  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.5);
+}
+
+/* Message meta */
+.message-id {
+  font-size: 0.8rem;
+  opacity: 0.7;
+  color: #000;
+}
+
+.message-type {
+  font-weight: bold;
+    color: #000;
+}
+
+.message-text {
+  font-size: 1rem;
+
+}
+
+.message-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.message-time {
+  font-style: italic;
+  color: #000;
+}
+.messages-select {
+  padding: 8px;
+  border-radius: 6px;
+  background-color: #000000be; /* dark background for dropdown */
+  color: white;            /* text color */
+  border: 1px solid #000000;  /* optional border */
+  margin-bottom: 15px;
+}
+
+
+.message-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.pin-button, .resolve-button {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+
+
+
+.resolve-button {
+  background-color: #0000009a; /* green */
+  color: white;
+}
+
+.resolve-button:hover {
+  background-color: #000000e3; /* darker semi-transparent black */
+  color: white;
+}

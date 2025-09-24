@@ -12,8 +12,10 @@ import Character from './pages/characterPage/character';
 import Encounter from './pages/encounterPage/encounter';
 import Dice from './pages/dice/dice';
 import EditCampaign from "./pages/homePage/components/EditCampaign";
-import Profile from "./pages/profilepage/profile"
-import Messages from './pages/adminpage/admin'; // import page
+import Profile from "./pages/profilepage/profile";
+import Messages from './pages/messagesPage/message';
+import AdminMessages from './pages/adminPage/admin'; // <- new admin messages page
+import RequireSuperAdmin from './pages/adminPage/componets/requireSuperAdmin'; // <-- import the wrapper
 
 // Wrapper to conditionally render Dice
 function DiceWrapper() {
@@ -44,6 +46,15 @@ function App() {
           <Route path="/edit-campaign" element={<EditCampaign />} />
           <Route path='/profile' element={<Profile />} />
           <Route path="/messages" element={<Messages />} />
+            {/* Protected admin route */}
+  <Route
+    path="/admin-messages"
+    element={
+      <RequireSuperAdmin>
+        <AdminMessages />
+      </RequireSuperAdmin>
+    }
+  />
         </Routes>
 
         {/* Dice only shows on allowed pages */}
@@ -67,5 +78,6 @@ function App() {
 }
 
 export default App;
+
 
 

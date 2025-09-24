@@ -1,13 +1,13 @@
 import React from 'react';
-import './admin.css';
+import './message.css';
 import Navbar from "../homePage/components/Navbar";
-import AdminMessage from './componets/adminMessages'; // exact casing and folder
+import Message from './componets/messages'; // exact casing and folder
 
 function ProfilePage() {
   return (
     <div>
       <Navbar />
-      <AdminMessage />
+      <Message />
     </div>
   );
 }

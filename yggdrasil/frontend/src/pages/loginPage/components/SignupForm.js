@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import LoadingScreen from '../../loadingPopup/loadingScreen'; // Import the loading screen
+import LoadingScreen from '../../loadingPopup/loadingScreen'; 
 import '../Login.css';
 
 const SignupForm = () => {
@@ -38,23 +38,46 @@ const SignupForm = () => {
     }
 
     try {
-      setShowLoadingScreen(true); // Show loading screen
-      
+      setShowLoadingScreen(true);
+
+      // 1️⃣ Signup
       await axios.post('http://localhost:5000/api/users/signup', {
         username: formData.username,
         email: formData.email,
         password: formData.password
       });
-      
+
       toast.success("Signup successful!");
-      
-      // Add a small delay to show the loading screen
+
+      // 2️⃣ Login immediately after signup
+      const loginRes = await axios.post('http://localhost:5000/api/users/login', {
+        email: formData.email,
+        password: formData.password
+      });
+
+      const token = loginRes.data.token;
+      if (!token) throw new Error("No token received from login");
+
+      localStorage.setItem('token', token);
+
+      // 3️⃣ Fetch logged-in user data
+      const meRes = await axios.get('http://localhost:5000/api/users/me', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      const userData = meRes.data;
+      const userId = userData.user_id || userData.id;
+      localStorage.setItem('user_id', userId);
+      console.log("Signed-up and logged-in user ID:", userId);
+
+      // Navigate to home after a short delay to show loading screen
       setTimeout(() => {
         navigate('/home');
-      }, 3000);
-      
+      }, 2000);
+
     } catch (err) {
-      toast.error(err.response?.data?.error || 'Signup failed');
+      console.error("Signup/Login error:", err.response?.data || err.message);
+      toast.error(err.response?.data?.error || 'Signup/Login failed');
       setShowLoadingScreen(false);
     }
   };

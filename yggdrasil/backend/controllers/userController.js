@@ -1,9 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { createUser, findUserByEmail, findUserByUsername } = require("../models/userModel");
 const pool = require("../config/db");
 const cloudinary = require("cloudinary").v2;
 const dotenv = require("dotenv");
+const { createUser, findUserByEmail, findUserByUsername } = require("../models/userModel");
 
 dotenv.config();
 
@@ -50,8 +50,9 @@ const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user_id = await generateUniqueUserId();
+    const role = "user"; // default role
 
-    await createUser({ user_id, username, email, password: hashedPassword, profile_img: null });
+    await createUser({ user_id, username, email, password: hashedPassword, profile_img: null, role });
 
     res.status(201).json({ message: "User registered successfully", user_id });
   } catch (error) {
@@ -72,7 +73,11 @@ const login = async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(400).json({ error: "Invalid credentials" });
 
-    const token = jwt.sign({ user_id: user.user_id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign(
+      { user_id: user.user_id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1h" }
+    );
 
     res.json({ message: "Login successful", token, user });
   } catch (error) {
@@ -85,18 +90,11 @@ const login = async (req, res) => {
 const getCurrentUser = async (req, res) => {
   try {
     const user_id = req.user.user_id;
-    const [rows] = await pool.query("SELECT * FROM users WHERE user_id = ?", [user_id]);
+    const [rows] = await pool.query("SELECT user_id, username, email, profile_img, role FROM users WHERE user_id = ?", [user_id]);
 
     if (!rows[0]) return res.status(404).json({ error: "User not found" });
 
-    const user = {
-      user_id: rows[0].user_id,
-      username: rows[0].username,
-      email: rows[0].email,
-      profile_img: rows[0].profile_img || null,
-    };
-
-    res.json(user);
+    res.json(rows[0]);
   } catch (err) {
     console.error("Get current user error:", err);
     res.status(500).json({ error: err.message });
@@ -116,7 +114,7 @@ const updateCurrentUser = async (req, res) => {
 
       // Upload to Cloudinary
       const uploadResult = await cloudinary.uploader.upload(file.tempFilePath, {
-        folder: "profiles", // optional folder
+        folder: "profiles",
       });
 
       profile_img = uploadResult.secure_url;
@@ -130,7 +128,7 @@ const updateCurrentUser = async (req, res) => {
 
     // Return updated user
     const [rows] = await pool.query(
-      "SELECT user_id, username, email, profile_img FROM users WHERE user_id = ?",
+      "SELECT user_id, username, email, profile_img, role FROM users WHERE user_id = ?",
       [user_id]
     );
 
@@ -141,6 +139,6 @@ const updateCurrentUser = async (req, res) => {
   }
 };
 
-
 module.exports = { signup, login, getCurrentUser, updateCurrentUser };
+
 
