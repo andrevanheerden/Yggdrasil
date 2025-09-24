@@ -1,13 +1,16 @@
+// Load environment variables first
 require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const fileUpload = require('express-fileupload');
 
+// Routes
 const userRoutes = require('./routes/userRoutes');
 const campaignRoutes = require('./routes/campaignRoutes');
 const messageRoutes = require("./routes/messageRoutes");
-const inviteRoutes = require('./routes/inviteRoutes'); // <-- added invite routes
+const inviteRoutes = require('./routes/inviteRoutes');
 
 const app = express();
 
@@ -24,7 +27,7 @@ app.use(express.urlencoded({ extended: true }));
 // File upload middleware
 app.use(fileUpload({
   useTempFiles: true,
-  tempFileDir: '/tmp/',
+  tempFileDir: path.join(__dirname, '/tmp/'), // safer cross-platform path
 }));
 
 // Serve static files
@@ -34,7 +37,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api/users', userRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use('/api/messages', messageRoutes);
-app.use('/api/invites', inviteRoutes); // <-- invite routes
+app.use('/api/invites', inviteRoutes);
 
 // Test route
 app.get('/api/test', (req, res) => {

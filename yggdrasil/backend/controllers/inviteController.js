@@ -1,10 +1,12 @@
 const { createInvite, getInvitesForUser, updateInviteStatus, getInviteById } = require("../models/inviteModel");
 const { addCampaignRole } = require("../models/campaignRoleModel");
 
+// Send invite
 const sendInvite = async (req, res) => {
   try {
     const { campaign_id, receiver_id } = req.body;
     const sender_id = req.user.user_id;
+
     if (!campaign_id || !receiver_id)
       return res.status(400).json({ error: "Campaign ID and receiver ID required" });
 
@@ -16,6 +18,7 @@ const sendInvite = async (req, res) => {
   }
 };
 
+// Get all pending invites for the logged-in user
 const getMyInvites = async (req, res) => {
   try {
     const user_id = req.user.user_id;
@@ -27,19 +30,22 @@ const getMyInvites = async (req, res) => {
   }
 };
 
+// Respond to invite (accept or reject)
 const respondToInvite = async (req, res) => {
   try {
     const { invite_id, accept } = req.body;
-    if (accept === undefined)
-      return res.status(400).json({ error: "Accept must be true or false" });
+    if (accept === undefined) return res.status(400).json({ error: "Accept must be true or false" });
 
     const invite = await getInviteById(invite_id);
     if (!invite || invite.receiver_id !== req.user.user_id)
       return res.status(404).json({ error: "Invite not found" });
 
-    const status = accept ? "accepted" : "declined";
+    const status = accept ? "accepted" : "rejected";
+
+    // Update invite status
     await updateInviteStatus(invite_id, status);
 
+    // If accepted, add player role
     if (accept) {
       await addCampaignRole({
         campaign_id: invite.campaign_id,
@@ -57,4 +63,5 @@ const respondToInvite = async (req, res) => {
 };
 
 module.exports = { sendInvite, getMyInvites, respondToInvite };
+
 

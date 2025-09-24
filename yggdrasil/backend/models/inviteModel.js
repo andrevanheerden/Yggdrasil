@@ -14,13 +14,15 @@ const createInvite = async ({ campaign_id, sender_id, receiver_id }) => {
   return result;
 };
 
-// Get all pending invites for a specific user, including sender username
+// Get all invites for a user (pending, accepted, rejected)
 const getInvitesForUser = async (user_id) => {
   const [rows] = await pool.query(
-    `SELECT ci.*, u.username AS sender_username
+    `SELECT ci.*, u.username AS sender_username, c.campaign_name
      FROM campaign_invites ci
      JOIN users u ON ci.sender_id = u.user_id
-     WHERE ci.receiver_id = ? AND ci.status = 'pending'`,
+     JOIN campaigns c ON ci.campaign_id = c.campaign_id
+     WHERE ci.receiver_id = ? AND ci.status = 'pending'
+     ORDER BY ci.created_at DESC`,
     [user_id]
   );
   return rows;
@@ -35,8 +37,12 @@ const getInviteById = async (invite_id) => {
   return rows[0];
 };
 
-// Update invite status (accepted/rejected)
+// Update invite status (pending -> accepted or rejected)
 const updateInviteStatus = async (invite_id, status) => {
+  if (!["accepted", "rejected"].includes(status)) {
+    throw new Error("Status must be 'accepted' or 'rejected'");
+  }
+
   const [result] = await pool.query(
     `UPDATE campaign_invites SET status = ? WHERE invite_id = ?`,
     [status, invite_id]

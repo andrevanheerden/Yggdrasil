@@ -8,12 +8,13 @@ const MyProfile = () => {
   const [user, setUser] = useState({
     username: "",
     profile_img: null,
-    notifications: [], // ensure notifications always exist
+    user_id: "",
   });
-  const [previewPic, setPreviewPic] = useState(""); // for preview
-  const [profileFile, setProfileFile] = useState(null); // actual file to send
+  const [previewPic, setPreviewPic] = useState(""); 
+  const [profileFile, setProfileFile] = useState(null); 
+  const [invites, setInvites] = useState([]); // store campaign invites
 
-  // Fetch current user and notifications
+  // Fetch current user
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -21,10 +22,7 @@ const MyProfile = () => {
         const res = await axios.get("http://localhost:5000/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUser({
-          ...res.data,
-          notifications: res.data.notifications || [], // default to empty array
-        });
+        setUser(res.data);
       } catch (err) {
         console.error("Failed to fetch user:", err);
       }
@@ -32,7 +30,23 @@ const MyProfile = () => {
     fetchUser();
   }, []);
 
-  // Handle file selection and preview
+  // Fetch invites
+  useEffect(() => {
+    const fetchInvites = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await axios.get("http://localhost:5000/api/invites/my", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setInvites(res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch invites:", err);
+      }
+    };
+    fetchInvites();
+  }, []);
+
+  // Handle profile pic change
   const handlePicChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -49,31 +63,42 @@ const MyProfile = () => {
       const token = localStorage.getItem("token");
       const formData = new FormData();
       formData.append("username", user.username);
-
       if (profileFile) {
-        formData.append("profile_img", profileFile); // send actual file
+        formData.append("profile_img", profileFile);
       }
 
-      const res = await axios.put(
-        "http://localhost:5000/api/users/me",
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-
-      setUser({
-        ...res.data,
-        notifications: res.data.notifications || [],
+      const res = await axios.put("http://localhost:5000/api/users/me", formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
       });
+
+      setUser(res.data);
       setEditMode(false);
       setPreviewPic("");
       setProfileFile(null);
     } catch (err) {
       console.error("Failed to update user:", err);
+    }
+  };
+
+  // Respond to invite
+  const handleInviteResponse = async (invite_id, accept) => {
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        "http://localhost:5000/api/invites/respond",
+        { invite_id, accept },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setInvites((prev) =>
+        prev.filter((invite) => invite.invite_id !== invite_id)
+      );
+      alert(accept ? "Invite accepted!" : "Invite declined.");
+    } catch (err) {
+      console.error("Failed to respond to invite:", err);
     }
   };
 
@@ -147,51 +172,47 @@ const MyProfile = () => {
         </div>
       </div>
 
+      {/* Notifications (Invites) */}
       <div className="profile-comments" style={{ width: "80%", marginTop: 30 }}>
         <h3>Notifications</h3>
-<div className="profile-comments-history">
-  {user.notifications.length === 0 ? (
-    <div className="no-notifications">No notifications</div>
-  ) : (
-    user.notifications.map((msg, i) => (
-      <div key={i} className="profile-comment-item">
-        <div className="profile-comment-item-details">{msg}</div>
-        {msg.includes("invited to join campaign") && (
-          <button
-            className="auth-button accept"
-            onClick={async () => {
-              const campaignId = msg.match(/campaign (\S+) by/)[1];
-              try {
-                const token = localStorage.getItem("token");
-                await axios.post(
-                  "http://localhost:5000/api/campaigns/accept-invite",
-                  { campaign_id: campaignId },
-                  { headers: { Authorization: `Bearer ${token}` } }
-                );
-                alert("You joined the campaign!");
-                setUser(prev => ({
-                  ...prev,
-                  notifications: prev.notifications.filter(n => n !== msg)
-                }));
-              } catch (err) {
-                console.error(err);
-              }
-            }}
-          >
-            Accept
-          </button>
-        )}
-      </div>
-    ))
-  )}
-</div>
-
+        <div className="profile-comments-history">
+          {invites.length === 0 ? (
+            <div className="no-notifications">No notifications</div>
+          ) : (
+            invites.map((invite) => (
+              <div key={invite.invite_id} className="profile-comment-item">
+                <div className="profile-comment-item-details">
+                  You were invited to <b>{invite.campaign_name}</b> by{" "}
+                  <b>{invite.sender_username}</b>
+                </div>
+                {invite.status === "pending" && (
+                  <div style={{ marginTop: "5px" }}>
+                    <button
+                      className="auth-button accept"
+                      onClick={() => handleInviteResponse(invite.invite_id, true)}
+                    >
+                      Accept
+                    </button>
+                    <button
+                      className="auth-button cancel"
+                      onClick={() => handleInviteResponse(invite.invite_id, false)}
+                      style={{ marginLeft: "10px" }}
+                    >
+                      Decline
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
 export default MyProfile;
+
 
 
 
