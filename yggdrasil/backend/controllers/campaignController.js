@@ -247,4 +247,38 @@ const updateCampaign = async (req, res) => {
   }
 };
 
-module.exports.updateCampaign = updateCampaign;
+const getCampaignDm = async (req, res) => {
+  try {
+    const { campaign_id } = req.params;
+
+    // Join campaign_roles with users to get DM info
+    const [rows] = await pool.query(
+      `SELECT u.user_id, u.username, u.profile_img
+       FROM campaign_roles cr
+       JOIN users u ON cr.user_id = u.user_id
+       WHERE cr.campaign_id = ? AND cr.role = 'admin'`,
+      [campaign_id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "DM not found for this campaign" });
+    }
+
+    res.json(rows[0]); // return the DM info
+  } catch (err) {
+    console.error("Error fetching DM info:", err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { 
+  createNewCampaign, 
+  fetchCampaigns, 
+  invitePlayerToCampaign, 
+  deleteCampaign: deleteCampaignController, 
+  leaveCampaign,
+  getCampaignRoles,
+  updateCampaign,   // keep your existing update function
+  getCampaignDm     // <-- include the new DM function
+};
+

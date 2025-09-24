@@ -522,6 +522,15 @@
   color: #555;
 }
 
+.dm-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+  color: #333;
+}
+
+
 /* --- Players List Container --- */
 .players-container {
   background: #d9d9d9;
@@ -547,7 +556,7 @@
   flex-direction: column;
   gap: 8px;
   width: 100%;
-  height: 280px;          /* Set exact height */
+  height: 250px;          /* Set exact height */
   overflow-y: auto;       /* Scroll when overflow */
   padding-right: 5px;     /* optional, avoid scrollbar overlap */
   box-sizing: border-box; /* include padding in height */

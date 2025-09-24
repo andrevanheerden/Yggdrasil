@@ -7,7 +7,8 @@ const {
   deleteCampaign, 
   leaveCampaign,
   getCampaignRoles,
-  updateCampaign // ← import updateCampaign
+  updateCampaign,    // ← existing update route
+  getCampaignDm      // ← import the new DM function
 } = require("../controllers/campaignController");
 
 const { authenticateUser } = require("../middleware/authMiddleware");
@@ -19,7 +20,8 @@ router.post("/invite", authenticateUser, invitePlayerToCampaign);
 router.delete("/:campaign_id", authenticateUser, deleteCampaign);
 router.post("/:campaign_id/leave", authenticateUser, leaveCampaign);
 router.get("/:campaign_id/roles", authenticateUser, getCampaignRoles);
-router.put("/:campaign_id", authenticateUser, updateCampaign); // ← edit route
+router.get("/:campaign_id/dm", authenticateUser, getCampaignDm); // ← new DM route
+router.put("/:campaign_id", authenticateUser, updateCampaign);   // ← edit route
 
 module.exports = router;
 
