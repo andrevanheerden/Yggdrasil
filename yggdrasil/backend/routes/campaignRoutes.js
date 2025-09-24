@@ -22,6 +22,9 @@ router.post("/:campaign_id/leave", authenticateUser, leaveCampaign);
 router.get("/:campaign_id/roles", authenticateUser, getCampaignRoles);
 router.get("/:campaign_id/dm", authenticateUser, getCampaignDm); // ← new DM route
 router.put("/:campaign_id", authenticateUser, updateCampaign);   // ← edit route
+router.post("/invite", authenticateUser, invitePlayerToCampaign);
+router.post("/accept-invite", authenticateUser, acceptCampaignInvite);
+
 
 module.exports = router;
 

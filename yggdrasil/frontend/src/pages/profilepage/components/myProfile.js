@@ -8,12 +8,12 @@ const MyProfile = () => {
   const [user, setUser] = useState({
     username: "",
     profile_img: null,
-    notifications: [], // optional
+    notifications: [], // ensure notifications always exist
   });
   const [previewPic, setPreviewPic] = useState(""); // for preview
   const [profileFile, setProfileFile] = useState(null); // actual file to send
 
-  // Fetch current user
+  // Fetch current user and notifications
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -21,7 +21,10 @@ const MyProfile = () => {
         const res = await axios.get("http://localhost:5000/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setUser(res.data);
+        setUser({
+          ...res.data,
+          notifications: res.data.notifications || [], // default to empty array
+        });
       } catch (err) {
         console.error("Failed to fetch user:", err);
       }
@@ -62,7 +65,10 @@ const MyProfile = () => {
         }
       );
 
-      setUser(res.data);
+      setUser({
+        ...res.data,
+        notifications: res.data.notifications || [],
+      });
       setEditMode(false);
       setPreviewPic("");
       setProfileFile(null);
@@ -74,26 +80,25 @@ const MyProfile = () => {
   return (
     <div
       className="profile-page-container"
-style={{
-  position: "absolute",
-  top: "48%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  zIndex: 200,
-  background: "rgba(0, 0, 0, 0.5)", // semi-transparent background
-  backdropFilter: "blur(5px)",      // <-- adds the blur
-  WebkitBackdropFilter: "blur(10px)", // for Safari support
-  borderRadius: "12px",
-  padding: "20px",
-  boxShadow: "0 2px 8px #0001",
-  height: "90vh",
-  width: "94vw",
-  display: "flex",
-  flexDirection: "column",
-  color: "white",
-  alignItems: "center",
-}}
-
+      style={{
+        position: "absolute",
+        top: "48%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 200,
+        background: "rgba(0, 0, 0, 0.5)",
+        backdropFilter: "blur(5px)",
+        WebkitBackdropFilter: "blur(10px)",
+        borderRadius: "12px",
+        padding: "20px",
+        boxShadow: "0 2px 8px #0001",
+        height: "90vh",
+        width: "94vw",
+        display: "flex",
+        flexDirection: "column",
+        color: "white",
+        alignItems: "center",
+      }}
     >
       <h2 className="profile-title">My Profile</h2>
 
@@ -114,20 +119,10 @@ style={{
                 }
                 className="profile-input"
               />
-              <div
-                style={{
-                  marginTop: "5px",
-                  fontSize: "14px",
-                  color: "#ccc",
-                }}
-              >
+              <div style={{ marginTop: "5px", fontSize: "14px", color: "#ccc" }}>
                 ID: {user.user_id}
               </div>
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePicChange}
-              />
+              <input type="file" accept="image/*" onChange={handlePicChange} />
               <button className="auth-button" onClick={handleSave}>
                 Save
               </button>
@@ -141,19 +136,10 @@ style={{
           ) : (
             <>
               <div className="profile-username">{user.username}</div>
-              <div
-                style={{
-                  marginTop: "5px",
-                  fontSize: "14px",
-                  color: "#ccc",
-                }}
-              >
+              <div style={{ marginTop: "5px", fontSize: "14px", color: "#ccc" }}>
                 ID: {user.user_id}
               </div>
-              <button
-                className="auth-button"
-                onClick={() => setEditMode(true)}
-              >
+              <button className="auth-button" onClick={() => setEditMode(true)}>
                 Edit Profile
               </button>
             </>
@@ -163,19 +149,50 @@ style={{
 
       <div className="profile-comments" style={{ width: "80%", marginTop: 30 }}>
         <h3>Notifications</h3>
-        <div className="profile-comments-history">
-          {user.notifications?.map((msg, i) => (
-            <div key={i} className="profile-comment-item">
-              <div className="profile-comment-item-details">{msg}</div>
-            </div>
-          ))}
-        </div>
+<div className="profile-comments-history">
+  {user.notifications.length === 0 ? (
+    <div className="no-notifications">No notifications</div>
+  ) : (
+    user.notifications.map((msg, i) => (
+      <div key={i} className="profile-comment-item">
+        <div className="profile-comment-item-details">{msg}</div>
+        {msg.includes("invited to join campaign") && (
+          <button
+            className="auth-button accept"
+            onClick={async () => {
+              const campaignId = msg.match(/campaign (\S+) by/)[1];
+              try {
+                const token = localStorage.getItem("token");
+                await axios.post(
+                  "http://localhost:5000/api/campaigns/accept-invite",
+                  { campaign_id: campaignId },
+                  { headers: { Authorization: `Bearer ${token}` } }
+                );
+                alert("You joined the campaign!");
+                setUser(prev => ({
+                  ...prev,
+                  notifications: prev.notifications.filter(n => n !== msg)
+                }));
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+          >
+            Accept
+          </button>
+        )}
+      </div>
+    ))
+  )}
+</div>
+
       </div>
     </div>
   );
 };
 
 export default MyProfile;
+
 
 
 

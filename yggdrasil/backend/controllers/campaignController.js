@@ -79,29 +79,45 @@ const fetchCampaigns = async (req, res) => {
   }
 };
 
-// Invite player to campaign
+// Send invite notification
 const invitePlayerToCampaign = async (req, res) => {
   try {
     const { campaign_id, user_id } = req.body;
     const invited_by = req.user.user_id;
 
-    if (!campaign_id || !user_id) return res.status(400).json({ error: "All fields are required" });
+    if (!campaign_id || !user_id) 
+      return res.status(400).json({ error: "All fields are required" });
 
-    await addCampaignRole({ campaign_id, user_id, role: "player", invited_by });
+    // Add a notification to the user
+    const notificationMsg = `You have been invited to join campaign ${campaign_id} by user ${invited_by}`;
+    await pool.query(
+      "UPDATE users SET notifications = JSON_ARRAY_APPEND(IFNULL(notifications, JSON_ARRAY()), '$', ?) WHERE user_id = ?",
+      [notificationMsg, user_id]
+    );
 
-    // Update campaign player_ids column
-    const campaigns = await getCampaigns();
-    const campaign = campaigns.find(c => c.campaign_id === campaign_id);
-    if (campaign) {
-      const currentPlayers = campaign.player_ids ? JSON.parse(campaign.player_ids) : [];
-      if (!currentPlayers.includes(user_id)) {
-        currentPlayers.push(user_id);
-        // This function doesn't exist yet - you'll need to implement it
-        // await updatePlayerIds(campaign_id, JSON.stringify(currentPlayers));
-      }
-    }
+    res.json({ message: "Invite sent successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
-    res.json({ message: "Player invited successfully" });
+// Accept invite
+const acceptCampaignInvite = async (req, res) => {
+  try {
+    const { campaign_id } = req.body;
+    const user_id = req.user.user_id;
+
+    // Add role for player
+    await addCampaignRole({ campaign_id, user_id, role: "player" });
+
+    // Remove notification
+    const [user] = await pool.query("SELECT notifications FROM users WHERE user_id = ?", [user_id]);
+    let notifications = user[0].notifications ? JSON.parse(user[0].notifications) : [];
+    notifications = notifications.filter(n => !n.includes(`invited to join campaign ${campaign_id}`));
+    await pool.query("UPDATE users SET notifications = ? WHERE user_id = ?", [JSON.stringify(notifications), user_id]);
+
+    res.json({ message: "You have joined the campaign!" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: err.message });
@@ -272,13 +288,13 @@ const getCampaignDm = async (req, res) => {
 };
 
 module.exports = { 
-  createNewCampaign, 
-  fetchCampaigns, 
-  invitePlayerToCampaign, 
-  deleteCampaign: deleteCampaignController, 
+  createNewCampaign,
+  fetchCampaigns,
+  invitePlayerToCampaign,
+  acceptCampaignInvite,
+  deleteCampaign: deleteCampaignController,
   leaveCampaign,
   getCampaignRoles,
-  updateCampaign,   // keep your existing update function
-  getCampaignDm     // <-- include the new DM function
+  updateCampaign,
 };
 
