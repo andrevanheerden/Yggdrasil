@@ -51,11 +51,14 @@ const handleInvite = async () => {
     const token = localStorage.getItem("token");
     const campaignId = localStorage.getItem("selectedCampaignId");
 
-    await axios.post(
-      "http://localhost:5000/api/campaigns/invite",
-      { campaign_id: campaignId, user_id: inviteId },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+await axios.post(
+  "http://localhost:5000/api/campaigns/invite",
+  { campaign_id: campaignId, receiver_id: inviteId }, // <-- use receiver_id
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+
+
 
     alert(`Invite sent to user ${inviteId}. They must accept to join.`);
     setInviteId("");

@@ -7,6 +7,7 @@ const fileUpload = require('express-fileupload');
 const userRoutes = require('./routes/userRoutes');
 const campaignRoutes = require('./routes/campaignRoutes');
 const messageRoutes = require("./routes/messageRoutes");
+const inviteRoutes = require('./routes/inviteRoutes'); // <-- added invite routes
 
 const app = express();
 
@@ -32,7 +33,8 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api/campaigns', campaignRoutes);
-app.use('/api/messages', messageRoutes); // <-- messages route before 404
+app.use('/api/messages', messageRoutes);
+app.use('/api/invites', inviteRoutes); // <-- invite routes
 
 // Test route
 app.get('/api/test', (req, res) => {

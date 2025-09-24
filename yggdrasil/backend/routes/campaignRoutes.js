@@ -7,26 +7,38 @@ const {
   deleteCampaign, 
   leaveCampaign,
   getCampaignRoles,
-  updateCampaign,    // ← existing update route
-  getCampaignDm      // ← import the new DM function
+  updateCampaign,
+  getCampaignDm
 } = require("../controllers/campaignController");
 
+const { respondToInvite, getMyInvites } = require("../controllers/inviteController");
 const { authenticateUser } = require("../middleware/authMiddleware");
 
+// Campaign routes
 router.post("/create", authenticateUser, createNewCampaign);
 router.get("/", authenticateUser, fetchCampaigns);
 router.get("/my", authenticateUser, fetchCampaigns);
+
+// Player management
 router.post("/invite", authenticateUser, invitePlayerToCampaign);
+router.get("/invites", authenticateUser, getMyInvites);
+router.post("/respond-invite", authenticateUser, respondToInvite);
+
 router.delete("/:campaign_id", authenticateUser, deleteCampaign);
 router.post("/:campaign_id/leave", authenticateUser, leaveCampaign);
-router.get("/:campaign_id/roles", authenticateUser, getCampaignRoles);
-router.get("/:campaign_id/dm", authenticateUser, getCampaignDm); // ← new DM route
-router.put("/:campaign_id", authenticateUser, updateCampaign);   // ← edit route
-router.post("/invite", authenticateUser, invitePlayerToCampaign);
-router.post("/accept-invite", authenticateUser, acceptCampaignInvite);
 
+// Info
+router.get("/:campaign_id/roles", authenticateUser, getCampaignRoles);
+router.get("/:campaign_id/dm", authenticateUser, getCampaignDm);
+router.put("/:campaign_id", authenticateUser, updateCampaign);
 
 module.exports = router;
+
+
+
+
+
+
 
 
 

@@ -1,7 +1,9 @@
 const { createCampaign, getCampaigns, deleteCampaign: deleteCampaignModel, removePlayerFromCampaign } = require("../models/campaignModel");
 const { addCampaignRole } = require("../models/campaignRoleModel");
+const { createInvite } = require("../models/inviteModel"); // ← Add this
 const cloudinary = require("cloudinary").v2;
 const pool = require("../config/db");
+
 
 // Cloudinary config
 cloudinary.config({
@@ -82,25 +84,22 @@ const fetchCampaigns = async (req, res) => {
 // Send invite notification
 const invitePlayerToCampaign = async (req, res) => {
   try {
-    const { campaign_id, user_id } = req.body;
-    const invited_by = req.user.user_id;
+    const { campaign_id, receiver_id } = req.body;
+    const sender_id = req.user.user_id; // logged-in user
 
-    if (!campaign_id || !user_id) 
-      return res.status(400).json({ error: "All fields are required" });
+    if (!campaign_id || !receiver_id)
+      return res.status(400).json({ error: "Campaign ID and receiver ID required" });
 
-    // Add a notification to the user
-    const notificationMsg = `You have been invited to join campaign ${campaign_id} by user ${invited_by}`;
-    await pool.query(
-      "UPDATE users SET notifications = JSON_ARRAY_APPEND(IFNULL(notifications, JSON_ARRAY()), '$', ?) WHERE user_id = ?",
-      [notificationMsg, user_id]
-    );
+    await createInvite({ campaign_id, sender_id, receiver_id });
 
     res.json({ message: "Invite sent successfully" });
   } catch (err) {
-    console.error(err);
+    console.error("invitePlayerToCampaign error:", err);
     res.status(500).json({ error: err.message });
   }
 };
+
+
 
 // Accept invite
 const acceptCampaignInvite = async (req, res) => {
@@ -287,14 +286,14 @@ const getCampaignDm = async (req, res) => {
   }
 };
 
-module.exports = { 
+module.exports = {
   createNewCampaign,
   fetchCampaigns,
   invitePlayerToCampaign,
-  acceptCampaignInvite,
   deleteCampaign: deleteCampaignController,
   leaveCampaign,
   getCampaignRoles,
   updateCampaign,
+  getCampaignDm
 };
 
