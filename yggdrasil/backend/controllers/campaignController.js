@@ -259,15 +259,55 @@ const rejectCampaignInvite = async (req, res) => {
   }
 };
 
+// Fetch roles for current user across all campaigns
+const fetchMyRoles = async (req, res) => {
+  try {
+    const userId = req.user.user_id;
+    const [rows] = await pool.query(
+      "SELECT * FROM campaign_roles WHERE user_id = ?",
+      [userId]
+    );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
+
+// Fetch all campaigns the user is involved with
+const getMyCampaigns = async (req, res) => {
+  try {
+    const uid = req.user.user_id;
+
+    const [rows] = await pool.query(`
+      SELECT DISTINCT c.*,
+        CASE WHEN c.creator_user_id = ? THEN 1 ELSE 0 END AS is_creator,
+        CASE WHEN cr.role = 'admin' AND cr.user_id = ? THEN 1 ELSE 0 END AS is_admin,
+        CASE WHEN cr.role = 'player' AND cr.user_id = ? THEN 1 ELSE 0 END AS is_player
+      FROM campaigns c
+      LEFT JOIN campaign_roles cr ON c.campaign_id = cr.campaign_id
+      WHERE c.creator_user_id = ? OR cr.user_id = ?
+    `, [uid, uid, uid, uid, uid]);
+
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to fetch campaigns" });
+  }
+};
+
 module.exports = {
   createNewCampaign,
   fetchCampaigns,
   updateCampaign,
-  deleteCampaign: deleteCampaignController,
+  deleteCampaignController, // <--- notice the name
   leaveCampaign,
   getCampaignDm,
   getCampaignRoles,
   invitePlayerToCampaign,
-  acceptCampaignInvite,
-  rejectCampaignInvite
+  getMyCampaigns
 };
+
