@@ -8,28 +8,32 @@ const CampaignPage = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const fetchCampaign = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const campaignId = localStorage.getItem("selectedCampaignId");
-        if (!campaignId) return;
+useEffect(() => {
+  const fetchCampaign = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const campaignId = localStorage.getItem("selectedCampaignId");
+      if (!campaignId) return;
 
-        const res = await axios.get("http://localhost:5000/api/campaigns", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+      // ✅ Use /my endpoint to include campaigns user is a player of
+      const res = await axios.get("http://localhost:5000/api/campaigns/my", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-        const found = res.data.find((c) => c.campaign_id === campaignId);
-        setCampaign(found);
-      } catch (err) {
-        console.error("Error loading campaign:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
+      // Find the campaign by ID
+      const found = res.data.find((c) => c.campaign_id === campaignId);
 
-    fetchCampaign();
-  }, []);
+      setCampaign(found);
+    } catch (err) {
+      console.error("Error loading campaign:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchCampaign();
+}, []);
+
 
   if (loading) return <p>Loading campaign...</p>;
   if (!campaign) return <p>Campaign not found.</p>;
