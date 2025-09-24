@@ -171,16 +171,28 @@ const BookCenterWrapper = () => {
     fetchCampaigns();
   }, []);
 
-  const openCampaign = (campaignId) => {
-    setLoadingCampaign(true);
-    localStorage.setItem("selectedCampaignId", campaignId);
+const openCampaign = (campaignId) => {
+  const campaign = campaigns.find(c => c.campaign_id === campaignId);
 
-    // simulate loading
-    setTimeout(() => {
-      setLoadingCampaign(false);
-      navigate("/campaign");
-    }, 1500);
-  };
+  if (!campaign) {
+    console.log("⚠️ Campaign not found for ID:", campaignId);
+  } else if (!campaign.creator_user_id) {
+    console.log("⚠️ No creator_user_id found for this campaign:", campaign);
+  } else {
+    console.log("✅ Opening campaign:", campaign.campaign_name);
+    console.log("Creator user ID:", campaign.creator_user_id);
+  }
+
+  setLoadingCampaign(true);
+  localStorage.setItem("selectedCampaignId", campaignId);
+
+  // simulate loading
+  setTimeout(() => {
+    setLoadingCampaign(false);
+    navigate("/campaign");
+  }, 1500);
+};
+
 
 const confirmAction = (message, onConfirm) => {
   const toastId = toast.info(
