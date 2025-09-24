@@ -6,7 +6,7 @@ import axios from "axios";
 import '../Home.css';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import LoadingScreen from '../../loadingPopup/loadingScreen'; // <-- Loading screen import
+import LoadingScreen from '../../loadingPopup/loadingScreen';
 
 /* --- Base Book Component --- */
 const Book = ({ title, campaignImg, blockColor, lineColor, onClick, showMenu, onDelete, onLeave }) => {
@@ -123,6 +123,7 @@ const BookCenterWrapper = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loadingCampaign, setLoadingCampaign] = useState(false);
 
+  /* --- Fetch campaigns on load --- */
   useEffect(() => {
     const fetchCampaigns = async () => {
       try {
@@ -171,63 +172,74 @@ const BookCenterWrapper = () => {
     fetchCampaigns();
   }, []);
 
-  const openCampaign = (campaignId) => {
-    setLoadingCampaign(true);
-    localStorage.setItem("selectedCampaignId", campaignId);
+  /* --- Open campaign and save data --- */
+const openCampaign = (campaignId) => {
+  const selectedCampaign = campaigns.find(c => c.campaign_id === campaignId);
+  if (!selectedCampaign) return;
 
-    // simulate loading
-    setTimeout(() => {
-      setLoadingCampaign(false);
-      navigate("/campaign");
-    }, 1500);
-  };
+  setLoadingCampaign(true);
 
-const confirmAction = (message, onConfirm) => {
-  const toastId = toast.info(
-    <div>
-      {message}
-      <div style={{ marginTop: "10px" }}>
-        <button
-          onClick={() => { toast.dismiss(toastId); onConfirm(); }}
-          style={{
-            marginRight: "10px",
-            background: "transparent",
-            color: "white",
-            border: "none",
-            padding: "4px 8px",
-            borderRadius: "4px"
-          }}
-        >
-          ✅
-        </button>
-        <button
-          onClick={() => toast.dismiss(toastId)}
-          style={{
-            background: "transparent",
-            color: "white",
-            border: "none",
-            padding: "4px 8px",
-            borderRadius: "4px"
-          }}
-        >
-          ❌
-        </button>
-      </div>
-    </div>,
-    {
-      autoClose: false,
-      style: { 
-        backgroundColor: "#222", // dark background
-        color: "#fff",           // white text
-        border: "1px solid #555",
-        borderRadius: "8px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.5)"
-      }
-    }
-  );
+  // Save campaign ID and full data
+  localStorage.setItem("selectedCampaignId", campaignId);
+  localStorage.setItem("selectedCampaignData", JSON.stringify(selectedCampaign));
+
+  // Log to console
+  console.log("Campaign data saved:", selectedCampaign);
+
+  setTimeout(() => {
+    setLoadingCampaign(false);
+    navigate("/campaign");
+  }, 1500);
 };
 
 
+  /* --- Confirmation toast --- */
+  const confirmAction = (message, onConfirm) => {
+    const toastId = toast.info(
+      <div>
+        {message}
+        <div style={{ marginTop: "10px" }}>
+          <button
+            onClick={() => { toast.dismiss(toastId); onConfirm(); }}
+            style={{
+              marginRight: "10px",
+              background: "transparent",
+              color: "white",
+              border: "none",
+              padding: "4px 8px",
+              borderRadius: "4px"
+            }}
+          >
+            ✅
+          </button>
+          <button
+            onClick={() => toast.dismiss(toastId)}
+            style={{
+              background: "transparent",
+              color: "white",
+              border: "none",
+              padding: "4px 8px",
+              borderRadius: "4px"
+            }}
+          >
+            ❌
+          </button>
+        </div>
+      </div>,
+      {
+        autoClose: false,
+        style: { 
+          backgroundColor: "#222",
+          color: "#fff",
+          border: "1px solid #555",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.5)"
+        }
+      }
+    );
+  };
+
+  /* --- Delete campaign --- */
   const handleDeleteCampaign = async (campaignId) => {
     confirmAction("Are you sure you want to delete this campaign?", async () => {
       try {
@@ -244,6 +256,7 @@ const confirmAction = (message, onConfirm) => {
     });
   };
 
+  /* --- Leave campaign --- */
   const handleLeaveCampaign = async (campaignId) => {
     confirmAction("Do you want to leave this campaign?", async () => {
       try {
