@@ -5,10 +5,15 @@ const RaceCreation = ({
   initialSkills = {},
   selectedSkills = [],
   toggleSkill,
+  abilityScores, // <- RECEIVE IT
 }) => {
   const [raceName, setRaceName] = useState("");
   const [languagesArray, setLanguagesArray] = useState([""]);
   const [toolsArray, setToolsArray] = useState([""]);
+
+  // Remove local abilityScores state completely!
+  // const [abilityScores] = useState(...);  <-- DELETE THIS
+
 
   // Default skill list
   const defaultSkills = {
@@ -34,9 +39,9 @@ const RaceCreation = ({
   };
 
   const [activeTab, setActiveTab] = useState(abilities[0]);
-  const [abilityScores] = useState(
-    abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {})
-  );
+  // const [abilityScores] = useState(
+  //   abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {})
+  // );
   const [profTab, setProfTab] = useState("Languages"); // tab for proficiencies
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
@@ -112,37 +117,40 @@ const RaceCreation = ({
                   `: ${selectedSkills.join(", ")}`}
               </div>
               <ul style={{ listStyle: "none", padding: 0 }}>
-                {skills[activeTab]?.map((skill) => {
-                  const ability = abilities.find((ab) =>
-                    skills[ab].includes(skill)
-                  );
-                  const bonus =
-                    getModifier(abilityScores[ability]) +
-                    (selectedSkills.includes(skill) ? 2 : 0);
-                  const isSelected = selectedSkills.includes(skill);
-                  return (
-                    <li
-                      key={skill}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      <span>
-                        {skill}{" "}
-                        <strong style={{ marginLeft: "5px" }}>+{bonus}</strong>
-                      </span>
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleSkill && toggleSkill(skill)}
-                        disabled={!isSelected && selectedSkills.length >= 2}
-                      />
-                    </li>
-                  );
-                })}
+{skills[activeTab]?.map((skill) => {
+  const ability = abilities.find((ab) =>
+    skills[ab].includes(skill)
+  );
+  const bonus =
+    getModifier(abilityScores[ability]) +
+    (selectedSkills.includes(skill) ? 2 : 0);
+  const isSelected = selectedSkills.includes(skill);
+  return (
+    <li
+      key={skill}
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: "5px",
+      }}
+    >
+      <span>
+        {skill}{" "}
+        <strong style={{ marginLeft: "5px" }}>
+          {bonus >= 0 ? `+${bonus}` : bonus}
+        </strong>
+      </span>
+      <input
+        type="checkbox"
+        checked={isSelected}
+        onChange={() => toggleSkill && toggleSkill(skill)}
+        disabled={!isSelected && selectedSkills.length >= 2}
+      />
+    </li>
+  );
+})}
+
               </ul>
             </div>
 

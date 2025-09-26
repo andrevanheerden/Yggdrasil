@@ -256,7 +256,13 @@ const EncounterCreater = ({ onClose }) => {
         ) : currentPage === "description" ? (
           <EncounterDesCreater />
         ) : currentPage === "race" ? (
-          <RaceCreation initialSkills={initialSkills} selectedSkills={selectedSkills} toggleSkill={toggleSkill} />
+          <RaceCreation
+  initialSkills={initialSkills}
+  selectedSkills={selectedSkills}
+  toggleSkill={toggleSkill}
+  abilityScores={abilityScores}  // <- PASS THIS
+/>
+
         ) : null}
       </div>
 

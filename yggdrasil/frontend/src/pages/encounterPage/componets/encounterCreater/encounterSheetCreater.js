@@ -96,22 +96,51 @@ const CharacterSheetCreater = ({
                 Selected Skills: {selectedSkills.length}/2
                 {selectedSkills.length > 0 && `: ${selectedSkills.join(", ")}`}
               </div>
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                {initialSkills[activeTab].map((skill) => {
-                  const ability = Object.keys(initialSkills).find((key) => initialSkills[key].includes(skill));
-                  const bonus = getModifier(abilityScores[ability]) + (selectedSkills.includes(skill) ? 2 : 0);
-                  const isSelected = selectedSkills.includes(skill);
+<ul style={{ listStyle: "none", padding: 0 }}>
+  {initialSkills[activeTab].map((skill) => {
+    // Find the ability that this skill belongs to
+    const ability = Object.keys(initialSkills).find((key) =>
+      initialSkills[key].includes(skill)
+    );
 
-                  return (
-                    <li key={skill} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5px" }}>
-                      <span>
-                        {skill} <strong style={{ marginLeft: "5px" }}>+{bonus}</strong>
-                      </span>
-                      <input type="checkbox"  checked={isSelected} onChange={() => toggleSkill(skill)} disabled={!isSelected && selectedSkills.length >= 2} />
-                    </li>
-                  );
-                })}
-              </ul>
+    const baseModifier = getModifier(abilityScores[ability]);
+    const proficiencyBonus = selectedSkills.includes(skill) ? 2 : 0;
+    const totalBonus = baseModifier + proficiencyBonus;
+
+    // Format: negative shows '-', positive shows '+', zero shows '0'
+    const displayBonus =
+      totalBonus > 0
+        ? `+${totalBonus}`
+        : totalBonus < 0
+        ? `${totalBonus}`
+        : "0";
+
+    const isSelected = selectedSkills.includes(skill);
+
+    return (
+      <li
+        key={skill}
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "5px",
+        }}
+      >
+        <span>
+          {skill} <strong style={{ marginLeft: "5px" }}>{displayBonus}</strong>
+        </span>
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={() => toggleSkill(skill)}
+          disabled={!isSelected && selectedSkills.length >= 2}
+        />
+      </li>
+    );
+  })}
+</ul>
+
             </div>
 
             <div className="skills-tabs-container">
