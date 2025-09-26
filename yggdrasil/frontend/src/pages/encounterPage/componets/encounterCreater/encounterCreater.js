@@ -4,6 +4,7 @@ import pageBg from "../../../../assets/images/page.png";
 import EncounterSheetCreater from "./encounterSheetCreater";
 import EncounterDesCreater from "./encounterDesCreater";
 import RaceCreation from "./raceCreater";
+import axios from "axios";
 
 import {
   Chart as ChartJS,
@@ -34,7 +35,7 @@ const initialSkills = {
   Cha: ["Deception", "Intimidation", "Performance", "Persuasion"],
 };
 
-const EncounterCreater = ({ onClose }) => {
+const EncounterCreater = ({ onClose, campaignId }) => {
   const [activeTab, setActiveTab] = useState("Str");
   const [abilityScores, setAbilityScores] = useState(
     abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {})
@@ -46,6 +47,10 @@ const EncounterCreater = ({ onClose }) => {
   const [encounterName, setEncounterName] = useState("New Encounter");
   const [encounterImage, setEncounterImage] = useState(null);
   const [currentPage, setCurrentPage] = useState("stats");
+  const [description, setDescription] = useState("");
+  const [raceName, setRaceName] = useState("");
+  const [raceLanguages, setRaceLanguages] = useState([]);
+  const [raceTools, setRaceTools] = useState([]);
   const fileInputRef = useRef(null);
   const [progress, setProgress] = useState(33);
 
@@ -138,6 +143,40 @@ const EncounterCreater = ({ onClose }) => {
     speed,
   };
 
+  // Save Encounter to backend
+  const handleSaveEncounter = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("campaign_id", campaignId || "CMP-001"); // default if no campaignId
+      formData.append("encounter_name", encounterName);
+      formData.append("description", description);
+      formData.append("abilities", JSON.stringify(abilityScores));
+      formData.append("ability_scores", JSON.stringify(abilityScores));
+      formData.append("hp", JSON.stringify(hp));
+      formData.append("ac", encounter.ac);
+      formData.append("speed", speed);
+      formData.append("level", encounter.level);
+      formData.append("selected_skills", JSON.stringify(selectedSkills));
+      formData.append("race_name", raceName);
+      formData.append("race_languages", JSON.stringify(raceLanguages));
+      formData.append("race_tools", JSON.stringify(raceTools));
+
+      if (encounterImage && encounterImage instanceof File) {
+        formData.append("encounter_image", encounterImage);
+      }
+
+      const res = await axios.post("/api/encounters/create", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      alert(`Encounter created! ID: ${res.data.encounter_id}`);
+      onClose && onClose();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create encounter.");
+    }
+  };
+
   const handleNext = () => {
     if (currentPage === "stats") {
       setCurrentPage("description");
@@ -146,7 +185,7 @@ const EncounterCreater = ({ onClose }) => {
       setCurrentPage("race");
       setProgress(100);
     } else if (currentPage === "race") {
-      alert("Encounter creation complete!");
+      handleSaveEncounter(); // <-- save to backend on final page
     }
   };
 
@@ -180,7 +219,6 @@ const EncounterCreater = ({ onClose }) => {
           <div className="progress-fill" style={{ width: `${progress}%` }}></div>
         </div>
 
-        {/* Header (only for stats & description) */}
         {(currentPage === "stats" || currentPage === "description") && (
           <div
             className="character-header"
@@ -232,7 +270,6 @@ const EncounterCreater = ({ onClose }) => {
           </div>
         )}
 
-        {/* Page Content */}
         {currentPage === "stats" ? (
           <EncounterSheetCreater
             abilities={abilities}
@@ -254,15 +291,20 @@ const EncounterCreater = ({ onClose }) => {
             savingThrowOptions={savingThrowOptions}
           />
         ) : currentPage === "description" ? (
-          <EncounterDesCreater />
+          <EncounterDesCreater setDescription={setDescription} />
         ) : currentPage === "race" ? (
           <RaceCreation
-  initialSkills={initialSkills}
-  selectedSkills={selectedSkills}
-  toggleSkill={toggleSkill}
-  abilityScores={abilityScores}  // <- PASS THIS
-/>
-
+            initialSkills={initialSkills}
+            selectedSkills={selectedSkills}
+            toggleSkill={toggleSkill}
+            abilityScores={abilityScores}
+            raceName={raceName}
+            setRaceName={setRaceName}
+            raceLanguages={raceLanguages}
+            setRaceLanguages={setRaceLanguages}
+            raceTools={raceTools}
+            setRaceTools={setRaceTools}
+          />
         ) : null}
       </div>
 
@@ -272,4 +314,5 @@ const EncounterCreater = ({ onClose }) => {
 };
 
 export default EncounterCreater;
+
 

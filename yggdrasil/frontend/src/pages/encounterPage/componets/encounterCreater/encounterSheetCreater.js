@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Radar } from "react-chartjs-2";
+import axios from "axios";
 
 const CharacterSheetCreater = ({
   abilities,
@@ -19,7 +20,41 @@ const CharacterSheetCreater = ({
   savingData,
   chartOptions,
   savingThrowOptions,
+  encounterId, // optional: pass if editing an existing encounter
+  setAbilityScores, // optional: setters from parent
+  setHp,
+  setSelectedSkills
 }) => {
+
+  // Fetch existing encounter data if editing
+  useEffect(() => {
+    if (!encounterId) return;
+
+    const fetchCharacter = async () => {
+      try {
+        const res = await axios.get(`/api/encounters/${encounterId}`);
+        const data = res.data;
+
+        if (data.ability_scores && setAbilityScores) {
+          setAbilityScores(data.ability_scores);
+        }
+
+        if (data.hp && setHp) {
+          setHp(data.hp);
+        }
+
+        if (data.selected_skills && setSelectedSkills) {
+          setSelectedSkills(data.selected_skills);
+        }
+
+      } catch (err) {
+        console.error("Failed to load character sheet", err);
+      }
+    };
+
+    fetchCharacter();
+  }, [encounterId, setAbilityScores, setHp, setSelectedSkills]);
+
   return (
     <div className="character-main">
       <div className="top-section" style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
@@ -98,7 +133,6 @@ const CharacterSheetCreater = ({
               </div>
 <ul style={{ listStyle: "none", padding: 0 }}>
   {initialSkills[activeTab].map((skill) => {
-    // Find the ability that this skill belongs to
     const ability = Object.keys(initialSkills).find((key) =>
       initialSkills[key].includes(skill)
     );
@@ -107,7 +141,6 @@ const CharacterSheetCreater = ({
     const proficiencyBonus = selectedSkills.includes(skill) ? 2 : 0;
     const totalBonus = baseModifier + proficiencyBonus;
 
-    // Format: negative shows '-', positive shows '+', zero shows '0'
     const displayBonus =
       totalBonus > 0
         ? `+${totalBonus}`
@@ -160,3 +193,4 @@ const CharacterSheetCreater = ({
 };
 
 export default CharacterSheetCreater;
+
