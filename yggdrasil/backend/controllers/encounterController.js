@@ -8,21 +8,36 @@ const {
   deleteEncounter
 } = require("../models/encounterModel");
 
-// Utility to generate encounter IDs
+
+// Generate encounter ID like CAM, but ENC
 const generateEncounterId = () => {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const randomLetter = () => letters[Math.floor(Math.random() * letters.length)];
-  const randomNumber = () => String(Math.floor(Math.random() * 1000)).padStart(3, "0");
-  return `ENC-${randomLetter()}${randomLetter()}${randomLetter()}-${randomNumber()}`;
+  const randomNumber = (length = 3) => {
+    let num = "";
+    for (let i = 0; i < length; i++) {
+      num += Math.floor(Math.random() * 10); // always 0-9
+    }
+    return num;
+  };
+
+  // ENC-ABC-123-456, guaranteed 3 letters + 3 digits + 3 digits
+  return `ENC-${randomLetter()}${randomLetter()}${randomLetter()}-${randomNumber()}-${randomNumber()}`;
 };
 
-// CREATE encounter with optional image upload
+
+
+// CREATE encounter
 exports.create = async (req, res) => {
   try {
-    const encounter_id = generateEncounterId();
-    let encounter_img = null;
+    const { campaign_id } = req.body;
+    if (!campaign_id) return res.status(400).json({ error: "Campaign ID is required" });
 
-    // Upload image to Cloudinary if file exists
+    // Generate encounter_id independently
+    const encounter_id = generateEncounterId();
+
+    // Handle optional image upload
+    let encounter_img = null;
     if (req.files && req.files.encounter_img) {
       const file = req.files.encounter_img;
       const result = await cloudinary.uploader.upload(file.tempFilePath, {
@@ -30,10 +45,10 @@ exports.create = async (req, res) => {
         use_filename: true,
       });
       encounter_img = result.secure_url;
-      fs.unlinkSync(file.tempFilePath); // remove temp file
+      fs.unlinkSync(file.tempFilePath);
     }
 
-    const data = { ...req.body, encounter_id, encounter_img };
+    const data = { ...req.body, encounter_img, encounter_id };
     await createEncounter(data);
 
     res.status(201).json({ message: "Encounter created", encounter_id });
@@ -42,6 +57,7 @@ exports.create = async (req, res) => {
     res.status(500).json({ error: "Failed to create encounter" });
   }
 };
+
 
 // GET all encounters for a campaign
 exports.getByCampaign = async (req, res) => {
@@ -54,7 +70,7 @@ exports.getByCampaign = async (req, res) => {
   }
 };
 
-// GET single encounter by ID
+// GET encounter by ID
 exports.getById = async (req, res) => {
   try {
     const encounter = await getEncounterById(req.params.id);
@@ -66,12 +82,10 @@ exports.getById = async (req, res) => {
   }
 };
 
-// UPDATE encounter by ID
+// UPDATE encounter
 exports.update = async (req, res) => {
   try {
     let encounter_img = req.body.encounter_img || null;
-
-    // If new image file uploaded
     if (req.files && req.files.encounter_img) {
       const file = req.files.encounter_img;
       const result = await cloudinary.uploader.upload(file.tempFilePath, {
@@ -91,7 +105,7 @@ exports.update = async (req, res) => {
   }
 };
 
-// DELETE encounter by ID
+// DELETE encounter
 exports.delete = async (req, res) => {
   try {
     await deleteEncounter(req.params.id);
