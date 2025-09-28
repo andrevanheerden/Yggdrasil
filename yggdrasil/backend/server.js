@@ -11,6 +11,7 @@ const userRoutes = require('./routes/userRoutes');
 const campaignRoutes = require('./routes/campaignRoutes');
 const messageRoutes = require("./routes/messageRoutes");
 const inviteRoutes = require('./routes/inviteRoutes');
+const encounterRoutes = require("./routes/encounterRoutes");
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/invites', inviteRoutes);
+app.use("/api/encounters", encounterRoutes);
 
 // Test route
 app.get('/api/test', (req, res) => {
