@@ -35,6 +35,9 @@ const initialSkills = {
 };
 
 const EncounterCreater = ({ onClose, campaignId }) => {
+  // Use latest campaign from localStorage if prop is missing
+  const latestCampaignId = campaignId || localStorage.getItem("selectedCampaignId");
+
   const [activeTab, setActiveTab] = useState("Str");
   const [abilityScores, setAbilityScores] = useState(
     abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {})
@@ -49,7 +52,6 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   const fileInputRef = useRef(null);
   const [progress, setProgress] = useState(33);
 
-  // Race page state
   const [raceName, setRaceName] = useState("");
   const [languagesArray, setLanguagesArray] = useState([""]);
   const [toolsArray, setToolsArray] = useState([""]);
@@ -145,57 +147,54 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   };
 
   // SAVE ENCOUNTER TO BACKEND
-const saveEncounter = async () => {
-  try {
-    const formData = new FormData();
-    formData.append("campaign_id", campaignId || "CAM-DEFAULT");
-    formData.append("encounter_name", encounterName);
-    formData.append("encounter_AC", acBase + getModifier(abilityScores.Dex));
-    formData.append("encounter_level", 1);
-    formData.append("encounter_speed", speed);
-    formData.append("encounter_current_HP", hp.current);
-    formData.append("encounter_max_HP", hp.max);
-    formData.append("encounter_ability_score_str", abilityScores.Str);
-    formData.append("encounter_ability_score_dex", abilityScores.Dex);
-    formData.append("encounter_ability_score_con", abilityScores.Con);
-    formData.append("encounter_ability_score_int", abilityScores.Int);
-    formData.append("encounter_ability_score_wis", abilityScores.Wis);
-    formData.append("encounter_ability_score_cha", abilityScores.Cha);
-    formData.append("skill_modefed_1", selectedSkills[0] || "");
-    formData.append("skill_modefed_2", selectedSkills[1] || "");
-    formData.append("encounter_dec", description);
-    formData.append("race_name", raceName);
-    formData.append("race_dec", description);
-    formData.append("race_skill_modefed_1", selectedSkills[0] || "");
-    formData.append("race_skill_modefed_2", selectedSkills[1] || "");
-    formData.append(
-      "race_proficiencie_languages",
-      JSON.stringify(languagesArray)
-    );
-    formData.append("race_proficiencie_tools", JSON.stringify(toolsArray));
-
-    if (fileInputRef.current && fileInputRef.current.files[0]) {
-      formData.append("encounter_img", fileInputRef.current.files[0]);
+  const saveEncounter = async () => {
+    const usedCampaignId = latestCampaignId;
+    if (!usedCampaignId) {
+      alert("You must be in a campaign to create an encounter.");
+      return;
     }
 
-    const response = await axios.post(
-      "http://localhost:5000/api/encounters",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    console.log("Encounter saved:", response.data);
-    alert("Encounter saved successfully!");
-    onClose && onClose();
-  } catch (err) {
-    console.error("Error saving encounter:", err);
-    alert("Failed to save encounter.");
-  }
-};
+    try {
+      const formData = new FormData();
+      formData.append("campaign_id", usedCampaignId);
+      formData.append("encounter_name", encounterName);
+      formData.append("encounter_AC", acBase + getModifier(abilityScores.Dex));
+      formData.append("encounter_level", 1);
+      formData.append("encounter_speed", speed);
+      formData.append("encounter_current_HP", hp.current);
+      formData.append("encounter_max_HP", hp.max);
+      formData.append("encounter_ability_score_str", abilityScores.Str);
+      formData.append("encounter_ability_score_dex", abilityScores.Dex);
+      formData.append("encounter_ability_score_con", abilityScores.Con);
+      formData.append("encounter_ability_score_int", abilityScores.Int);
+      formData.append("encounter_ability_score_wis", abilityScores.Wis);
+      formData.append("encounter_ability_score_cha", abilityScores.Cha);
+      formData.append("skill_modefed_1", selectedSkills[0] || "");
+      formData.append("skill_modefed_2", selectedSkills[1] || "");
+      formData.append("encounter_dec", description);
+      formData.append("race_name", raceName);
+      formData.append("race_dec", description);
+      formData.append("race_skill_modefed_1", selectedSkills[0] || "");
+      formData.append("race_skill_modefed_2", selectedSkills[1] || "");
+      formData.append("race_proficiencie_languages", JSON.stringify(languagesArray));
+      formData.append("race_proficiencie_tools", JSON.stringify(toolsArray));
 
+      if (fileInputRef.current && fileInputRef.current.files[0]) {
+        formData.append("encounter_img", fileInputRef.current.files[0]);
+      }
+
+      const response = await axios.post("http://localhost:5000/api/encounters", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      console.log("Encounter saved:", response.data);
+      alert("Encounter saved successfully!");
+      onClose && onClose();
+    } catch (err) {
+      console.error("Error saving encounter:", err);
+      alert("Failed to save encounter.");
+    }
+  };
 
   const handleNext = () => {
     if (currentPage === "stats") {
@@ -239,7 +238,6 @@ const saveEncounter = async () => {
           <div className="progress-fill" style={{ width: `${progress}%` }}></div>
         </div>
 
-        {/* Header (only for stats & description) */}
         {(currentPage === "stats" || currentPage === "description") && (
           <div className="character-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
             <input
@@ -270,18 +268,16 @@ const saveEncounter = async () => {
                 {!encounterImage && <span>{currentPage === "stats" ? "Click to upload" : "No Image"}</span>}
               </div>
               <input
-  type="file"
-  ref={fileInputRef}
-  onChange={handleImageUpload}
-  accept="image/*"
-  style={{ display: "none" }}
-/>
-
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                accept="image/*"
+                style={{ display: "none" }}
+              />
             </div>
           </div>
         )}
 
-        {/* Page Content */}
         {currentPage === "stats" ? (
           <EncounterSheetCreater
             abilities={abilities}

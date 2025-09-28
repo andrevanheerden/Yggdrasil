@@ -3,7 +3,7 @@ const pool = require("../config/db");
 // Create a new encounter
 const createEncounter = async (data) => {
   const sql = `
-    INSERT INTO encounter (
+    INSERT INTO encounters (
       encounter_id, campaign_id, encounter_name, encounter_img,
       encounter_AC, encounter_level, encounter_speed,
       encounter_current_HP, encounter_max_HP,
