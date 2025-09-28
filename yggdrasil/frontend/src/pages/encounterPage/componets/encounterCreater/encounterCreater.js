@@ -2,8 +2,8 @@ import React, { useState, useRef } from "react";
 import "../../../characterPage/character.css";
 import pageBg from "../../../../assets/images/page.png";
 import EncounterSheetCreater from "./encounterSheetCreater";
-import EncounterDesCreater from "./encounterDesCreater";
 import RaceCreation from "./raceCreater";
+import axios from "axios";
 
 import {
   Chart as ChartJS,
@@ -34,7 +34,7 @@ const initialSkills = {
   Cha: ["Deception", "Intimidation", "Performance", "Persuasion"],
 };
 
-const EncounterCreater = ({ onClose }) => {
+const EncounterCreater = ({ onClose, campaignId }) => {
   const [activeTab, setActiveTab] = useState("Str");
   const [abilityScores, setAbilityScores] = useState(
     abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {})
@@ -48,6 +48,12 @@ const EncounterCreater = ({ onClose }) => {
   const [currentPage, setCurrentPage] = useState("stats");
   const fileInputRef = useRef(null);
   const [progress, setProgress] = useState(33);
+
+  // Race page state
+  const [raceName, setRaceName] = useState("");
+  const [languagesArray, setLanguagesArray] = useState([""]);
+  const [toolsArray, setToolsArray] = useState([""]);
+  const [description, setDescription] = useState("");
 
   // Image upload
   const handleImageUpload = (e) => {
@@ -138,6 +144,59 @@ const EncounterCreater = ({ onClose }) => {
     speed,
   };
 
+  // SAVE ENCOUNTER TO BACKEND
+const saveEncounter = async () => {
+  try {
+    const formData = new FormData();
+    formData.append("campaign_id", campaignId || "CAM-DEFAULT");
+    formData.append("encounter_name", encounterName);
+    formData.append("encounter_AC", acBase + getModifier(abilityScores.Dex));
+    formData.append("encounter_level", 1);
+    formData.append("encounter_speed", speed);
+    formData.append("encounter_current_HP", hp.current);
+    formData.append("encounter_max_HP", hp.max);
+    formData.append("encounter_ability_score_str", abilityScores.Str);
+    formData.append("encounter_ability_score_dex", abilityScores.Dex);
+    formData.append("encounter_ability_score_con", abilityScores.Con);
+    formData.append("encounter_ability_score_int", abilityScores.Int);
+    formData.append("encounter_ability_score_wis", abilityScores.Wis);
+    formData.append("encounter_ability_score_cha", abilityScores.Cha);
+    formData.append("skill_modefed_1", selectedSkills[0] || "");
+    formData.append("skill_modefed_2", selectedSkills[1] || "");
+    formData.append("encounter_dec", description);
+    formData.append("race_name", raceName);
+    formData.append("race_dec", description);
+    formData.append("race_skill_modefed_1", selectedSkills[0] || "");
+    formData.append("race_skill_modefed_2", selectedSkills[1] || "");
+    formData.append(
+      "race_proficiencie_languages",
+      JSON.stringify(languagesArray)
+    );
+    formData.append("race_proficiencie_tools", JSON.stringify(toolsArray));
+
+    if (fileInputRef.current && fileInputRef.current.files[0]) {
+      formData.append("encounter_img", fileInputRef.current.files[0]);
+    }
+
+    const response = await axios.post(
+      "http://localhost:5000/api/encounters",
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    console.log("Encounter saved:", response.data);
+    alert("Encounter saved successfully!");
+    onClose && onClose();
+  } catch (err) {
+    console.error("Error saving encounter:", err);
+    alert("Failed to save encounter.");
+  }
+};
+
+
   const handleNext = () => {
     if (currentPage === "stats") {
       setCurrentPage("description");
@@ -146,7 +205,7 @@ const EncounterCreater = ({ onClose }) => {
       setCurrentPage("race");
       setProgress(100);
     } else if (currentPage === "race") {
-      alert("Encounter creation complete!");
+      saveEncounter();
     }
   };
 
@@ -182,15 +241,7 @@ const EncounterCreater = ({ onClose }) => {
 
         {/* Header (only for stats & description) */}
         {(currentPage === "stats" || currentPage === "description") && (
-          <div
-            className="character-header"
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "15px",
-            }}
-          >
+          <div className="character-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
             <input
               type="text"
               value={encounterName}
@@ -199,10 +250,7 @@ const EncounterCreater = ({ onClose }) => {
               placeholder="Encounter Name"
               style={{ width: "50%", marginBottom: 0 }}
             />
-            <div
-              className="character-image-upload"
-              style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-            >
+            <div className="character-image-upload" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               <div
                 className="character-image-preview"
                 onClick={currentPage === "stats" ? triggerFileInput : undefined}
@@ -222,12 +270,13 @@ const EncounterCreater = ({ onClose }) => {
                 {!encounterImage && <span>{currentPage === "stats" ? "Click to upload" : "No Image"}</span>}
               </div>
               <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageUpload}
-                accept="image/*"
-                style={{ display: "none" }}
-              />
+  type="file"
+  ref={fileInputRef}
+  onChange={handleImageUpload}
+  accept="image/*"
+  style={{ display: "none" }}
+/>
+
             </div>
           </div>
         )}
@@ -254,15 +303,55 @@ const EncounterCreater = ({ onClose }) => {
             savingThrowOptions={savingThrowOptions}
           />
         ) : currentPage === "description" ? (
-          <EncounterDesCreater />
+          <div
+            className="character-description-container"
+            style={{
+              width: "800px",
+              height: "650px",
+              background: "#D9D9D9",
+              padding: "10px",
+              borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.25)",
+              textAlign: "center",
+              margin: "20px auto",
+              fontFamily: "'Caudex', serif",
+              fontSize: "16px",
+              color: "#333",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <textarea
+              style={{
+                flex: 1,
+                width: "100%",
+                border: "none",
+                outline: "none",
+                background: "transparent",
+                resize: "none",
+                fontFamily: "'Caudex', serif",
+                fontSize: "16px",
+                color: "#333",
+                textAlign: "left",
+              }}
+              placeholder="Write your encounter's description here..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
         ) : currentPage === "race" ? (
           <RaceCreation
-  initialSkills={initialSkills}
-  selectedSkills={selectedSkills}
-  toggleSkill={toggleSkill}
-  abilityScores={abilityScores}  // <- PASS THIS
-/>
-
+            initialSkills={initialSkills}
+            selectedSkills={selectedSkills}
+            toggleSkill={toggleSkill}
+            abilityScores={abilityScores}
+            raceName={raceName}
+            setRaceName={setRaceName}
+            languagesArray={languagesArray}
+            setLanguagesArray={setLanguagesArray}
+            toolsArray={toolsArray}
+            setToolsArray={setToolsArray}
+          />
         ) : null}
       </div>
 
@@ -272,4 +361,3 @@ const EncounterCreater = ({ onClose }) => {
 };
 
 export default EncounterCreater;
-
