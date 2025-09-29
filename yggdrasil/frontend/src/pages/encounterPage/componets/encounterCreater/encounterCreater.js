@@ -35,7 +35,6 @@ const initialSkills = {
 };
 
 const EncounterCreater = ({ onClose, campaignId }) => {
-  // Use latest campaign from localStorage if prop is missing
   const latestCampaignId = campaignId || localStorage.getItem("selectedCampaignId");
 
   const [activeTab, setActiveTab] = useState("Str");
@@ -48,6 +47,7 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [encounterName, setEncounterName] = useState("New Encounter");
   const [encounterImage, setEncounterImage] = useState(null);
+  const [encounterFile, setEncounterFile] = useState(null); // store raw file
   const [currentPage, setCurrentPage] = useState("stats");
   const fileInputRef = useRef(null);
   const [progress, setProgress] = useState(33);
@@ -61,11 +61,13 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      setEncounterFile(file); // store for upload
       const reader = new FileReader();
       reader.onload = (event) => setEncounterImage(event.target.result);
       reader.readAsDataURL(file);
     }
   };
+
   const triggerFileInput = () => fileInputRef.current.click();
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
@@ -179,8 +181,9 @@ const EncounterCreater = ({ onClose, campaignId }) => {
       formData.append("race_proficiencie_languages", JSON.stringify(languagesArray));
       formData.append("race_proficiencie_tools", JSON.stringify(toolsArray));
 
-      if (fileInputRef.current && fileInputRef.current.files[0]) {
-        formData.append("encounter_img", fileInputRef.current.files[0]);
+      if (encounterFile) {
+        formData.append("encounter_img", encounterFile);
+        console.log("File being sent:", encounterFile);
       }
 
       const response = await axios.post("http://localhost:5000/api/encounters", formData, {
@@ -357,3 +360,4 @@ const EncounterCreater = ({ onClose, campaignId }) => {
 };
 
 export default EncounterCreater;
+
