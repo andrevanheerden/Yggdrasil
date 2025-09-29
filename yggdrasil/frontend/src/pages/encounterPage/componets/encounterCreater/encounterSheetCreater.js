@@ -10,6 +10,7 @@ const CharacterSheetCreater = ({
   changeHp,
   character,
   speed,
+  setSpeed,
   activeTab,
   setActiveTab,
   selectedSkills,
@@ -19,6 +20,8 @@ const CharacterSheetCreater = ({
   savingData,
   chartOptions,
   savingThrowOptions,
+  level,
+  setLevel
 }) => {
   return (
     <div className="character-main">
@@ -48,10 +51,42 @@ const CharacterSheetCreater = ({
 
             {/* Stats with HP Bar */}
             <div className="stats-container" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-              <div className="stats-row" style={{ display: "flex", gap: "10px" }}>
+              <div className="stats-row" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                 <div className="stat-box hex">AC {character.ac}</div>
-                <div className="stat-box hex">Level {character.level}</div>
-                <div className="stat-box hex">Speed {speed}</div>
+                
+                <div className="stat-box hex" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={level}
+                    onChange={(e) => setLevel(Number(e.target.value))}
+                    style={{
+                      width: "40px",
+                      textAlign: "center",
+                      border: "1px solid #ccc",
+                      borderRadius: "3px",
+                      outline: "none",
+                      marginBottom: "2px"
+                    }}
+                  />
+                  Level
+                </div>
+
+                <div className="stat-box hex" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={speed}
+                    onChange={(e) => setSpeed(Number(e.target.value))}
+                    style={{
+                      width: "40px",
+                      textAlign: "center",
+                      border: "1px solid #ccc",
+                      borderRadius: "3px",
+                      outline: "none",
+                      marginBottom: "2px"
+                    }}
+                  />
+                  Speed
+                </div>
               </div>
 
               <div className="hp-container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -96,51 +131,38 @@ const CharacterSheetCreater = ({
                 Selected Skills: {selectedSkills.length}/2
                 {selectedSkills.length > 0 && `: ${selectedSkills.join(", ")}`}
               </div>
-<ul style={{ listStyle: "none", padding: 0 }}>
-  {initialSkills[activeTab].map((skill) => {
-    // Find the ability that this skill belongs to
-    const ability = Object.keys(initialSkills).find((key) =>
-      initialSkills[key].includes(skill)
-    );
+              <ul style={{ listStyle: "none", padding: 0 }}>
+                {initialSkills[activeTab].map((skill) => {
+                  const ability = Object.keys(initialSkills).find((key) => initialSkills[key].includes(skill));
+                  const baseModifier = getModifier(abilityScores[ability]);
+                  const proficiencyBonus = selectedSkills.includes(skill) ? 2 : 0;
+                  const totalBonus = baseModifier + proficiencyBonus;
+                  const displayBonus = totalBonus > 0 ? `+${totalBonus}` : totalBonus < 0 ? `${totalBonus}` : "0";
+                  const isSelected = selectedSkills.includes(skill);
 
-    const baseModifier = getModifier(abilityScores[ability]);
-    const proficiencyBonus = selectedSkills.includes(skill) ? 2 : 0;
-    const totalBonus = baseModifier + proficiencyBonus;
-
-    // Format: negative shows '-', positive shows '+', zero shows '0'
-    const displayBonus =
-      totalBonus > 0
-        ? `+${totalBonus}`
-        : totalBonus < 0
-        ? `${totalBonus}`
-        : "0";
-
-    const isSelected = selectedSkills.includes(skill);
-
-    return (
-      <li
-        key={skill}
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "5px",
-        }}
-      >
-        <span>
-          {skill} <strong style={{ marginLeft: "5px" }}>{displayBonus}</strong>
-        </span>
-        <input
-          type="checkbox"
-          checked={isSelected}
-          onChange={() => toggleSkill(skill)}
-          disabled={!isSelected && selectedSkills.length >= 2}
-        />
-      </li>
-    );
-  })}
-</ul>
-
+                  return (
+                    <li
+                      key={skill}
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: "5px",
+                      }}
+                    >
+                      <span>
+                        {skill} <strong style={{ marginLeft: "5px" }}>{displayBonus}</strong>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSkill(skill)}
+                        disabled={!isSelected && selectedSkills.length >= 2}
+                      />
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
 
             <div className="skills-tabs-container">
@@ -160,3 +182,5 @@ const CharacterSheetCreater = ({
 };
 
 export default CharacterSheetCreater;
+
+

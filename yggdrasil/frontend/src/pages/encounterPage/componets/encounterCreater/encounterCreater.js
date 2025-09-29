@@ -1,3 +1,4 @@
+// EncounterCreater.js
 import React, { useState, useRef } from "react";
 import "../../../characterPage/character.css";
 import pageBg from "../../../../assets/images/page.png";
@@ -15,14 +16,7 @@ import {
   Legend,
 } from "chart.js";
 
-ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend
-);
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 const abilities = ["Str", "Dex", "Con", "Int", "Wis", "Cha"];
 const initialSkills = {
@@ -43,13 +37,18 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   );
   const [hp, setHp] = useState({ current: 10, max: 10 });
   const [acBase] = useState(10);
-  const [speed] = useState(30);
-  const [selectedSkills, setSelectedSkills] = useState([]);
+  const [level, setLevel] = useState(1);
+  const [speed, setSpeed] = useState(30);
+
+  const [encounterSkills, setEncounterSkills] = useState([]);
+  const [raceSkills, setRaceSkills] = useState([]);
+
   const [encounterName, setEncounterName] = useState("New Encounter");
   const [encounterImage, setEncounterImage] = useState(null);
-  const [encounterFile, setEncounterFile] = useState(null); // store raw file
-  const [currentPage, setCurrentPage] = useState("stats");
+  const [encounterFile, setEncounterFile] = useState(null);
   const fileInputRef = useRef(null);
+
+  const [currentPage, setCurrentPage] = useState("stats");
   const [progress, setProgress] = useState(33);
 
   const [raceName, setRaceName] = useState("");
@@ -57,20 +56,19 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   const [toolsArray, setToolsArray] = useState([""]);
   const [description, setDescription] = useState("");
 
+  const getModifier = (score) => Math.floor((score - 10) / 2);
+
   // Image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setEncounterFile(file); // store for upload
+      setEncounterFile(file);
       const reader = new FileReader();
       reader.onload = (event) => setEncounterImage(event.target.result);
       reader.readAsDataURL(file);
     }
   };
-
   const triggerFileInput = () => fileInputRef.current.click();
-
-  const getModifier = (score) => Math.floor((score - 10) / 2);
 
   const changeAbility = (ab, delta) => {
     setAbilityScores((prev) => {
@@ -84,24 +82,21 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   const changeHp = (type, delta) => {
     setHp((prev) => {
       if (type === "current") {
-        let newCurrent = Math.max(0, Math.min(prev.current + delta, prev.max));
+        const newCurrent = Math.max(0, Math.min(prev.current + delta, prev.max));
         return { ...prev, current: newCurrent };
       } else {
-        let newMax = Math.max(1, prev.max + delta);
+        const newMax = Math.max(1, prev.max + delta);
         const newCurrent = Math.min(prev.current, newMax);
         return { current: newCurrent, max: newMax };
       }
     });
   };
 
-  const toggleSkill = (skill) => {
-    setSelectedSkills((prev) => {
-      if (prev.includes(skill)) {
-        return prev.filter((s) => s !== skill);
-      } else {
-        if (prev.length < 2) return [...prev, skill];
-        return prev;
-      }
+  const toggleEncounterSkill = (skill) => {
+    setEncounterSkills((prev) => {
+      if (prev.includes(skill)) return prev.filter((s) => s !== skill);
+      if (prev.length < 2) return [...prev, skill];
+      return prev;
     });
   };
 
@@ -141,27 +136,18 @@ const EncounterCreater = ({ onClose, campaignId }) => {
     plugins: { legend: { display: false } },
   };
 
-  const encounter = {
-    name: encounterName,
-    ac: acBase + getModifier(abilityScores.Dex),
-    level: 1,
-    speed,
-  };
-
-  // SAVE ENCOUNTER TO BACKEND
   const saveEncounter = async () => {
-    const usedCampaignId = latestCampaignId;
-    if (!usedCampaignId) {
+    if (!latestCampaignId) {
       alert("You must be in a campaign to create an encounter.");
       return;
     }
 
     try {
       const formData = new FormData();
-      formData.append("campaign_id", usedCampaignId);
+      formData.append("campaign_id", latestCampaignId);
       formData.append("encounter_name", encounterName);
       formData.append("encounter_AC", acBase + getModifier(abilityScores.Dex));
-      formData.append("encounter_level", 1);
+      formData.append("encounter_level", level);
       formData.append("encounter_speed", speed);
       formData.append("encounter_current_HP", hp.current);
       formData.append("encounter_max_HP", hp.max);
@@ -171,20 +157,19 @@ const EncounterCreater = ({ onClose, campaignId }) => {
       formData.append("encounter_ability_score_int", abilityScores.Int);
       formData.append("encounter_ability_score_wis", abilityScores.Wis);
       formData.append("encounter_ability_score_cha", abilityScores.Cha);
-      formData.append("skill_modefed_1", selectedSkills[0] || "");
-      formData.append("skill_modefed_2", selectedSkills[1] || "");
+formData.append("skill_modefed_1", encounterSkills[0] || "");
+formData.append("skill_modefed_2", encounterSkills[1] || "");
+
       formData.append("encounter_dec", description);
+
       formData.append("race_name", raceName);
       formData.append("race_dec", description);
-      formData.append("race_skill_modefed_1", selectedSkills[0] || "");
-      formData.append("race_skill_modefed_2", selectedSkills[1] || "");
+formData.append("race_skill_modefed_1", raceSkills[0] || "");
+formData.append("race_skill_modefed_2", raceSkills[1] || "");
       formData.append("race_proficiencie_languages", JSON.stringify(languagesArray));
       formData.append("race_proficiencie_tools", JSON.stringify(toolsArray));
 
-      if (encounterFile) {
-        formData.append("encounter_img", encounterFile);
-        console.log("File being sent:", encounterFile);
-      }
+      if (encounterFile) formData.append("encounter_img", encounterFile);
 
       const response = await axios.post("http://localhost:5000/api/encounters", formData, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -222,6 +207,13 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   };
 
   const handleExit = () => onClose && onClose();
+
+  const encounter = {
+    name: encounterName,
+    ac: acBase + getModifier(abilityScores.Dex),
+    level,
+    speed,
+  };
 
   return (
     <div className="character-popup-overlay">
@@ -270,13 +262,7 @@ const EncounterCreater = ({ onClose, campaignId }) => {
               >
                 {!encounterImage && <span>{currentPage === "stats" ? "Click to upload" : "No Image"}</span>}
               </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageUpload}
-                accept="image/*"
-                style={{ display: "none" }}
-              />
+              <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" style={{ display: "none" }} />
             </div>
           </div>
         )}
@@ -291,48 +277,23 @@ const EncounterCreater = ({ onClose, campaignId }) => {
             changeHp={changeHp}
             character={encounter}
             speed={speed}
+            setSpeed={setSpeed}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
+            selectedSkills={encounterSkills}
+            toggleSkill={toggleEncounterSkill}
             initialSkills={initialSkills}
             abilityData={abilityData}
             savingData={savingData}
             chartOptions={chartOptions}
             savingThrowOptions={savingThrowOptions}
+            level={level}
+            setLevel={setLevel}
           />
         ) : currentPage === "description" ? (
-          <div
-            className="character-description-container"
-            style={{
-              width: "800px",
-              height: "650px",
-              background: "#D9D9D9",
-              padding: "10px",
-              borderRadius: "10px",
-              boxShadow: "0 4px 10px rgba(0,0,0,0.25)",
-              textAlign: "center",
-              margin: "20px auto",
-              fontFamily: "'Caudex', serif",
-              fontSize: "16px",
-              color: "#333",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
+          <div className="character-description-container" style={{ width: "800px", height: "650px", background: "#D9D9D9", padding: "10px", borderRadius: "10px", boxShadow: "0 4px 10px rgba(0,0,0,0.25)", textAlign: "center", margin: "20px auto", fontFamily: "'Caudex', serif", fontSize: "16px", color: "#333", display: "flex", flexDirection: "column" }}>
             <textarea
-              style={{
-                flex: 1,
-                width: "100%",
-                border: "none",
-                outline: "none",
-                background: "transparent",
-                resize: "none",
-                fontFamily: "'Caudex', serif",
-                fontSize: "16px",
-                color: "#333",
-                textAlign: "left",
-              }}
+              style={{ flex: 1, width: "100%", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: "'Caudex', serif", fontSize: "16px", color: "#333", textAlign: "left" }}
               placeholder="Write your encounter's description here..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -341,8 +302,7 @@ const EncounterCreater = ({ onClose, campaignId }) => {
         ) : currentPage === "race" ? (
           <RaceCreation
             initialSkills={initialSkills}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
+            selectedSkills={raceSkills}
             abilityScores={abilityScores}
             raceName={raceName}
             setRaceName={setRaceName}
@@ -350,6 +310,7 @@ const EncounterCreater = ({ onClose, campaignId }) => {
             setLanguagesArray={setLanguagesArray}
             toolsArray={toolsArray}
             setToolsArray={setToolsArray}
+            onChangeSelectedSkills={(skills) => setRaceSkills(skills)}
           />
         ) : null}
       </div>
@@ -360,4 +321,5 @@ const EncounterCreater = ({ onClose, campaignId }) => {
 };
 
 export default EncounterCreater;
+
 

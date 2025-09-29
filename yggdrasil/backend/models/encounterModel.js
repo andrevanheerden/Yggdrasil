@@ -1,5 +1,8 @@
 const pool = require("../config/db");
 
+// Helper: ensure value is not undefined
+const safeValue = (val) => (val === undefined || val === null ? "" : val);
+
 // Create a new encounter
 const createEncounter = async (data) => {
   const sql = `
@@ -17,30 +20,30 @@ const createEncounter = async (data) => {
   `;
 
   const values = [
-    data.encounter_id,      // backend-generated ID
-    data.campaign_id,       // frontend-sent ID
-    data.encounter_name,
-    data.encounter_img,
-    data.encounter_AC,
-    data.encounter_level,
-    data.encounter_speed,
-    data.encounter_current_HP,
-    data.encounter_max_HP,
-    data.encounter_ability_score_str,
-    data.encounter_ability_score_dex,
-    data.encounter_ability_score_con,
-    data.encounter_ability_score_int,
-    data.encounter_ability_score_wis,
-    data.encounter_ability_score_cha,
-    data.skill_modefed_1,
-    data.skill_modefed_2,
-    data.encounter_dec,
-    data.race_name,
-    data.race_dec,
-    data.race_skill_modefed_1,
-    data.race_skill_modefed_2,
-    JSON.stringify(data.race_proficiencie_languages),
-    JSON.stringify(data.race_proficiencie_tools)
+    safeValue(data.encounter_id),
+    safeValue(data.campaign_id),
+    safeValue(data.encounter_name),
+    safeValue(data.encounter_img),
+    safeValue(data.encounter_AC),
+    safeValue(data.encounter_level),
+    safeValue(data.encounter_speed),
+    safeValue(data.encounter_current_HP),
+    safeValue(data.encounter_max_HP),
+    safeValue(data.encounter_ability_score_str),
+    safeValue(data.encounter_ability_score_dex),
+    safeValue(data.encounter_ability_score_con),
+    safeValue(data.encounter_ability_score_int),
+    safeValue(data.encounter_ability_score_wis),
+    safeValue(data.encounter_ability_score_cha),
+    safeValue(data.skill_modefed_1),
+    safeValue(data.skill_modefed_2),
+    safeValue(data.encounter_dec),
+    safeValue(data.race_name),
+    safeValue(data.race_dec),
+    safeValue(data.race_skill_modefed_1),
+    safeValue(data.race_skill_modefed_2),
+    JSON.stringify(data.race_proficiencie_languages || []),
+    JSON.stringify(data.race_proficiencie_tools || [])
   ];
 
   const [result] = await pool.execute(sql, values);
@@ -78,16 +81,29 @@ const updateEncounter = async (id, data) => {
   `;
 
   const values = [
-    data.encounter_name, data.encounter_img, data.encounter_AC, data.encounter_level,
-    data.encounter_speed, data.encounter_current_HP, data.encounter_max_HP,
-    data.encounter_ability_score_str, data.encounter_ability_score_dex,
-    data.encounter_ability_score_con, data.encounter_ability_score_int,
-    data.encounter_ability_score_wis, data.encounter_ability_score_cha,
-    data.skill_modefed_1, data.skill_modefed_2, data.encounter_dec,
-    data.race_name, data.race_dec, data.race_skill_modefed_1, data.race_skill_modefed_2,
-    JSON.stringify(data.race_proficiencie_languages),
-    JSON.stringify(data.race_proficiencie_tools),
-    id
+    safeValue(data.encounter_name),
+    safeValue(data.encounter_img),
+    safeValue(data.encounter_AC),
+    safeValue(data.encounter_level),
+    safeValue(data.encounter_speed),
+    safeValue(data.encounter_current_HP),
+    safeValue(data.encounter_max_HP),
+    safeValue(data.encounter_ability_score_str),
+    safeValue(data.encounter_ability_score_dex),
+    safeValue(data.encounter_ability_score_con),
+    safeValue(data.encounter_ability_score_int),
+    safeValue(data.encounter_ability_score_wis),
+    safeValue(data.encounter_ability_score_cha),
+    safeValue(data.skill_modefed_1),
+    safeValue(data.skill_modefed_2),
+    safeValue(data.encounter_dec),
+    safeValue(data.race_name),
+    safeValue(data.race_dec),
+    safeValue(data.race_skill_modefed_1),
+    safeValue(data.race_skill_modefed_2),
+    JSON.stringify(data.race_proficiencie_languages || []),
+    JSON.stringify(data.race_proficiencie_tools || []),
+    safeValue(id)
   ];
 
   const [result] = await pool.execute(sql, values);

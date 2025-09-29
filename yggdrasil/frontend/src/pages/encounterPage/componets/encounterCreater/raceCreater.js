@@ -1,54 +1,53 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../../characterPage/character.css";
 
 const RaceCreation = ({
   initialSkills = {},
-  selectedSkills = [],
-  toggleSkill,
-  abilityScores, // <- RECEIVE IT
+  abilityScores = {},
+  raceName,
+  setRaceName,
+  languagesArray,
+  setLanguagesArray,
+  toolsArray,
+  setToolsArray,
+  onChangeSelectedSkills, // callback to send selected skills to parent
+  selectedSkills = [], // initial selected skills from parent
 }) => {
-  const [raceName, setRaceName] = useState("");
-  const [languagesArray, setLanguagesArray] = useState([""]);
-  const [toolsArray, setToolsArray] = useState([""]);
+  const [selectedRaceSkills, setSelectedRaceSkills] = useState(selectedSkills);
 
-  // Remove local abilityScores state completely!
-  // const [abilityScores] = useState(...);  <-- DELETE THIS
+  // Sync local skills with parent
+  useEffect(() => {
+    if (onChangeSelectedSkills) onChangeSelectedSkills(selectedRaceSkills);
+  }, [selectedRaceSkills, onChangeSelectedSkills]);
 
-
-  // Default skill list
-  const defaultSkills = {
-    Strength: ["Athletics"],
-    Dexterity: ["Acrobatics", "Sleight of Hand", "Stealth"],
-    Constitution: ["Endurance"],
-    Intelligence: ["Arcana", "History", "Investigation"],
-    Wisdom: ["Insight", "Perception", "Survival"],
-    Charisma: ["Deception", "Performance", "Persuasion"],
+  const toggleRaceSkill = (skill) => {
+    setSelectedRaceSkills((prev) => {
+      if (prev.includes(skill)) return prev.filter((s) => s !== skill);
+      if (prev.length < 2) return [...prev, skill];
+      return prev;
+    });
   };
 
-  const skills =
-    Object.keys(initialSkills).length > 0 ? initialSkills : defaultSkills;
+  const defaultSkills = {
+    Str: ["Athletics"],
+    Dex: ["Acrobatics", "Sleight of Hand", "Stealth"],
+    Con: ["Endurance"],
+    Int: ["Arcana", "History", "Investigation", "Nature", "Religion"],
+    Wis: ["Animal Handling", "Insight", "Medicine", "Perception", "Survival"],
+    Cha: ["Deception", "Intimidation", "Performance", "Persuasion"],
+  };
+
+  const skills = Object.keys(initialSkills).length > 0 ? initialSkills : defaultSkills;
   const abilities = Object.keys(skills);
 
-  const abilityLabels = {
-    Str: "srt",
-    Dex: "dex",
-    Con: "con",
-    Int: "int",
-    Wis: "wis",
-    Cha: "cha",
-  };
-
   const [activeTab, setActiveTab] = useState(abilities[0]);
-  // const [abilityScores] = useState(
-  //   abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {})
-  // );
-  const [profTab, setProfTab] = useState("Languages"); // tab for proficiencies
+  const [profTab, setProfTab] = useState("Languages");
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
   return (
     <div className="character-main">
-      {/* Race Name Input */}
+      {/* Race Name */}
       <div style={{ marginBottom: "15px" }}>
         <input
           type="text"
@@ -68,7 +67,7 @@ const RaceCreation = ({
       </div>
 
       <div className="top-section" style={{ display: "flex", gap: "20px" }}>
-        {/* Left: Description */}
+        {/* Description */}
         <div
           className="character-description-container"
           style={{
@@ -104,53 +103,36 @@ const RaceCreation = ({
 
         {/* Right Column */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Skills Box */}
-          <div
-            className="skills-box white-box3"
-            style={{ width: "200px", height: "380px" }}
-          >
+          {/* Skills */}
+          <div className="skills-box white-box3" style={{ width: "200px", height: "380px" }}>
             <h3>Race Skills</h3>
             <div className="skills-tab-content">
               <div style={{ marginBottom: "5px" }}>
-                Selected Skills: {selectedSkills.length}/2
-                {selectedSkills.length > 0 &&
-                  `: ${selectedSkills.join(", ")}`}
+                Selected Skills: {selectedRaceSkills.length}/2
+                {selectedRaceSkills.length > 0 && `: ${selectedRaceSkills.join(", ")}`}
               </div>
               <ul style={{ listStyle: "none", padding: 0 }}>
-{skills[activeTab]?.map((skill) => {
-  const ability = abilities.find((ab) =>
-    skills[ab].includes(skill)
-  );
-  const bonus =
-    getModifier(abilityScores[ability]) +
-    (selectedSkills.includes(skill) ? 2 : 0);
-  const isSelected = selectedSkills.includes(skill);
-  return (
-    <li
-      key={skill}
-      style={{
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        marginBottom: "5px",
-      }}
-    >
-      <span>
-        {skill}{" "}
-        <strong style={{ marginLeft: "5px" }}>
-          {bonus >= 0 ? `+${bonus}` : bonus}
-        </strong>
-      </span>
-      <input
-        type="checkbox"
-        checked={isSelected}
-        onChange={() => toggleSkill && toggleSkill(skill)}
-        disabled={!isSelected && selectedSkills.length >= 2}
-      />
-    </li>
-  );
-})}
-
+                {skills[activeTab]?.map((skill) => {
+                  const ability = activeTab;
+                  const bonus = getModifier(abilityScores[ability] || 10) + (selectedRaceSkills.includes(skill) ? 2 : 0);
+                  const isSelected = selectedRaceSkills.includes(skill);
+                  return (
+                    <li
+                      key={skill}
+                      style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "5px" }}
+                    >
+                      <span>
+                        {skill} <strong style={{ marginLeft: "5px" }}>{bonus >= 0 ? `+${bonus}` : bonus}</strong>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleRaceSkill(skill)}
+                        disabled={!isSelected && selectedRaceSkills.length >= 2}
+                      />
+                    </li>
+                  );
+                })}
               </ul>
             </div>
 
@@ -160,43 +142,30 @@ const RaceCreation = ({
                 {abilities.map((ability) => (
                   <button
                     key={ability}
-                    className={`skills-tab-btn ${
-                      activeTab === ability ? "active" : ""
-                    }`}
+                    className={`skills-tab-btn ${activeTab === ability ? "active" : ""}`}
                     onClick={() => setActiveTab(ability)}
                   >
-                    {abilityLabels[ability]}
+                    {ability}
                   </button>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Languages & Tools with Tabs */}
+          {/* Languages & Tools */}
           <div className="skills-box white-box2" style={{ width: "200px", height: "500px" }}>
             <h3>Race Proficiencies</h3>
-
-            {/* Tabs container */}
             <div className="skills-tabs-container2">
               <div className="skills-tab-buttons2">
-                <button
-                  className={`skills-tab-btn2 ${
-                    profTab === "Languages" ? "active" : ""
-                  }`}
-                  onClick={() => setProfTab("Languages")}
-                >
+                <button className={`skills-tab-btn2 ${profTab === "Languages" ? "active" : ""}`} onClick={() => setProfTab("Languages")}>
                   Languages
                 </button>
-                <button
-                  className={`skills-tab-btn2 ${profTab === "Tools" ? "active" : ""}`}
-                  onClick={() => setProfTab("Tools")}
-                >
+                <button className={`skills-tab-btn2 ${profTab === "Tools" ? "active" : ""}`} onClick={() => setProfTab("Tools")}>
                   Tools
                 </button>
               </div>
             </div>
 
-            {/* Tab content */}
             <div className="skills-tab-content2">
               {profTab === "Languages" && (
                 <div>
@@ -212,31 +181,10 @@ const RaceCreation = ({
                       }}
                       placeholder="Type language..."
                       maxLength={20}
-                      style={{
-                        width: "100%",
-                        padding: "5px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                        fontFamily: "'Caudex', serif",
-                        fontSize: "16px",
-                        marginBottom: "5px",
-                      }}
+                      style={{ width: "100%", padding: "5px", borderRadius: "5px", border: "1px solid #ccc", fontFamily: "'Caudex', serif", fontSize: "16px", marginBottom: "5px" }}
                     />
                   ))}
-                  <button
-                    onClick={() => setLanguagesArray([...languagesArray, ""])}
-                    style={{
-                      marginTop: "5px",
-                      width: "100%",
-                      padding: "5px",
-                      borderRadius: "5px",
-                      border: "none",
-                      backgroundColor: "#199a6a",
-                      color: "#fff",
-                      fontFamily: "'Caudex', serif",
-                      cursor: "pointer",
-                    }}
-                  >
+                  <button onClick={() => setLanguagesArray([...languagesArray, ""])} style={{ marginTop: "5px", width: "100%", padding: "5px", borderRadius: "5px", border: "none", backgroundColor: "#199a6a", color: "#fff", fontFamily: "'Caudex', serif", cursor: "pointer" }}>
                     Add Language
                   </button>
                 </div>
@@ -256,31 +204,10 @@ const RaceCreation = ({
                       }}
                       placeholder="Type tool..."
                       maxLength={20}
-                      style={{
-                        width: "100%",
-                        padding: "5px",
-                        borderRadius: "5px",
-                        border: "1px solid #ccc",
-                        fontFamily: "'Caudex', serif",
-                        fontSize: "16px",
-                        marginBottom: "5px",
-                      }}
+                      style={{ width: "100%", padding: "5px", borderRadius: "5px", border: "1px solid #ccc", fontFamily: "'Caudex', serif", fontSize: "16px", marginBottom: "5px" }}
                     />
                   ))}
-                  <button
-                    onClick={() => setToolsArray([...toolsArray, ""])}
-                    style={{
-                      marginTop: "5px",
-                      width: "100%",
-                      padding: "5px",
-                      borderRadius: "5px",
-                      border: "none",
-                      backgroundColor: "#199a6a",
-                      color: "#fff",
-                      fontFamily: "'Caudex', serif",
-                      cursor: "pointer",
-                    }}
-                  >
+                  <button onClick={() => setToolsArray([...toolsArray, ""])} style={{ marginTop: "5px", width: "100%", padding: "5px", borderRadius: "5px", border: "none", backgroundColor: "#199a6a", color: "#fff", fontFamily: "'Caudex', serif", cursor: "pointer" }}>
                     Add Tool
                   </button>
                 </div>
@@ -294,3 +221,4 @@ const RaceCreation = ({
 };
 
 export default RaceCreation;
+
