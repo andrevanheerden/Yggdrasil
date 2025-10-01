@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "../encounter.css";
 import { Radar } from "react-chartjs-2";
+import fallbackImg from "../../../assets/images/profile.jpg"; // fallback image
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -11,23 +12,14 @@ import {
   Legend,
 } from "chart.js";
 
-ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend
-);
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 const EncounterSheet = ({ encounter }) => {
   const [activeTab, setActiveTab] = useState("Str");
 
-  if (!encounter) {
-    return <p>Select an encounter to view details.</p>;
-  }
+  if (!encounter) return <p>Select an encounter to view details.</p>;
 
-  // === Ability Scores from DB ===
+  // --- Ability Scores from DB ---
   const abilityScores = {
     Str: encounter.encounter_ability_score_str || 10,
     Dex: encounter.encounter_ability_score_dex || 10,
@@ -37,19 +29,43 @@ const EncounterSheet = ({ encounter }) => {
     Cha: encounter.encounter_ability_score_cha || 10,
   };
 
-  // === Calculate modifier ===
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
-  const savingThrows = {
-    Str: getModifier(abilityScores.Str),
-    Dex: getModifier(abilityScores.Dex),
-    Con: getModifier(abilityScores.Con),
-    Int: getModifier(abilityScores.Int),
-    Wis: getModifier(abilityScores.Wis),
-    Cha: getModifier(abilityScores.Cha),
+  // --- Standard skills per ability ---
+  const allSkills = {
+    Str: ["Athletics"],
+    Dex: ["Acrobatics", "Sleight of Hand", "Stealth"],
+    Con: ["Endurance"],
+    Int: ["Arcana", "History", "Investigation", "Nature", "Religion"],
+    Wis: ["Animal Handling", "Insight", "Medicine", "Perception", "Survival"],
+    Cha: ["Deception", "Intimidation", "Performance", "Persuasion"],
   };
 
-  // === Chart Data ===
+  // --- Extra modifiers from DB ---
+  const extraModifiers = [
+    encounter.skill_modefed_1,
+    encounter.skill_modefed_2,
+    encounter.race_skill_modefed_1,
+    encounter.race_skill_modefed_2,
+  ].filter(Boolean); // remove nulls
+
+  // --- Build skills with values ---
+  const skillsByAbility = {};
+  Object.keys(allSkills).forEach((ability) => {
+    const abilityMod = getModifier(abilityScores[ability]);
+    skillsByAbility[ability] = allSkills[ability].map((skill) => {
+      // check if skill has extra +2 from DB
+      const extra = extraModifiers.includes(skill) ? 2 : 0;
+      const total = abilityMod + extra;
+      return { name: skill, value: total };
+    });
+  });
+
+  // --- Chart Data ---
+  const savingThrows = Object.fromEntries(
+    Object.entries(abilityScores).map(([k, v]) => [k, getModifier(v)])
+  );
+
   const abilityData = {
     labels: Object.keys(abilityScores),
     datasets: [
@@ -77,25 +93,9 @@ const EncounterSheet = ({ encounter }) => {
   };
 
   const chartOptions = {
-    scales: {
-      r: {
-        angleLines: { display: true },
-        suggestedMin: -2,
-        suggestedMax: 20,
-      },
-    },
-    plugins: {
-      legend: { display: false },
-    },
+    scales: { r: { angleLines: { display: true }, suggestedMin: -2, suggestedMax: 20 } },
+    plugins: { legend: { display: false } },
   };
-
-  // === Skills from DB ===
-  const skills = [
-    encounter.skill_modefed_1,
-    encounter.skill_modefed_2,
-    encounter.race_skill_modefed_1,
-    encounter.race_skill_modefed_2,
-  ].filter(Boolean); // remove null/undefined
 
   return (
     <div className="page left-page">
@@ -106,7 +106,7 @@ const EncounterSheet = ({ encounter }) => {
           <p>{encounter.race_name}</p>
         </div>
         <img
-          src={encounter.encounter_img || encounter.portrait}
+          src={encounter.encounter_img || fallbackImg}
           alt={encounter.encounter_name}
           className="portrait-img-header"
         />
@@ -152,26 +152,20 @@ const EncounterSheet = ({ encounter }) => {
           <div className="skills-box white-box">
             <div className="skills-tab-content">
               <h3>{activeTab} Skills</h3>
-              {skills.length > 0 ? (
-                <ul>
-                  {skills.map((skill, idx) => (
-                    <li key={idx}>
-                      {skill} ({savingThrows[activeTab] >= 0 ? "+" : ""}
-                      {savingThrows[activeTab]})
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No skills available</p>
-              )}
+              <ul>
+                {skillsByAbility[activeTab].map((skill, idx) => (
+                  <li key={idx}>
+                    {skill.name} {skill.value >= 0 ? "+" : ""}
+                    {skill.value}
+                  </li>
+                ))}
+              </ul>
             </div>
             <div className="skills-tabs-container">
-              {["Str", "Dex", "Con", "Int", "Wis", "Cha"].map((ability) => (
+              {Object.keys(skillsByAbility).map((ability) => (
                 <button
                   key={ability}
-                  className={`skills-tab-btn ${
-                    activeTab === ability ? "active" : ""
-                  }`}
+                  className={`skills-tab-btn ${activeTab === ability ? "active" : ""}`}
                   onClick={() => setActiveTab(ability)}
                 >
                   {ability}
@@ -186,3 +180,5 @@ const EncounterSheet = ({ encounter }) => {
 };
 
 export default EncounterSheet;
+
+
