@@ -20,25 +20,22 @@ const EncounterRaceDes = ({ encounter }) => {
     { label: encounter.race_skill_modefed_2 || "", bonus: "+2" },
   ].filter((h) => h.label);
 
-  // === Parse JSON strings into arrays ===
-  let toolProficiencies = [];
-  let languages = [];
+  // === Parse escaped JSON strings into clean arrays ===
+  const parseEscapedJSONList = (data) => {
+    if (!data) return [];
+    try {
+      // Remove leading/trailing quotes if present
+      const unescaped = data.replace(/^"(.*)"$/, "$1").replace(/\\"/g, '"');
+      const parsed = JSON.parse(unescaped);
+      if (Array.isArray(parsed)) return parsed.map((w) => w.trim());
+      return [parsed.toString().trim()];
+    } catch {
+      return [];
+    }
+  };
 
-  try {
-    toolProficiencies = encounter.race_proficiencie_tools
-      ? JSON.parse(encounter.race_proficiencie_tools)
-      : [];
-  } catch {
-    toolProficiencies = [];
-  }
-
-  try {
-    languages = encounter.race_proficiencie_languages
-      ? JSON.parse(encounter.race_proficiencie_languages)
-      : [];
-  } catch {
-    languages = [];
-  }
+  const toolProficiencies = parseEscapedJSONList(encounter.race_proficiencie_tools);
+  const languages = parseEscapedJSONList(encounter.race_proficiencie_languages);
 
   const tabs = {
     Tools: toolProficiencies,
@@ -86,8 +83,8 @@ const EncounterRaceDes = ({ encounter }) => {
             <div className="background-skills-content">
               <h3>{activeTab}</h3>
               <ul>
-                {Array.isArray(tabs[activeTab]) ? (
-                  tabs[activeTab].map((item, idx) => <li key={idx}>{item}</li>)
+                {tabs[activeTab].length > 0 ? (
+                  tabs[activeTab].map((word, idx) => <li key={idx}>{word}</li>)
                 ) : (
                   <li>No data</li>
                 )}
@@ -117,4 +114,7 @@ const EncounterRaceDes = ({ encounter }) => {
 };
 
 export default EncounterRaceDes;
+
+
+
 
