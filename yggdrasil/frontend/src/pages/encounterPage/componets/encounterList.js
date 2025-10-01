@@ -65,7 +65,6 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
                 <div className="encounter-info">
                   <div className="encounter-name">{enc.encounter_name}</div>
                   <div className="encounter-race">{enc.race_name}</div>
-                  <div className="encounter-class">{enc.encounter_ability_score_str ? "Monster" : ""}</div>
                 </div>
 
                 <div className="encounter-stats">
