@@ -470,6 +470,7 @@
   justify-content: center;
   gap: 30px;
   margin-bottom: 20px;
+  margin-left: 80px;
 }
 
 .background-character-info {
@@ -480,7 +481,7 @@
 }
 
 .background-character-name {
-  font-size: 24px;
+  font-size: 30px;
   font-weight: bold;
   color: #222;
   text-align: center;
@@ -507,7 +508,7 @@
   object-fit: cover;
   border-radius: 75px;
   border: 2px solid #ccc;
-    margin-left: 50px;
+    margin-left: 90px;
 }
 
 /* Main content: description + right column */
