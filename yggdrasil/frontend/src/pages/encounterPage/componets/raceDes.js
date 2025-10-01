@@ -1,27 +1,44 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import goblinImg from "../../../assets/images/goblin.jpg"; // Goblin portrait
+import fallbackImg from "../../../assets/images/profile.jpg"; // fallback portrait
 
-const EncounterRaceDes = () => {
-  const [description, setDescription] = useState(
-    "Goblins are small, cunning, and quick-witted creatures. Known for their resourcefulness and adaptability, they thrive in chaotic environments and often use their intelligence to survive. Despite their mischievous nature, goblins can be loyal allies to those they trust."
-  );
-
+const EncounterRaceDes = ({ encounter }) => {
+  const [description, setDescription] = useState("No description available.");
   const [activeTab, setActiveTab] = useState("Tools");
 
-  const character = {
-    name: "Grik Nok",
-    race: "Goblin",
-    portrait: goblinImg,
-  };
+  useEffect(() => {
+    if (encounter) {
+      setDescription(encounter.race_dec || "No description available.");
+    }
+  }, [encounter]);
 
+  if (!encounter) return <p>Select an encounter to view race details.</p>;
+
+  // === Hex bonuses ===
   const hexBonuses = [
-    { label: "Dexterity", bonus: "+2" },
-    { label: "Stealth", bonus: "+1" },
-  ];
+    { label: encounter.race_skill_modefed_1 || "", bonus: "+2" },
+    { label: encounter.race_skill_modefed_2 || "", bonus: "+2" },
+  ].filter((h) => h.label);
 
-  const toolProficiencies = ["Tinkerer's tools", "Poisoner's kit"];
-  const languages = ["Goblin", "Common"];
+  // === Parse JSON strings into arrays ===
+  let toolProficiencies = [];
+  let languages = [];
+
+  try {
+    toolProficiencies = encounter.race_proficiencie_tools
+      ? JSON.parse(encounter.race_proficiencie_tools)
+      : [];
+  } catch {
+    toolProficiencies = [];
+  }
+
+  try {
+    languages = encounter.race_proficiencie_languages
+      ? JSON.parse(encounter.race_proficiencie_languages)
+      : [];
+  } catch {
+    languages = [];
+  }
 
   const tabs = {
     Tools: toolProficiencies,
@@ -33,14 +50,11 @@ const EncounterRaceDes = () => {
       {/* Header */}
       <div className="background-header">
         <div className="background-character-info">
-          <div className="background-character-name">{character.name}</div>
-          <div className="background-character-details">
-            <div className="background-character-background">{character.race}</div>
-          </div>
+          <div className="background-character-name">{encounter.race_name}</div>
         </div>
         <img
-          src={character.portrait}
-          alt="Portrait"
+          src={encounter.encounter_img || fallbackImg}
+          alt={encounter.race_name}
           className="background-portrait-img"
         />
       </div>
@@ -72,9 +86,11 @@ const EncounterRaceDes = () => {
             <div className="background-skills-content">
               <h3>{activeTab}</h3>
               <ul>
-                {tabs[activeTab].map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
+                {Array.isArray(tabs[activeTab]) ? (
+                  tabs[activeTab].map((item, idx) => <li key={idx}>{item}</li>)
+                ) : (
+                  <li>No data</li>
+                )}
               </ul>
             </div>
 
@@ -101,3 +117,4 @@ const EncounterRaceDes = () => {
 };
 
 export default EncounterRaceDes;
+
