@@ -698,3 +698,36 @@ stroke: #000;
   font-weight: bold;
   color: #444;
 }
+
+
+
+/* inventroy  */
+.inventory-slot.create-new {
+  display: flex;
+  justify-content: center;   /* center horizontally */
+  align-items: center;       /* center vertically */
+  text-align: center;        /* center text inside */
+  border: 2px solid #000000;
+  font-weight: bold;
+  color: #555;
+  cursor: pointer;
+  transition: background 0.2s;
+
+}
+
+.inventory-slot.create-new:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.encounter-popup-overlay {
+  position: fixed;  /* make sure it floats above everything */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.6); /* dim background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* much higher than .top-block */
+}

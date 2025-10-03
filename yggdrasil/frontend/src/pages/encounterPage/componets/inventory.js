@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import daggerImg from "../../../assets/images/dagger.jpg"; // placeholder for dagger
-import armorImg from "../../../assets/images/brokenArmor.jpg";   // placeholder for pouch
-import pouchImg from "../../../assets/images/pouch.jpg"; // placeholder for dagger
-import FullItemView from "./fullItemView"; // import your full item view
+import daggerImg from "../../../assets/images/dagger.jpg"; 
+import armorImg from "../../../assets/images/brokenArmor.jpg"; 
+import pouchImg from "../../../assets/images/pouch.jpg"; 
+import FullItemView from "./fullItemView";
+import CreateItemPopup from "./itemCreater/itemCreatePopup";  // ✅ import popup
 
 const RightPageInventory = () => {
   const [items] = useState([
@@ -11,33 +12,31 @@ const RightPageInventory = () => {
       id: "dagger",
       name: "Crude Goblin Dagger",
       type: "Weapon - Dagger",
-      image: daggerImg, // replace with a dagger image if you have one
-      description:
-        "A jagged dagger fashioned from scrap metal. It’s rusted and uneven, but still sharp enough to be dangerous.",
+      image: daggerImg,
+      description: "A jagged dagger fashioned from scrap metal. It’s rusted and uneven, but still sharp enough to be dangerous.",
       damage: ["1d4 Piercing"],
     },
     {
       id: "armor",
       name: "Tattered Leather Armor",
       type: "Armor - Light",
-      image: armorImg, // replace with an armor image if you have one
-      description:
-        "Patchwork leather armor held together with crude stitching. Offers minimal protection.",
+      image: armorImg,
+      description: "Patchwork leather armor held together with crude stitching. Offers minimal protection.",
       damage: [],
     },
     {
       id: "pouch",
       name: "Small Coin Pouch",
       type: "Misc - Currency",
-      image: pouchImg, // replace with a pouch/coin image if you have one
-      description:
-        "A small pouch containing a handful of copper coins. Likely stolen.",
+      image: pouchImg,
+      description: "A small pouch containing a handful of copper coins. Likely stolen.",
       damage: [],
     },
   ]);
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeTab, setActiveTab] = useState("inventory");
+  const [isCreateOpen, setIsCreateOpen] = useState(false); // ✅ popup toggle
 
   useEffect(() => {
     if (!selectedItem && items.length > 0) {
@@ -105,25 +104,33 @@ const RightPageInventory = () => {
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className={`inventory-slot ${
-                    selectedItem?.id === item.id ? "active" : ""
-                  }`}
+                  className={`inventory-slot ${selectedItem?.id === item.id ? "active" : ""}`}
                   onClick={() => setSelectedItem(item)}
                 >
                   <img src={item.image} alt={item.name} className="inventory-img" />
                 </div>
               ))}
-              {Array.from({ length: 16 - items.length }).map((_, i) => (
-                <div key={`empty-${i}`} className="inventory-slot empty"></div>
-              ))}
+
+              {/* Create New Item Block */}
+              <div
+                className="inventory-slot create-new"
+                onClick={() => setIsCreateOpen(true)}  // ✅ open popup
+              >
+                <span>+ Create New Item</span>
+              </div>
             </div>
           </div>
         </>
       )}
 
       {activeTab === "fullItemView" && <FullItemView item={selectedItem} />}
+
+      {/* Popup */}
+      {isCreateOpen && <CreateItemPopup onClose={() => setIsCreateOpen(false)} />}
     </div>
   );
 };
 
 export default RightPageInventory;
+
+
