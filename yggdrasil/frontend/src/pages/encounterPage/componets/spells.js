@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import "../encounter.css";
 import catImg from "../../../assets/images/cat.jpg";
 import catTraitsImg from "../../../assets/images/catTraits.jpg";
-import FullSpellView from "./fullSpellView"; // Make sure this exists
+import FullSpellView from "./fullSpellView";
+import CreateSpellPopup from "./spellCreater/spellCreatePopup"; // Import your popup
 
 const RightPageSpells = () => {
   const [activeTab, setActiveTab] = useState("spells");
-  const [spells] = useState([
+  const [spells, setSpells] = useState([
     {
       id: 1,
       name: "Summon Cat",
@@ -29,8 +30,8 @@ const RightPageSpells = () => {
     },
   ]);
 
-
   const [selectedSpell, setSelectedSpell] = useState(null);
+  const [showCreatePopup, setShowCreatePopup] = useState(false); // new state for popup
 
   useEffect(() => {
     if (!selectedSpell && spells.length > 0) setSelectedSpell(spells[0]);
@@ -47,9 +48,7 @@ const RightPageSpells = () => {
           Spells
         </button>
         <button
-          className={`right-tab-btn ${
-            activeTab === "fullSpellView" ? "active" : ""
-          }`}
+          className={`right-tab-btn ${activeTab === "fullSpellView" ? "active" : ""}`}
           onClick={() => setActiveTab("fullSpellView")}
         >
           Full Spell View
@@ -64,37 +63,28 @@ const RightPageSpells = () => {
             <div className="inventory-title">
               <div className="item-name">{selectedSpell.name}</div>
               <div className="item-type">
-                {selectedSpell.spellClass} -{" "}
                 {selectedSpell.level === "Cantrip"
                   ? selectedSpell.level
-                  : `Lvl ${selectedSpell.level}`}
+                  : `Lvl ${selectedSpell.level}`}{" "}
+                - {selectedSpell.spellClass}
               </div>
             </div>
             <div className="item-image-container">
-              <img
-                src={selectedSpell.image}
-                alt={selectedSpell.name}
-                className="item-image"
-              />
+              <img src={selectedSpell.image} alt={selectedSpell.name} className="item-image" />
             </div>
           </div>
 
           {/* Middle Section */}
           <div className="inventory-middle">
-<div className="inventory-description-box">
-<div
-  className="description-title"
-  style={{
-    fontWeight: 'bold',
-    marginBottom: '8px',
-    fontSize: '18px'
-  }}
->
-  Description
-</div>
-
-  {selectedSpell.description}
-</div>
+            <div className="inventory-description-box">
+              <div
+                className="description-title"
+                style={{ fontWeight: "bold", marginBottom: "8px", fontSize: "18px" }}
+              >
+                Description
+              </div>
+              {selectedSpell.description}
+            </div>
 
             <div className="damage-container">
               {selectedSpell.damage.slice(0, 3).map((dmg, i) => (
@@ -103,8 +93,6 @@ const RightPageSpells = () => {
                 </div>
               ))}
             </div>
-
-
           </div>
 
           {/* Spells Grid */}
@@ -113,12 +101,10 @@ const RightPageSpells = () => {
               {spells.map((spell) => (
                 <div
                   key={spell.id}
-                  className={`spells-slot ${
-                    selectedSpell?.id === spell.id ? "active" : ""
-                  }`}
+                  className={`spells-slot ${selectedSpell?.id === spell.id ? "active" : ""}`}
                   onClick={() => setSelectedSpell(spell)}
                 >
-                  <img src={spell.image} alt={spell.name} className="spells-img" />
+                  {spell.image && <img src={spell.image} alt={spell.name} className="spells-img" />}
                   <div className="spells-info">
                     <div className="spells-name">{spell.name}</div>
                     <div className="spells-class">{spell.spellClass}</div>
@@ -128,16 +114,38 @@ const RightPageSpells = () => {
                   </div>
                 </div>
               ))}
+
+              {/* Create Spell Box */}
+              <div
+                className="spells-slot create-spell-box"
+                onClick={() => setShowCreatePopup(true)}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "2px dashed #666",
+                  cursor: "pointer",
+                  padding: "10px",
+                  fontFamily: "'Caudex', serif",
+                  fontSize: "16px",
+                  color: "#333",
+                }}
+              >
+                + Create Spell
+              </div>
             </div>
           </div>
         </>
       )}
 
-      {activeTab === "fullSpellView" && selectedSpell && (
-        <FullSpellView spell={selectedSpell} />
-      )}
+      {activeTab === "fullSpellView" && selectedSpell && <FullSpellView spell={selectedSpell} />}
+
+      {/* Create Spell Popup */}
+      {showCreatePopup && <CreateSpellPopup onClose={() => setShowCreatePopup(false)} />}
     </div>
   );
 };
 
 export default RightPageSpells;
+
