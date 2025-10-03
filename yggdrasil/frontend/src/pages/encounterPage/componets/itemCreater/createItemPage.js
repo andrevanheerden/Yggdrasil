@@ -59,7 +59,7 @@ const CreateItemPage = () => {
             position: "relative",
             cursor: "pointer",
             flexShrink: 0,
-            right: '20px ',
+            right: '30px ',
           }}
           onClick={() => document.getElementById("item-image").click()}
         >

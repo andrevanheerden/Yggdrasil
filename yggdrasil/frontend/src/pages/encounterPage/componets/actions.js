@@ -4,6 +4,7 @@ import dashImg from "../../../assets/images/dash.jpg";
 import attackImg from "../../../assets/images/attack.jpg";
 import dodgeImg from "../../../assets/images/dodge.jpg";
 import FullActionView from "./fullActionView";
+import CreateActionPopup from "./actionCreater/actionCreatePopup"; // Make sure this exists
 
 const RightPageActions = () => {
   const [activeTab, setActiveTab] = useState("actions");
@@ -36,6 +37,7 @@ const RightPageActions = () => {
   ]);
 
   const [selectedAction, setSelectedAction] = useState(null);
+  const [showCreateAction, setShowCreateAction] = useState(false);
 
   useEffect(() => {
     if (!selectedAction && actions.length > 0) setSelectedAction(actions[0]);
@@ -94,6 +96,27 @@ const RightPageActions = () => {
                   </div>
                 </div>
               ))}
+
+              {/* Create Action Slot */}
+              <div
+                className="spells-slot create-slot"
+                  style={{
+                  display: "flex",
+                  height: "55px",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  border: "2px solid #666",
+                  cursor: "pointer",
+                  padding: "10px",
+                  fontFamily: "'Caudex', serif",
+                  fontSize: "16px",
+                  color: "#333",
+                }}
+                onClick={() => setShowCreateAction(true)}
+              >
+                + Create Action
+              </div>
             </div>
           </div>
         </>
@@ -102,6 +125,11 @@ const RightPageActions = () => {
       {/* Full Action View */}
       {activeTab === "fullActionView" && selectedAction && (
         <FullActionView action={selectedAction} />
+      )}
+
+      {/* Create Action Popup */}
+      {showCreateAction && (
+        <CreateActionPopup onClose={() => setShowCreateAction(false)} />
       )}
     </div>
   );

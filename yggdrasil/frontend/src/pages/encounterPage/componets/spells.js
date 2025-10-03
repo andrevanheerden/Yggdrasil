@@ -121,10 +121,11 @@ const RightPageSpells = () => {
                 onClick={() => setShowCreatePopup(true)}
                 style={{
                   display: "flex",
+                  height: "60px",
                   flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
-                  border: "2px dashed #666",
+                  border: "2px solid #666",
                   cursor: "pointer",
                   padding: "10px",
                   fontFamily: "'Caudex', serif",

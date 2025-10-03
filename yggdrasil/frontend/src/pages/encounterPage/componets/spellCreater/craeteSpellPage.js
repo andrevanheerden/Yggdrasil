@@ -9,7 +9,7 @@ const CreateSpellPage = () => {
 
   const [effectA, setEffectA] = useState([""]);
   const [effectB, setEffectB] = useState([
-    { level: 0, range: "", area: "", amount: "", effect: "" }
+    { level: 0, range: "", area: "", cost: "", effect: "" }
   ]);
 
   return (
@@ -59,6 +59,7 @@ const CreateSpellPage = () => {
             position: "relative",
             cursor: "pointer",
             flexShrink: 0,
+            right: '30px ',
           }}
           onClick={() => document.getElementById("spell-image").click()}
         >
@@ -81,6 +82,7 @@ const CreateSpellPage = () => {
                 color: "#666",
                 textAlign: "center",
                 padding: "5px",
+                
               }}
             >
               Click to choose image
@@ -210,6 +212,7 @@ const CreateSpellPage = () => {
                     fontFamily: "'Caudex', serif",
                     fontSize: "14px",
                     backgroundColor: "transparent",
+                    marginTop: "8px",
                   }}
                 >
                   <option value={0}>Cantrip (0)</option>
@@ -263,13 +266,13 @@ const CreateSpellPage = () => {
 
                 <input
                   type="text"
-                  value={eff.amount}
+                  value={eff.cost}
                   onChange={(e) => {
                     const newArr = [...effectB];
-                    newArr[index].amount = e.target.value.slice(0, 18);
+                    newArr[index].cost = e.target.value.slice(0, 18);
                     setEffectB(newArr);
                   }}
-                  placeholder="Amount"
+                  placeholder="cost"
                   maxLength={18}
                   style={{
                     width: "100%",
