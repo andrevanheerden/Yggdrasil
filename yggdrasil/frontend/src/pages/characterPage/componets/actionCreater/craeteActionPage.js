@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../encounter.css";
+import "../../character.css";
 
 const CreateActionPage = () => {
   const [actionName, setActionName] = useState("");
@@ -219,6 +219,7 @@ const CreateActionPage = () => {
   <option value="Defense">Defense</option>
   <option value="Combat">Combat</option>
 </select>
+
 
                 <input
                   type="text"

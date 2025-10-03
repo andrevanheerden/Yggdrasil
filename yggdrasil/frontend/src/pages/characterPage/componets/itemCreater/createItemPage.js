@@ -1,15 +1,15 @@
 import React, { useState } from "react";
-import "../../encounter.css";
+import "../../character.css";
 
-const CreateActionPage = () => {
-  const [actionName, setActionName] = useState("");
-  const [actionType, setActionType] = useState("");
-  const [actionImage, setActionImage] = useState(null);
+const CreateItemPage = () => {
+  const [itemName, setItemName] = useState("");
+  const [itemType, setItemType] = useState("");
+  const [itemImage, setItemImage] = useState(null);
   const [description, setDescription] = useState("");
 
-  const [effectA, setEffectA] = useState([""]);
-  const [effectB, setEffectB] = useState([
-    { level: 0, range: "", area: "", cost: "", effect: "" }
+  const [profA, setProfA] = useState([""]);
+  const [profB, setProfB] = useState([
+    { name: "", range: "", area: "", amount: "", effect: "" }
   ]);
 
   return (
@@ -20,9 +20,9 @@ const CreateActionPage = () => {
         <div style={{ display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
           <input
             type="text"
-            value={actionName}
-            onChange={(e) => setActionName(e.target.value)}
-            placeholder="Action Name"
+            value={itemName}
+            onChange={(e) => setItemName(e.target.value)}
+            placeholder="Item Name"
             style={{
               width: "500px",
               padding: "8px",
@@ -34,9 +34,9 @@ const CreateActionPage = () => {
           />
           <input
             type="text"
-            value={actionType}
-            onChange={(e) => setActionType(e.target.value)}
-            placeholder="Action Type"
+            value={itemType}
+            onChange={(e) => setItemType(e.target.value)}
+            placeholder="Item Type"
             style={{
               width: "500px",
               padding: "8px",
@@ -59,14 +59,14 @@ const CreateActionPage = () => {
             position: "relative",
             cursor: "pointer",
             flexShrink: 0,
-            right: '30px',
+            right: '30px ',
           }}
-          onClick={() => document.getElementById("action-image").click()}
+          onClick={() => document.getElementById("item-image").click()}
         >
-          {actionImage ? (
+          {itemImage ? (
             <img
-              src={URL.createObjectURL(actionImage)}
-              alt="Action"
+              src={URL.createObjectURL(itemImage)}
+              alt="Item"
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           ) : (
@@ -88,11 +88,11 @@ const CreateActionPage = () => {
             </div>
           )}
           <input
-            id="action-image"
+            id="item-image"
             type="file"
             accept="image/*"
             style={{ display: "none" }}
-            onChange={(e) => setActionImage(e.target.files[0])}
+            onChange={(e) => setItemImage(e.target.files[0])}
           />
         </div>
       </div>
@@ -131,26 +131,26 @@ const CreateActionPage = () => {
               color: "#333",
               textAlign: "left",
             }}
-            placeholder="Write a description of the action and its information here..."
+            placeholder="Write a description of the item and its information here..."
           />
         </div>
 
-        {/* Right Column: Effect & Damage */}
+        {/* Right Column: Damage & Abilities */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Effect Section */}
+          {/* Damage Section */}
           <div className="skills-box white-box3" style={{ width: "240px", height: "200px" }}>
             <h3>Damage</h3>
-            {effectA.map((eff, index) => (
+            {profA.map((prof, index) => (
               <input
                 key={index}
                 type="text"
-                value={eff}
+                value={prof}
                 onChange={(e) => {
-                  const newArr = [...effectA];
+                  const newArr = [...profA];
                   newArr[index] = e.target.value.slice(0, 20);
-                  setEffectA(newArr);
+                  setProfA(newArr);
                 }}
-                placeholder="Damage type..."
+                placeholder="D* type..."
                 maxLength={20}
                 style={{
                   width: "100%",
@@ -164,7 +164,7 @@ const CreateActionPage = () => {
               />
             ))}
             <button
-              onClick={() => setEffectA([...effectA, ""])}
+              onClick={() => setProfA([...profA, ""])}
               style={{
                 marginTop: "5px",
                 width: "100%",
@@ -181,10 +181,10 @@ const CreateActionPage = () => {
             </button>
           </div>
 
-          {/* Abilities Section with Level Dropdown */}
+          {/* Abilities Section */}
           <div className="skills-box white-box3" style={{ width: "260px", height: "395px", overflowY: "auto", padding: "5px" }}>
-            <h3>Effects</h3>
-            {effectB.map((eff, index) => (
+            <h3>Abilities</h3>
+            {profB.map((prof, index) => (
               <div
                 key={index}
                 style={{
@@ -194,39 +194,32 @@ const CreateActionPage = () => {
                   marginBottom: "10px",
                 }}
               >
-{/* Level dropdown changed to Action Type dropdown */}
-<select
-  value={eff.level}  // You might want to rename 'level' to 'actionType' for clarity
-  onChange={(e) => {
-    const newArr = [...effectB];
-    newArr[index].level = e.target.value;  // store the string value now
-    setEffectB(newArr);
-  }}
-  style={{
-    width: "100%",
-    height: "30px",
-    padding: "5px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    fontFamily: "'Caudex', serif",
-    fontSize: "14px",
-    backgroundColor: "transparent",
-    marginTop: "8px",
-  }}
->
-  <option value="">Action Type</option>
-  <option value="Movement">Movement</option>
-  <option value="Defense">Defense</option>
-  <option value="Combat">Combat</option>
-</select>
-
                 <input
                   type="text"
-                  value={eff.range}
+                  value={prof.name}
                   onChange={(e) => {
-                    const newArr = [...effectB];
+                    const newArr = [...profB];
+                    newArr[index].name = e.target.value.slice(0, 18);
+                    setProfB(newArr);
+                  }}
+                  placeholder="Name"
+                  maxLength={18}
+                  style={{
+                    width: "100%",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    fontFamily: "'Caudex', serif",
+                    fontSize: "14px",
+                  }}
+                />
+                <input
+                  type="text"
+                  value={prof.range}
+                  onChange={(e) => {
+                    const newArr = [...profB];
                     newArr[index].range = e.target.value.slice(0, 18);
-                    setEffectB(newArr);
+                    setProfB(newArr);
                   }}
                   placeholder="Range"
                   maxLength={18}
@@ -239,14 +232,13 @@ const CreateActionPage = () => {
                     fontSize: "14px",
                   }}
                 />
-
                 <input
                   type="text"
-                  value={eff.area}
+                  value={prof.area}
                   onChange={(e) => {
-                    const newArr = [...effectB];
+                    const newArr = [...profB];
                     newArr[index].area = e.target.value.slice(0, 18);
-                    setEffectB(newArr);
+                    setProfB(newArr);
                   }}
                   placeholder="Area"
                   maxLength={18}
@@ -259,16 +251,15 @@ const CreateActionPage = () => {
                     fontSize: "14px",
                   }}
                 />
-
                 <input
                   type="text"
-                  value={eff.cost}
+                  value={prof.amount}
                   onChange={(e) => {
-                    const newArr = [...effectB];
-                    newArr[index].cost = e.target.value.slice(0, 18);
-                    setEffectB(newArr);
+                    const newArr = [...profB];
+                    newArr[index].amount = e.target.value.slice(0, 18);
+                    setProfB(newArr);
                   }}
-                  placeholder="cost"
+                  placeholder="Amount"
                   maxLength={18}
                   style={{
                     width: "100%",
@@ -279,13 +270,12 @@ const CreateActionPage = () => {
                     fontSize: "14px",
                   }}
                 />
-
                 <textarea
-                  value={eff.effect}
+                  value={prof.effect}
                   onChange={(e) => {
-                    const newArr = [...effectB];
+                    const newArr = [...profB];
                     newArr[index].effect = e.target.value.slice(0, 420);
-                    setEffectB(newArr);
+                    setProfB(newArr);
                   }}
                   placeholder="Effect"
                   maxLength={420}
@@ -313,4 +303,8 @@ const CreateActionPage = () => {
   );
 };
 
-export default CreateActionPage;
+export default CreateItemPage;
+
+
+
+

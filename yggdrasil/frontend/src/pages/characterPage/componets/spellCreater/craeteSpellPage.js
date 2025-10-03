@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import "../../encounter.css";
+import "../../character.css";
 
-const CreateActionPage = () => {
-  const [actionName, setActionName] = useState("");
-  const [actionType, setActionType] = useState("");
-  const [actionImage, setActionImage] = useState(null);
+const CreateSpellPage = () => {
+  const [spellName, setSpellName] = useState("");
+  const [spellType, setSpellType] = useState("");
+  const [spellImage, setSpellImage] = useState(null);
   const [description, setDescription] = useState("");
 
   const [effectA, setEffectA] = useState([""]);
@@ -20,9 +20,9 @@ const CreateActionPage = () => {
         <div style={{ display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
           <input
             type="text"
-            value={actionName}
-            onChange={(e) => setActionName(e.target.value)}
-            placeholder="Action Name"
+            value={spellName}
+            onChange={(e) => setSpellName(e.target.value)}
+            placeholder="Spell Name"
             style={{
               width: "500px",
               padding: "8px",
@@ -34,9 +34,9 @@ const CreateActionPage = () => {
           />
           <input
             type="text"
-            value={actionType}
-            onChange={(e) => setActionType(e.target.value)}
-            placeholder="Action Type"
+            value={spellType}
+            onChange={(e) => setSpellType(e.target.value)}
+            placeholder="Spell Type"
             style={{
               width: "500px",
               padding: "8px",
@@ -59,14 +59,14 @@ const CreateActionPage = () => {
             position: "relative",
             cursor: "pointer",
             flexShrink: 0,
-            right: '30px',
+            right: '30px ',
           }}
-          onClick={() => document.getElementById("action-image").click()}
+          onClick={() => document.getElementById("spell-image").click()}
         >
-          {actionImage ? (
+          {spellImage ? (
             <img
-              src={URL.createObjectURL(actionImage)}
-              alt="Action"
+              src={URL.createObjectURL(spellImage)}
+              alt="Spell"
               style={{ width: "100%", height: "100%", objectFit: "cover" }}
             />
           ) : (
@@ -82,17 +82,18 @@ const CreateActionPage = () => {
                 color: "#666",
                 textAlign: "center",
                 padding: "5px",
+                
               }}
             >
               Click to choose image
             </div>
           )}
           <input
-            id="action-image"
+            id="spell-image"
             type="file"
             accept="image/*"
             style={{ display: "none" }}
-            onChange={(e) => setActionImage(e.target.files[0])}
+            onChange={(e) => setSpellImage(e.target.files[0])}
           />
         </div>
       </div>
@@ -131,7 +132,7 @@ const CreateActionPage = () => {
               color: "#333",
               textAlign: "left",
             }}
-            placeholder="Write a description of the action and its information here..."
+            placeholder="Write a description of the spell and its information here..."
           />
         </div>
 
@@ -194,31 +195,34 @@ const CreateActionPage = () => {
                   marginBottom: "10px",
                 }}
               >
-{/* Level dropdown changed to Action Type dropdown */}
-<select
-  value={eff.level}  // You might want to rename 'level' to 'actionType' for clarity
-  onChange={(e) => {
-    const newArr = [...effectB];
-    newArr[index].level = e.target.value;  // store the string value now
-    setEffectB(newArr);
-  }}
-  style={{
-    width: "100%",
-    height: "30px",
-    padding: "5px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    fontFamily: "'Caudex', serif",
-    fontSize: "14px",
-    backgroundColor: "transparent",
-    marginTop: "8px",
-  }}
->
-  <option value="">Action Type</option>
-  <option value="Movement">Movement</option>
-  <option value="Defense">Defense</option>
-  <option value="Combat">Combat</option>
-</select>
+                {/* Level dropdown */}
+                <select
+                  value={eff.level}
+                  onChange={(e) => {
+                    const newArr = [...effectB];
+                    newArr[index].level = Number(e.target.value);
+                    setEffectB(newArr);
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "30px",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    fontFamily: "'Caudex', serif",
+                    fontSize: "14px",
+                    backgroundColor: "transparent",
+                    marginTop: "8px",
+                  }}
+                >
+                  <option value={0}>Cantrip (0)</option>
+                  <option value={1}>Level 1</option>
+                  <option value={2}>Level 2</option>
+                  <option value={3}>Level 3</option>
+                  <option value={4}>Level 4</option>
+                  <option value={5}>Level 5</option>
+                  <option value={6}>Level 6</option>
+                </select>
 
                 <input
                   type="text"
@@ -313,4 +317,4 @@ const CreateActionPage = () => {
   );
 };
 
-export default CreateActionPage;
+export default CreateSpellPage;

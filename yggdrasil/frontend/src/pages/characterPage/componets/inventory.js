@@ -3,6 +3,7 @@ import "../character.css";
 import swordImg from "../../../assets/images/sword.jpg";
 import ringImg from "../../../assets/images/ring.jpg";
 import FullItemView from "./fullItemView"; // import your full item view
+import CreateItemPopup from "./itemCreater/itemCreatePopup"; // new popup import
 
 const RightPageInventory = () => {
   const [items] = useState([
@@ -26,7 +27,8 @@ const RightPageInventory = () => {
   ]);
 
   const [selectedItem, setSelectedItem] = useState(null);
-  const [activeTab, setActiveTab] = useState("inventory"); // NEW: active tab state
+  const [activeTab, setActiveTab] = useState("inventory");
+  const [showCreateItem, setShowCreateItem] = useState(false);
 
   useEffect(() => {
     if (!selectedItem && items.length > 0) {
@@ -72,13 +74,12 @@ const RightPageInventory = () => {
 
           {/* Middle Section */}
           <div className="inventory-middle">
-<div className="inventory-description-container">
-  
-  <div className="inventory-description-box">
-    <div className="inventory-description-title">Description</div>
-    {selectedItem.description}
-  </div>
-</div>
+            <div className="inventory-description-container">
+              <div className="inventory-description-box">
+                <div className="inventory-description-title">Description</div>
+                {selectedItem.description}
+              </div>
+            </div>
 
             <div className="damage-container">
               {selectedItem.damage.slice(0, 3).map((dmg, i) => (
@@ -101,17 +102,29 @@ const RightPageInventory = () => {
                   <img src={item.image} alt={item.name} className="inventory-img" />
                 </div>
               ))}
-              {Array.from({ length: 16 - items.length }).map((_, i) => (
-                <div key={`empty-${i}`} className="inventory-slot empty"></div>
-              ))}
+
+              {/* Create Item Slot */}
+              <div
+                className="inventory-slot create-new"
+                onClick={() => setShowCreateItem(true)}
+              >
+                + Create Item
+              </div>
             </div>
           </div>
         </>
       )}
 
       {activeTab === "fullItemView" && <FullItemView item={selectedItem} />}
+
+      {/* Create Item Popup */}
+      {showCreateItem && (
+        <CreateItemPopup onClose={() => setShowCreateItem(false)} />
+      )}
     </div>
   );
 };
 
 export default RightPageInventory;
+
+
