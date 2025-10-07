@@ -1,11 +1,19 @@
-// CreateItemPopup.jsx
 import React from "react";
 import ReactDOM from "react-dom";
 import "../../encounter.css";
 import pageBg from "../../../../assets/images/page.png";
 import CreateItemPage from "./createItemPage";
 
-const CreateItemPopup = ({ onClose }) => {
+const CreateItemPopup = ({ onClose, encounterId, onItemCreated }) => {
+  // Reference the child page for submit
+  let pageRef = React.createRef();
+
+  const handleSubmitClick = () => {
+    if (pageRef.current) {
+      pageRef.current.handleSubmit(); // call submit in child
+    }
+  };
+
   return ReactDOM.createPortal(
     <div
       className="character-popup-overlay"
@@ -22,19 +30,39 @@ const CreateItemPopup = ({ onClose }) => {
         zIndex: 9999,
       }}
     >
-      {/* Exit button */}
-      <button
-        className="exit-x-btn"
-        onClick={onClose}
-        style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
-          zIndex: 10000,
-        }}
-      >
-        ✖
-      </button>
+      {/* Top Buttons */}
+      <div style={{ position: "absolute", top: "94%", right: 20, display: "flex", gap: "10px", zIndex: 10000 }}>
+        <button
+          onClick={handleSubmitClick}
+          style={{
+            padding: "8px 16px",
+            fontFamily: "'Caudex', serif",
+            backgroundColor: "#199a6a",
+            color: "#fff",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Submit
+        </button>
+
+        <button
+          className="exit-x-btn"
+          onClick={onClose}
+          style={{
+            padding: "8px 16px",
+            fontFamily: "'Caudex', serif",
+            backgroundColor: "#c0392b",
+            color: "#fff",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          ✖
+        </button>
+      </div>
 
       <div
         className="character-popup"
@@ -46,12 +74,17 @@ const CreateItemPopup = ({ onClose }) => {
           zIndex: 10000,
         }}
       >
-        <CreateItemPage />
+        <CreateItemPage
+          ref={pageRef}
+          encounterId={encounterId}
+          onItemCreated={onItemCreated}
+        />
       </div>
     </div>,
-    document.body // ✅ Render outside React tree so it is above .top-block
+    document.body
   );
 };
 
 export default CreateItemPopup;
+
 

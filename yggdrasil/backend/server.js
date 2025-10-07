@@ -12,6 +12,7 @@ const campaignRoutes = require('./routes/campaignRoutes');
 const messageRoutes = require("./routes/messageRoutes");
 const inviteRoutes = require('./routes/inviteRoutes');
 const encounterRoutes = require("./routes/encounterRoutes");
+const encounterInventoryRoutes = require("./routes/encounterInventoryRoutes");
 
 const app = express();
 
@@ -34,19 +35,20 @@ app.use(fileUpload({
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Routes
+// API Routes
 app.use('/api/users', userRoutes);
 app.use('/api/campaigns', campaignRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use("/api/encounters", encounterRoutes);
+app.use("/api/encounter-inventory", encounterInventoryRoutes); // moved above 404
 
 // Test route
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
 
-// 404 handler
+// 404 handler (must be after all other routes)
 app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
