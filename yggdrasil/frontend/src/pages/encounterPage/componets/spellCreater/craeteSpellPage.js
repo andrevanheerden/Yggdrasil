@@ -2,7 +2,7 @@ import React, { useState, forwardRef, useImperativeHandle, useEffect } from "rea
 import "../../encounter.css";
 import axios from "axios";
 
-const CreateSpellPage = forwardRef(({ onSpellCreated }, ref) => {
+const CreateSpellPage = forwardRef(({ onSpellCreated, encounterId }, ref) => {
   const [spellName, setSpellName] = useState("");
   const [spellType, setSpellType] = useState("");
   const [spellImage, setSpellImage] = useState(null);
@@ -10,64 +10,57 @@ const CreateSpellPage = forwardRef(({ onSpellCreated }, ref) => {
   const [effectA, setEffectA] = useState([""]);
   const [effectB, setEffectB] = useState([{ level: 0, range: "", area: "", cost: "", effect: "" }]);
 
-  const [currentEncounterId, setCurrentEncounterId] = useState(null);
-
-  useEffect(() => {
-    const storedEncounterId = localStorage.getItem("selectedEncounterId");
-    if (storedEncounterId) {
-      setCurrentEncounterId(storedEncounterId);
-      console.log("Loaded Encounter ID:", storedEncounterId);
-    } else {
-      console.warn("No encounter selected in localStorage");
-    }
-  }, []);
-
+  // Expose handleSubmit to parent
   useImperativeHandle(ref, () => ({ handleSubmit }));
 
-  const handleSubmit = async () => {
-    if (!currentEncounterId) {
-      alert("No encounter selected");
-      return;
-    }
+const handleSubmit = async () => {
+  const encounterIdToUse = encounterId || localStorage.getItem("selectedEncounterId");
+  if (!encounterIdToUse) {
+    alert("No encounter selected. Please open an encounter first.");
+    return;
+  }
 
-    try {
-      const formData = new FormData();
-      formData.append("encounter_id", currentEncounterId);
-      formData.append("item_name", spellName);
-      formData.append("item_type", spellType);
-      formData.append("item_description", description);
+  try {
+    const formData = new FormData();
+    formData.append("encounter_id", encounterIdToUse);
+    formData.append("spell_name", spellName);
+    formData.append("spell_type", spellType);
+    formData.append("spell_description", description);
 
-      const firstEffect = effectB[0] || {};
-      formData.append("item_range", firstEffect.range || "");
-      formData.append("item_area", firstEffect.area || "");
-      formData.append("item_cost", firstEffect.cost || "");
-      formData.append("item_effect", firstEffect.effect || "");
+    const firstEffect = effectB[0] || {};
+    formData.append("spell_level", firstEffect.level || 0); // ✅ added
+    formData.append("spell_range", firstEffect.range || "");
+    formData.append("spell_area", firstEffect.area || "");
+    formData.append("spell_cost", firstEffect.cost || "");
+    formData.append("spell_effects", firstEffect.effect || "");
+    formData.append("damage_types", JSON.stringify(effectA.filter(d => d.trim() !== "")));
 
-      formData.append("damage_types", JSON.stringify(effectA));
-      formData.append("abilities", JSON.stringify(effectB));
+    if (spellImage) formData.append("spell_image", spellImage);
 
-      if (spellImage) formData.append("item_image", spellImage);
+    const res = await axios.post(
+      "http://localhost:5000/api/encounter-spells",
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
 
-      const res = await axios.post(
-        "http://localhost:5000/api/encounter-spells",
-        formData,
-        { headers: { "Content-Type": "multipart/form-data" } }
-      );
+    alert("Spell created successfully!");
+    if (onSpellCreated) onSpellCreated(res.data);
 
-      alert("Spell created successfully!");
-      if (onSpellCreated) onSpellCreated(res.data);
+    // Reset form
+    setSpellName("");
+    setSpellType("");
+    setSpellImage(null);
+    setDescription("");
+    setEffectA([""]);
+    setEffectB([{ level: 0, range: "", area: "", cost: "", effect: "" }]);
+  } catch (err) {
+    console.error("❌ Failed to create spell:", err);
+    alert("Failed to create spell");
+  }
+};
 
-      setSpellName("");
-      setSpellType("");
-      setSpellImage(null);
-      setDescription("");
-      setEffectA([""]);
-      setEffectB([{ level: 0, range: "", area: "", cost: "", effect: "" }]);
-    } catch (err) {
-      console.error(err);
-      alert("Failed to create spell");
-    }
-  };
+
+
 
   return (
     <div className="character-main">

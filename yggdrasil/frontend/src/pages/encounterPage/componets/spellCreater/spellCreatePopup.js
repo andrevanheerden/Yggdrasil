@@ -1,20 +1,22 @@
-import React from "react";
+import React, { useRef } from "react";
 import ReactDOM from "react-dom";
 import "../../encounter.css";
 import pageBg from "../../../../assets/images/page.png";
 import CreateSpellPage from "./craeteSpellPage";
 
 const CreateSpellPopup = ({ onClose, encounterId, onSpellCreated }) => {
-  // Reference the child page for submit
-  let pageRef = React.createRef();
+  const pageRef = useRef();
+
+  // Always ensure we have an encounter ID: prop first, then localStorage
+  const effectiveEncounterId = encounterId || localStorage.getItem("selectedEncounterId");
 
   const handleSubmitClick = () => {
-    if (!encounterId) {
-      alert("No encounter selected");
+    if (!effectiveEncounterId) {
+      alert("No encounter selected. Please open an encounter first.");
       return;
     }
     if (pageRef.current) {
-      pageRef.current.handleSubmit(); // call submit in child
+      pageRef.current.handleSubmit(effectiveEncounterId); // pass the ID to child
     }
   };
 
@@ -80,7 +82,7 @@ const CreateSpellPopup = ({ onClose, encounterId, onSpellCreated }) => {
       >
         <CreateSpellPage
           ref={pageRef}
-          encounterId={encounterId}
+          encounterId={effectiveEncounterId} // always passes the ID
           onSpellCreated={onSpellCreated}
         />
       </div>
