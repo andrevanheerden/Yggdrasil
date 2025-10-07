@@ -7,7 +7,7 @@ const {
   deleteEncounterSpell
 } = require("../models/encounterSpellsModel");
 
-// ID generator: ENC-SPL-XXX-123-123
+// ID generator
 const generateEncounterSpellId = () => {
   const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const randomLetters = (count = 3) =>
@@ -22,56 +22,55 @@ exports.create = async (req, res) => {
   try {
     const {
       encounter_id,
-      item_name,
-      item_type,
-      item_description,
-      item_range,
-      item_area,
-      item_cost,
-      item_effect,
-      damage_types // <- this comes as a JSON string
+      spell_name,
+      spell_type,
+      spell_level,
+      spell_description,
+      spell_range,
+      spell_area,
+      spell_cost,
+      spell_effects,
+      damage_types
     } = req.body;
 
-    if (!encounter_id) {
-      return res.status(400).json({ error: "Encounter ID is required" });
-    }
+    if (!encounter_id) return res.status(400).json({ error: "Encounter ID is required" });
 
-    const encounter_item_id = generateEncounterItemId();
+    const encounter_spell_id = generateEncounterSpellId();
 
-    let item_image = null;
-    if (req.files && req.files.item_image) {
-      const file = req.files.item_image;
+    let spell_image = null;
+    if (req.files && req.files.spell_image) {
+      const file = req.files.spell_image;
       const result = await cloudinary.uploader.upload(file.tempFilePath, {
-        folder: "encounter_items",
+        folder: "encounter_spells",
         use_filename: true
       });
-      item_image = result.secure_url;
+      spell_image = result.secure_url;
       fs.unlink(file.tempFilePath, (err) => { if (err) console.error(err); });
     }
 
     const data = {
-      encounter_item_id,
+      encounter_spell_id,
       encounter_id,
-      item_name,
-      item_type,
-      item_image,
-      item_description,
-      item_range,
-      item_area,
-      item_cost,
-      item_effect,
-      damage_types: damage_types ? JSON.parse(damage_types) : [] // <-- parse string
+      spell_name,
+      spell_type,
+      spell_level,
+      spell_image,
+      spell_description,
+      spell_range,
+      spell_area,
+      spell_cost,
+      spell_effects,
+      damage_types: damage_types ? JSON.parse(damage_types) : []
     };
 
-    await createEncounterItem(data);
-    res.status(201).json({ message: "Item created", encounter_item_id });
+    await createEncounterSpell(data);
+
+    res.status(201).json({ message: "Spell created", encounter_spell_id });
   } catch (err) {
-    console.error("❌ Create item error:", err);
-    res.status(500).json({ error: "Failed to create item" });
+    console.error("❌ Create spell error:", err);
+    res.status(500).json({ error: "Failed to create spell" });
   }
 };
-
-
 
 // GET spells by encounter
 exports.getByEncounter = async (req, res) => {

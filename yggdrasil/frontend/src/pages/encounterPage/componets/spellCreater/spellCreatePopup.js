@@ -1,11 +1,23 @@
-// CreateItemPopup.jsx
 import React from "react";
 import ReactDOM from "react-dom";
 import "../../encounter.css";
 import pageBg from "../../../../assets/images/page.png";
 import CreateSpellPage from "./craeteSpellPage";
 
-const CreateSpellPopup = ({ onClose }) => {
+const CreateSpellPopup = ({ onClose, encounterId, onSpellCreated }) => {
+  // Reference the child page for submit
+  let pageRef = React.createRef();
+
+  const handleSubmitClick = () => {
+    if (!encounterId) {
+      alert("No encounter selected");
+      return;
+    }
+    if (pageRef.current) {
+      pageRef.current.handleSubmit(); // call submit in child
+    }
+  };
+
   return ReactDOM.createPortal(
     <div
       className="character-popup-overlay"
@@ -22,19 +34,39 @@ const CreateSpellPopup = ({ onClose }) => {
         zIndex: 9999,
       }}
     >
-      {/* Exit button */}
-      <button
-        className="exit-x-btn"
-        onClick={onClose}
-        style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
-          zIndex: 10000,
-        }}
-      >
-        ✖
-      </button>
+      {/* Top Buttons */}
+      <div style={{ position: "absolute", top: "94%", right: 20, display: "flex", gap: "10px", zIndex: 10000 }}>
+        <button
+          onClick={handleSubmitClick}
+          style={{
+            padding: "8px 16px",
+            fontFamily: "'Caudex', serif",
+            backgroundColor: "#199a6a",
+            color: "#fff",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Submit
+        </button>
+
+        <button
+          className="exit-x-btn"
+          onClick={onClose}
+          style={{
+            padding: "8px 16px",
+            fontFamily: "'Caudex', serif",
+            backgroundColor: "#c0392b",
+            color: "#fff",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          ✖
+        </button>
+      </div>
 
       <div
         className="character-popup"
@@ -46,10 +78,14 @@ const CreateSpellPopup = ({ onClose }) => {
           zIndex: 10000,
         }}
       >
-        <CreateSpellPage />
+        <CreateSpellPage
+          ref={pageRef}
+          encounterId={encounterId}
+          onSpellCreated={onSpellCreated}
+        />
       </div>
     </div>,
-    document.body // ✅ Render outside React tree so it is above .top-block
+    document.body
   );
 };
 

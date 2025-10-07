@@ -1,16 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import "../../encounter.css";
+import axios from "axios";
 
-const CreateSpellPage = () => {
+const CreateSpellPage = forwardRef(({ onSpellCreated }, ref) => {
   const [spellName, setSpellName] = useState("");
   const [spellType, setSpellType] = useState("");
   const [spellImage, setSpellImage] = useState(null);
   const [description, setDescription] = useState("");
-
   const [effectA, setEffectA] = useState([""]);
-  const [effectB, setEffectB] = useState([
-    { level: 0, range: "", area: "", cost: "", effect: "" }
-  ]);
+  const [effectB, setEffectB] = useState([{ level: 0, range: "", area: "", cost: "", effect: "" }]);
+
+  const [currentEncounterId, setCurrentEncounterId] = useState(null);
+
+  useEffect(() => {
+    const storedEncounterId = localStorage.getItem("selectedEncounterId");
+    if (storedEncounterId) {
+      setCurrentEncounterId(storedEncounterId);
+      console.log("Loaded Encounter ID:", storedEncounterId);
+    } else {
+      console.warn("No encounter selected in localStorage");
+    }
+  }, []);
+
+  useImperativeHandle(ref, () => ({ handleSubmit }));
+
+  const handleSubmit = async () => {
+    if (!currentEncounterId) {
+      alert("No encounter selected");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("encounter_id", currentEncounterId);
+      formData.append("item_name", spellName);
+      formData.append("item_type", spellType);
+      formData.append("item_description", description);
+
+      const firstEffect = effectB[0] || {};
+      formData.append("item_range", firstEffect.range || "");
+      formData.append("item_area", firstEffect.area || "");
+      formData.append("item_cost", firstEffect.cost || "");
+      formData.append("item_effect", firstEffect.effect || "");
+
+      formData.append("damage_types", JSON.stringify(effectA));
+      formData.append("abilities", JSON.stringify(effectB));
+
+      if (spellImage) formData.append("item_image", spellImage);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/encounter-spells",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      alert("Spell created successfully!");
+      if (onSpellCreated) onSpellCreated(res.data);
+
+      setSpellName("");
+      setSpellType("");
+      setSpellImage(null);
+      setDescription("");
+      setEffectA([""]);
+      setEffectB([{ level: 0, range: "", area: "", cost: "", effect: "" }]);
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create spell");
+    }
+  };
 
   return (
     <div className="character-main">
@@ -315,6 +372,6 @@ const CreateSpellPage = () => {
       </div>
     </div>
   );
-};
+});
 
 export default CreateSpellPage;

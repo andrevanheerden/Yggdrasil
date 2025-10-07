@@ -13,6 +13,7 @@ const messageRoutes = require("./routes/messageRoutes");
 const inviteRoutes = require('./routes/inviteRoutes');
 const encounterRoutes = require("./routes/encounterRoutes");
 const encounterInventoryRoutes = require("./routes/encounterInventoryRoutes");
+const encounterSpellsRoutes = require("./routes/encounterSpellsRoutes");
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use("/api/encounters", encounterRoutes);
 app.use("/api/encounter-inventory", encounterInventoryRoutes); // moved above 404
+app.use("/api/encounter-spells", encounterSpellsRoutes);
 
 // Test route
 app.get('/api/test', (req, res) => {

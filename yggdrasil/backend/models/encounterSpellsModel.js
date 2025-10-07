@@ -1,32 +1,32 @@
 const pool = require("../config/db");
 const safeValue = (val) => (val === undefined || val === null ? "" : val);
 
-const createEncounterItem = async (data) => {
+const createEncounterSpell = async (data) => {
   const sql = `
-    INSERT INTO encounter_inventory (
-      encounter_item_id, encounter_id, item_name, item_type, item_image,
-      item_description, item_range, item_area, item_cost, item_effect, damage_types
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO encounter_spells (
+      encounter_spell_id, encounter_id, spell_name, spell_type, spell_level,
+      spell_image, spell_description, spell_range, spell_area, spell_cost,
+      spell_effects, damage_types
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
-
   const values = [
-    safeValue(data.encounter_item_id),
+    safeValue(data.encounter_spell_id),
     safeValue(data.encounter_id),
-    safeValue(data.item_name),
-    safeValue(data.item_type),
-    safeValue(data.item_image),
-    safeValue(data.item_description),
-    safeValue(data.item_range),
-    safeValue(data.item_area),
-    safeValue(data.item_cost),
-    safeValue(data.item_effect),
-    JSON.stringify(data.damage_types || []) // <-- stringify array for JSON column
+    safeValue(data.spell_name),
+    safeValue(data.spell_type),
+    safeValue(data.spell_level),
+    safeValue(data.spell_image),
+    safeValue(data.spell_description),
+    safeValue(data.spell_range),
+    safeValue(data.spell_area),
+    safeValue(data.spell_cost),
+    safeValue(data.spell_effects),
+    JSON.stringify(data.damage_types || [])
   ];
 
   const [result] = await pool.execute(sql, values);
   return result;
 };
-
 
 const getSpellsByEncounter = async (encounterId) => {
   const [rows] = await pool.execute(
@@ -56,5 +56,5 @@ module.exports = {
   createEncounterSpell,
   getSpellsByEncounter,
   getSpellById,
-  deleteEncounterSpell,
+  deleteEncounterSpell
 };
