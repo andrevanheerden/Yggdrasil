@@ -17,19 +17,21 @@ const generateEncounterItemId = () => {
   return `ENC-ITM_${randomLetters()}-${randomNumbers()}-${randomNumbers()}`;
 };
 
+
 // CREATE Item
 exports.create = async (req, res) => {
   try {
     const {
-  encounter_id,
-  item_name,
-  item_type,
-  item_description,
-  item_range,
-  item_area,
-  item_cost, // <-- rename from item_amount
-  item_effect
-} = req.body;
+      encounter_id,
+      item_name,
+      item_type,
+      item_description,
+      item_range,
+      item_area,
+      item_cost,
+      item_effect,
+      damage_types: damageRaw
+    } = req.body;
 
     if (!encounter_id) {
       return res.status(400).json({ error: "Encounter ID is required" });
@@ -37,7 +39,7 @@ exports.create = async (req, res) => {
 
     const encounter_item_id = generateEncounterItemId();
 
-    // Upload image to Cloudinary
+    // Upload image if exists
     let item_image = null;
     if (req.files && req.files.item_image) {
       const file = req.files.item_image;
@@ -52,26 +54,41 @@ exports.create = async (req, res) => {
       });
     }
 
+    // Parse damage_types JSON string safely
+    let damage_types = [];
+    if (damageRaw) {
+      try {
+        damage_types = JSON.parse(damageRaw);
+      } catch (err) {
+        console.warn("Failed to parse damage_types, defaulting to []");
+        damage_types = [];
+      }
+    }
+
     const data = {
-  encounter_item_id,
-  encounter_id,
-  item_name,
-  item_type,
-  item_image,
-  item_description,
-  item_range,
-  item_area,
-  item_cost, // <-- send correct field
-  item_effect
-};
+      encounter_item_id,
+      encounter_id,
+      item_name,
+      item_type,
+      item_image,
+      item_description,
+      item_range,
+      item_area,
+      item_cost,
+      item_effect,
+      damage_types
+    };
 
     await createEncounterItem(data);
+
     res.status(201).json({ message: "Item created", encounter_item_id });
   } catch (err) {
     console.error("Create item error:", err);
     res.status(500).json({ error: "Failed to create item" });
   }
 };
+
+
 
 // GET items by encounter
 exports.getByEncounter = async (req, res) => {

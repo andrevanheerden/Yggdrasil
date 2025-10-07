@@ -1,6 +1,4 @@
 const pool = require("../config/db");
-
-// Helper
 const safeValue = (val) => (val === undefined || val === null ? "" : val);
 
 const createEncounterItem = async (data) => {
@@ -22,40 +20,41 @@ const createEncounterItem = async (data) => {
     safeValue(data.item_area),
     safeValue(data.item_cost),
     safeValue(data.item_effect),
-    JSON.stringify(data.damage_types || []), // Save damage types as JSON
+    JSON.stringify(data.damage_types || []) // <-- stringify array for JSON column
   ];
 
   const [result] = await pool.execute(sql, values);
   return result;
 };
 
-const getItemsByEncounter = async (encounterId) => {
+
+const getSpellsByEncounter = async (encounterId) => {
   const [rows] = await pool.execute(
-    "SELECT * FROM encounter_inventory WHERE encounter_id = ?",
+    "SELECT * FROM encounter_spells WHERE encounter_id = ?",
     [encounterId]
   );
   return rows;
 };
 
-const getItemById = async (id) => {
+const getSpellById = async (id) => {
   const [rows] = await pool.execute(
-    "SELECT * FROM encounter_inventory WHERE encounter_item_id = ?",
+    "SELECT * FROM encounter_spells WHERE encounter_spell_id = ?",
     [id]
   );
   return rows[0];
 };
 
-const deleteEncounterItem = async (id) => {
+const deleteEncounterSpell = async (id) => {
   const [result] = await pool.execute(
-    "DELETE FROM encounter_inventory WHERE encounter_item_id = ?",
+    "DELETE FROM encounter_spells WHERE encounter_spell_id = ?",
     [id]
   );
   return result;
 };
 
 module.exports = {
-  createEncounterItem,
-  getItemsByEncounter,
-  getItemById,
-  deleteEncounterItem,
+  createEncounterSpell,
+  getSpellsByEncounter,
+  getSpellById,
+  deleteEncounterSpell,
 };

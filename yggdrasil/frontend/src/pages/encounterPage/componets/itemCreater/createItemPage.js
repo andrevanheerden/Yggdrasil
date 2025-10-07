@@ -39,6 +39,7 @@ const CreateItemPage = forwardRef(({ onItemCreated }, ref) => {
       formData.append("item_name", itemName);
       formData.append("item_type", itemType);
       formData.append("item_description", description);
+      
 
       // Map first ability (or leave empty)
       const firstAbility = profB[0] || {};
@@ -48,7 +49,13 @@ const CreateItemPage = forwardRef(({ onItemCreated }, ref) => {
       formData.append("item_effect", firstAbility.effect || "");
 
       // Damage types as JSON
-      formData.append("damage_types", JSON.stringify(profA));
+formData.append(
+  "damage_types",
+  JSON.stringify(profA.filter(d => d.trim() !== ""))
+);
+
+ // profA is array of strings
+
 
       // Full abilities array as JSON
       formData.append("abilities", JSON.stringify(profB));
