@@ -202,7 +202,7 @@ const CreateItemPage = () => {
                     newArr[index].name = e.target.value.slice(0, 18);
                     setProfB(newArr);
                   }}
-                  placeholder="Name"
+                  placeholder="item type"
                   maxLength={18}
                   style={{
                     width: "100%",
