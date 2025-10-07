@@ -37,6 +37,13 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
     fetchEncounters();
   }, []);
 
+  // 🧠 Add logging + localStorage saving here
+  const handleEncounterSelect = (enc) => {
+    console.log("Opened Encounter:", enc.encounter_id, enc.encounter_name);
+    localStorage.setItem("selectedEncounterId", enc.encounter_id);
+    if (onSelectEncounter) onSelectEncounter(enc);
+  };
+
   if (loading) return <p>Loading encounters...</p>;
   if (error) return <p className="error-message">{error}</p>;
 
@@ -47,38 +54,39 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
       </h2>
 
       <div className="encounter-list-container">
-        {encounters.length > 0
-          ? encounters.map((enc) => (
-              <div
-                key={enc.encounter_id}
-                className="encounter-box"
-                onClick={() => onSelectEncounter && onSelectEncounter(enc)}
-              >
-                <div className="encounter-img-container">
-                  <img
-                    src={enc.encounter_img || fallbackImg}
-                    alt={enc.encounter_name}
-                    className="encounter-img"
-                  />
-                </div>
+        {encounters.length > 0 ? (
+          encounters.map((enc) => (
+            <div
+              key={enc.encounter_id}
+              className="encounter-box"
+              onClick={() => handleEncounterSelect(enc)} // ← use the new handler
+            >
+              <div className="encounter-img-container">
+                <img
+                  src={enc.encounter_img || fallbackImg}
+                  alt={enc.encounter_name}
+                  className="encounter-img"
+                />
+              </div>
 
-                <div className="encounter-info">
-                  <div className="encounter-name">{enc.encounter_name}</div>
-                  <div className="encounter-race">{enc.race_name}</div>
-                </div>
+              <div className="encounter-info">
+                <div className="encounter-name">{enc.encounter_name}</div>
+                <div className="encounter-race">{enc.race_name}</div>
+              </div>
 
-                <div className="encounter-stats">
-                  <div className="encounter-level">Lvl {enc.encounter_level}</div>
-                  <div className="encounter-ac">AC {enc.encounter_AC}</div>
-                  <div className="encounter-speed">Speed {enc.encounter_speed}</div>
-                  <div className="encounter-hp">
-                    HP {enc.encounter_current_HP}/{enc.encounter_max_HP}
-                  </div>
+              <div className="encounter-stats">
+                <div className="encounter-level">Lvl {enc.encounter_level}</div>
+                <div className="encounter-ac">AC {enc.encounter_AC}</div>
+                <div className="encounter-speed">Speed {enc.encounter_speed}</div>
+                <div className="encounter-hp">
+                  HP {enc.encounter_current_HP}/{enc.encounter_max_HP}
                 </div>
               </div>
-            ))
-          : <p>No encounters available for this campaign.</p>
-        }
+            </div>
+          ))
+        ) : (
+          <p>No encounters available for this campaign.</p>
+        )}
 
         {/* ➕ Create New Encounter */}
         <div
@@ -98,6 +106,7 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
 };
 
 export default EncounterList;
+
 
 
 
