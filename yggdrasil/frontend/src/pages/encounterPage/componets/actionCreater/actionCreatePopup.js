@@ -14,57 +14,62 @@ const CreateActionPopup = ({ onClose, encounterId, onActionCreated }) => {
     encounterId || localStorage.getItem("selectedEncounterId");
 
   // ✅ Submit button logic
-const handleSubmitClick = async () => {
-  if (!pageRef.current) return;
+  const handleSubmitClick = async () => {
+    if (!pageRef.current) return;
 
-  const { actionName, actionType, description, effectA, effectB, actionImage } =
-    pageRef.current.getFormData();
+    const { actionName, actionType, description, effectA, effectB, actionImage } =
+      pageRef.current.getFormData();
 
-  if (!actionName || !actionType) {
-    alert("Please enter an action name and type.");
-    return;
-  }
+    if (!actionName || !actionType) {
+      alert("Please enter an action name and type.");
+      return;
+    }
 
-  try {
-    const formData = new FormData();
-    formData.append("encounter_id", effectiveEncounterId);
-    formData.append("action_name", actionName);
-    formData.append("action_type", actionType);
-    formData.append("action_description", description);
+    try {
+      const formData = new FormData();
+      formData.append("encounter_id", effectiveEncounterId);
+      formData.append("action_name", actionName);
+      formData.append("action_type", actionType);
+      formData.append("action_description", description);
 
-    // Damage types
-    formData.append(
-      "damage_types",
-      JSON.stringify(effectA.filter((d) => d.trim() !== ""))
-    );
+      // Damage types
+      formData.append(
+        "damage_types",
+        JSON.stringify(effectA.filter((d) => d.trim() !== ""))
+      );
 
-    // Effects: only the text goes to action_effects
-    const effectTexts = effectB.map((e) => e.effect || "");
-    formData.append("effects", JSON.stringify(effectTexts));
+      // Effects: only the text goes to action_effects
+      const effectsTextAreaValue = effectB.map((e) => e.effect || "").join("\n");
+      const effectsArray = effectsTextAreaValue
+        .split('\n')
+        .map(e => e.trim())
+        .filter(Boolean);
 
-    // First effect's range/area/cost
-    const firstEffect = effectB[0] || {};
-    formData.append("action_range", firstEffect.range || "");
-    formData.append("action_area", firstEffect.area || "");
-    formData.append("action_cost", firstEffect.cost || "");
+      formData.append("effects", JSON.stringify(effectsArray));
 
-    if (actionImage) formData.append("action_image", actionImage);
+      // First effect's range/area/cost
+      const firstEffect = effectB[0] || {};
+      formData.append("action_range", firstEffect.range || "");
+      formData.append("action_area", firstEffect.area || "");
+      formData.append("action_cost", firstEffect.cost || "");
 
-    const res = await axios.post(
-      "http://localhost:5000/api/encounter-actions",
-      formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
-    );
+      if (actionImage) formData.append("action_image", actionImage);
 
-    console.log("Action created:", res.data);
-    alert("Action successfully created!");
-    if (onActionCreated) onActionCreated(res.data);
-    onClose();
-  } catch (err) {
-    console.error("Failed to create action:", err);
-    alert("Error creating action. Check backend logs.");
-  }
-};
+      const res = await axios.post(
+        "http://localhost:5000/api/encounter-actions",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      console.log("Action created:", res.data);
+      alert("Action successfully created!");
+      if (onActionCreated) onActionCreated(res.data);
+      onClose();
+    } catch (err) {
+      console.error("Failed to create action:", err);
+      alert("Error creating action. Check backend logs.");
+    }
+  };
 
 
   return ReactDOM.createPortal(

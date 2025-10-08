@@ -45,22 +45,24 @@ exports.create = async (req, res) => {
     }
 
     // Parse effects from frontend
-    const parsedEffects = JSON.parse(effects || "[]");
-    const effectTexts = parsedEffects.map(e => e.effect); // only effect text
+    // Parse effects from frontend (array of strings)
+const parsedEffects = JSON.parse(effects || "[]"); // ["Burn", "Freeze"]
+const effectTexts = parsedEffects.map(e => e?.trim()).filter(Boolean); // ["Burn", "Freeze"]
 
-    const data = {
-      encounter_action_id,
-      encounter_id,
-      action_name,
-      action_type,
-      action_description,
-      action_image,
-      action_effects: effectTexts,
-      damage_types: JSON.parse(damage_types || "[]"),
-      action_range: safeValue(action_range),
-      action_area: safeValue(action_area),
-      action_cost: safeValue(action_cost),
-    };
+const data = {
+  encounter_action_id,
+  encounter_id,
+  action_name,
+  action_type,
+  action_description,
+  action_image,
+  action_effects: effectTexts,
+  damage_types: JSON.parse(damage_types || "[]"),
+  action_range: safeValue(action_range),
+  action_area: safeValue(action_area),
+  action_cost: safeValue(action_cost),
+};
+
 
     const result = await createEncounterAction(data);
     res.status(201).json({ message: "Action created", encounter_action_id, result });
