@@ -1,23 +1,47 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle } from "react";
 import "../../encounter.css";
 
-const CreateActionPage = () => {
+const CreateActionPage = forwardRef((props, ref) => {
   const [actionName, setActionName] = useState("");
   const [actionType, setActionType] = useState("");
   const [actionImage, setActionImage] = useState(null);
   const [description, setDescription] = useState("");
-
   const [effectA, setEffectA] = useState([""]);
-  const [effectB, setEffectB] = useState([
-    { level: 0, range: "", area: "", cost: "", effect: "" }
-  ]);
+  const [effectB, setEffectB] = useState([{ type: "", range: "", area: "", cost: "", effect: "" }]);
+
+  // Expose form data to parent via ref
+  useImperativeHandle(ref, () => ({
+    getFormData: () => ({
+      actionName,
+      actionType,
+      actionImage,
+      description,
+      effectA,
+      effectB,
+    }),
+  }));
 
   return (
     <div className="character-main">
-      {/* Top Bar: Name & Type, Image on Right */}
-      <div style={{ display: "flex", gap: "20px", marginBottom: "20px", alignItems: "flex-start" }}>
-        {/* Name & Type (stacked vertically) */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
+      {/* Top Bar: Name, Type Dropdown, Image */}
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          marginBottom: "20px",
+          alignItems: "flex-start",
+        }}
+      >
+        {/* Left side: Name + Type */}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "10px",
+            flex: 1,
+          }}
+        >
+          {/* Action Name */}
           <input
             type="text"
             value={actionName}
@@ -32,23 +56,30 @@ const CreateActionPage = () => {
               border: "2px solid #333",
             }}
           />
-          <input
-            type="text"
+
+          {/* 🔽 Movement Type Dropdown */}
+          <select
             value={actionType}
             onChange={(e) => setActionType(e.target.value)}
-            placeholder="Action Type"
             style={{
               width: "500px",
               padding: "8px",
               fontSize: "18px",
               fontFamily: "'Caudex', serif",
+              marginLeft: "150px",
               borderRadius: "5px",
               border: "2px solid #333",
+              backgroundColor: "transparent",
             }}
-          />
+          >
+            <option value="">Select Movement Type</option>
+            <option value="Movement">Movement</option>
+            <option value="Defense">Defense</option>
+            <option value="Combat">Combat</option>
+          </select>
         </div>
 
-        {/* Image Block on Right */}
+        {/* Right: Image Upload */}
         <div
           style={{
             width: "125px",
@@ -59,7 +90,7 @@ const CreateActionPage = () => {
             position: "relative",
             cursor: "pointer",
             flexShrink: 0,
-            right: '30px',
+            right: "30px",
           }}
           onClick={() => document.getElementById("action-image").click()}
         >
@@ -135,10 +166,13 @@ const CreateActionPage = () => {
           />
         </div>
 
-        {/* Right Column: Effect & Damage */}
+        {/* Right Column */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Effect Section */}
-          <div className="skills-box white-box3" style={{ width: "240px", height: "200px" }}>
+          {/* Damage Types */}
+          <div
+            className="skills-box white-box3"
+            style={{ width: "240px", height: "200px" }}
+          >
             <h3>Damage</h3>
             {effectA.map((eff, index) => (
               <input
@@ -177,12 +211,20 @@ const CreateActionPage = () => {
                 cursor: "pointer",
               }}
             >
-              Add Damage type
+              Add Damage Type
             </button>
           </div>
 
-          {/* Abilities Section with Level Dropdown */}
-          <div className="skills-box white-box3" style={{ width: "260px", height: "395px", overflowY: "auto", padding: "5px" }}>
+          {/* Effects */}
+          <div
+            className="skills-box white-box3"
+            style={{
+              width: "260px",
+              height: "395px",
+              overflowY: "auto",
+              padding: "5px",
+            }}
+          >
             <h3>Effects</h3>
             {effectB.map((eff, index) => (
               <div
@@ -194,31 +236,31 @@ const CreateActionPage = () => {
                   marginBottom: "10px",
                 }}
               >
-{/* Level dropdown changed to Action Type dropdown */}
-<select
-  value={eff.level}  // You might want to rename 'level' to 'actionType' for clarity
-  onChange={(e) => {
-    const newArr = [...effectB];
-    newArr[index].level = e.target.value;  // store the string value now
-    setEffectB(newArr);
-  }}
-  style={{
-    width: "100%",
-    height: "30px",
-    padding: "5px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    fontFamily: "'Caudex', serif",
-    fontSize: "14px",
-    backgroundColor: "transparent",
-    marginTop: "8px",
-  }}
->
-  <option value="">Action Type</option>
-  <option value="Movement">Movement</option>
-  <option value="Defense">Defense</option>
-  <option value="Combat">Combat</option>
-</select>
+                {/* Effect Action Type Dropdown */}
+                <select
+                  value={eff.type}
+                  onChange={(e) => {
+                    const newArr = [...effectB];
+                    newArr[index].type = e.target.value;
+                    setEffectB(newArr);
+                  }}
+                  style={{
+                    width: "100%",
+                    height: "30px",
+                    padding: "5px",
+                    borderRadius: "5px",
+                    border: "1px solid #ccc",
+                    fontFamily: "'Caudex', serif",
+                    fontSize: "14px",
+                    backgroundColor: "transparent",
+                    marginTop: "8px",
+                  }}
+                >
+                  <option value="">Action Type</option>
+                  <option value="Movement">Movement</option>
+                  <option value="Defense">Defense</option>
+                  <option value="Combat">Combat</option>
+                </select>
 
                 <input
                   type="text"
@@ -268,7 +310,7 @@ const CreateActionPage = () => {
                     newArr[index].cost = e.target.value.slice(0, 18);
                     setEffectB(newArr);
                   }}
-                  placeholder="cost"
+                  placeholder="Cost"
                   maxLength={18}
                   style={{
                     width: "100%",
@@ -311,6 +353,7 @@ const CreateActionPage = () => {
       </div>
     </div>
   );
-};
+});
 
 export default CreateActionPage;
+

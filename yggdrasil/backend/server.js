@@ -14,7 +14,7 @@ const inviteRoutes = require('./routes/inviteRoutes');
 const encounterRoutes = require("./routes/encounterRoutes");
 const encounterInventoryRoutes = require("./routes/encounterInventoryRoutes");
 const encounterSpellsRoutes = require("./routes/encounterSpellsRoutes");
-
+const encounterActionsRoutes = require("./routes/encounterActionsRoutes");
 const app = express();
 
 // CORS
@@ -44,6 +44,7 @@ app.use('/api/invites', inviteRoutes);
 app.use("/api/encounters", encounterRoutes);
 app.use("/api/encounter-inventory", encounterInventoryRoutes); // moved above 404
 app.use("/api/encounter-spells", encounterSpellsRoutes);
+app.use("/api/encounter-actions", encounterActionsRoutes);
 
 // Test route
 app.get('/api/test', (req, res) => {
