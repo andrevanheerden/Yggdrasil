@@ -19,6 +19,7 @@ const generateEncounterItemId = () => {
 
 
 // CREATE Item
+// CREATE Item
 exports.create = async (req, res) => {
   try {
     const {
@@ -54,16 +55,23 @@ exports.create = async (req, res) => {
       });
     }
 
-    // Parse damage_types JSON string safely
-    let damage_types = [];
-    if (damageRaw) {
+    // Parse damage_types safely
+    let damageTypes = [];
+    if (Array.isArray(damageRaw)) {
+      damageTypes = damageRaw;
+    } else if (typeof damageRaw === "string") {
       try {
-        damage_types = JSON.parse(damageRaw);
-      } catch (err) {
-        console.warn("Failed to parse damage_types, defaulting to []");
-        damage_types = [];
+        damageTypes = JSON.parse(damageRaw);
+        if (!Array.isArray(damageTypes)) {
+          damageTypes = damageRaw.split(",").map(s => s.trim()).filter(Boolean);
+        }
+      } catch {
+        damageTypes = damageRaw.split(",").map(s => s.trim()).filter(Boolean);
       }
     }
+
+    // Take only the first 3 types if needed
+    damageTypes = damageTypes.slice(0, 3);
 
     const data = {
       encounter_item_id,
@@ -76,7 +84,7 @@ exports.create = async (req, res) => {
       item_area,
       item_cost,
       item_effect,
-      damage_types
+      damage_types: JSON.stringify(damageTypes) // ✅ store as string
     };
 
     await createEncounterItem(data);
@@ -90,16 +98,22 @@ exports.create = async (req, res) => {
 
 
 
+
+
 // GET items by encounter
 exports.getByEncounter = async (req, res) => {
   try {
-    const items = await getItemsByEncounter(req.params.encounterId);
-    res.json(items);
+    const encounterId = req.params.encounterId;
+    if (!encounterId) return res.json([]);
+    const items = await getItemsByEncounter(encounterId);
+    res.json(items); // always return an array
   } catch (err) {
-    console.error(err);
+    console.error("Error fetching encounter items:", err);
     res.status(500).json({ error: "Failed to fetch encounter items" });
   }
 };
+
+
 
 // GET item by ID
 exports.getById = async (req, res) => {
@@ -158,3 +172,7 @@ exports.delete = async (req, res) => {
     res.status(500).json({ error: "Failed to delete item" });
   }
 };
+
+
+
+

@@ -37,6 +37,7 @@ const getItemsByEncounter = async (encounterId) => {
   return rows;
 };
 
+
 const getItemById = async (id) => {
   const [rows] = await pool.execute(
     "SELECT * FROM encounter_inventory WHERE encounter_item_id = ?",

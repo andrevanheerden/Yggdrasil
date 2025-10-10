@@ -1,10 +1,13 @@
+// encounterInventoryRoutes.js
 const express = require("express");
 const router = express.Router();
 const encounterInventoryController = require("../controllers/encounterInventoryController");
 
-router.post("/", encounterInventoryController.create);
-router.get("/:encounterId", encounterInventoryController.getByEncounter);
+// Corrected line:
+router.get("/encounter/:encounterId", encounterInventoryController.getByEncounter);
+
 router.get("/id/:id", encounterInventoryController.getById);
+router.post("/", encounterInventoryController.create);
 router.delete("/:id", encounterInventoryController.delete);
 
 module.exports = router;
