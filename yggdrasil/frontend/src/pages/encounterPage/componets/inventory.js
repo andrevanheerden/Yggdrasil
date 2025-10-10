@@ -3,54 +3,54 @@ import "../encounter.css";
 import axios from "axios";
 import FullItemView from "./fullItemView";
 import CreateItemPopup from "./itemCreater/itemCreatePopup";  // ✅ import popup
+import fallbackImg from "../../../assets/images/noItem.jpg"; // ✅ import fallback image
 
 const RightPageInventory = () => {
-  const [items, setItems] = useState([]); // dynamic items from backend
+  const [items, setItems] = useState([]); 
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeTab, setActiveTab] = useState("inventory");
-  const [isCreateOpen, setIsCreateOpen] = useState(false); // popup toggle
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  // Fetch items whenever the encounter changes
-useEffect(() => {
-  const fetchItems = async () => {
-    const encounterIdRaw = localStorage.getItem("selectedEncounterId");
-    if (!encounterIdRaw) return;
+  useEffect(() => {
+    const fetchItems = async () => {
+      const encounterIdRaw = localStorage.getItem("selectedEncounterId");
+      if (!encounterIdRaw) return;
 
-    const encounterId = encounterIdRaw.split(":")[0].trim();
+      const encounterId = encounterIdRaw.split(":")[0].trim();
 
-    try {
-      const res = await axios.get(
-        `http://localhost:5000/api/encounter-inventory/encounter/${encounterId}`
-      );
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/encounter-inventory/encounter/${encounterId}`
+        );
 
-      const fetchedItems = res.data || [];
-      setItems(fetchedItems);
-      setSelectedItem(fetchedItems[0] || null); // null if no items
-    } catch (err) {
-      console.error("Error fetching encounter items:", err);
-      setItems([]);
-      setSelectedItem(null);
-    }
-  };
+        const fetchedItems = res.data || [];
+        setItems(fetchedItems);
+        setSelectedItem(fetchedItems[0] || null);
+      } catch (err) {
+        console.error("Error fetching encounter items:", err);
+        setItems([]);
+        setSelectedItem(null);
+      }
+    };
 
-  fetchItems();
-}, []);
+    fetchItems();
+  }, []);
 
-let damageTypes = [];
-if (selectedItem) {
-  if (Array.isArray(selectedItem.damage_types)) {
-    damageTypes = selectedItem.damage_types;
-  } else if (typeof selectedItem.damage_types === "string") {
-    try {
-      damageTypes = JSON.parse(selectedItem.damage_types);
-      if (!Array.isArray(damageTypes)) {
+  let damageTypes = [];
+  if (selectedItem) {
+    if (Array.isArray(selectedItem.damage_types)) {
+      damageTypes = selectedItem.damage_types;
+    } else if (typeof selectedItem.damage_types === "string") {
+      try {
+        damageTypes = JSON.parse(selectedItem.damage_types);
+        if (!Array.isArray(damageTypes)) {
+          damageTypes = selectedItem.damage_types.split(",").map(s => s.trim()).filter(Boolean);
+        }
+      } catch {
         damageTypes = selectedItem.damage_types.split(",").map(s => s.trim()).filter(Boolean);
       }
-    } catch {
-      damageTypes = selectedItem.damage_types.split(",").map(s => s.trim()).filter(Boolean);
     }
   }
-}
 
   return (
     <div className="page right-page" style={{ position: "relative" }}>
@@ -70,10 +70,8 @@ if (selectedItem) {
         </button>
       </div>
 
-      {/* Tab Content */}
       {activeTab === "inventory" && selectedItem && (
         <>
-          {/* Header */}
           <div className="inventory-header">
             <div className="inventory-title">
               <div className="item-name">{selectedItem.item_name}</div>
@@ -81,14 +79,13 @@ if (selectedItem) {
             </div>
             <div className="item-image-container">
               <img
-                src={selectedItem.item_image || "/fallback-image.jpg"} // fallback image if none
+                src={selectedItem.item_image || fallbackImg} // ✅ use imported fallback
                 alt={selectedItem.item_name}
                 className="item-image"
               />
             </div>
           </div>
 
-          {/* Middle Section */}
           <div className="inventory-middle">
             <div className="inventory-description-container">
               <div className="inventory-description-box">
@@ -98,15 +95,14 @@ if (selectedItem) {
             </div>
 
             <div className="damage-container">
-  {damageTypes.slice(0, 3).map((dmg, i) => (
-    <div key={i} className="damage-hexagon">
-      {dmg}
-    </div>
-  ))}
-</div>
+              {damageTypes.slice(0, 3).map((dmg, i) => (
+                <div key={i} className="damage-hexagon">
+                  {dmg}
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Inventory Grid */}
           <div className="inventory-container scroll-box">
             <div className="inventory-grid">
               {items.map((item) => (
@@ -116,14 +112,13 @@ if (selectedItem) {
                   onClick={() => setSelectedItem(item)}
                 >
                   <img
-                    src={item.item_image || "/fallback-image.jpg"}
+                    src={item.item_image || fallbackImg} // ✅ use imported fallback
                     alt={item.item_name}
                     className="inventory-img"
                   />
                 </div>
               ))}
 
-              {/* Create New Item Block */}
               <div
                 className="inventory-slot create-new"
                 onClick={() => setIsCreateOpen(true)}
@@ -137,13 +132,13 @@ if (selectedItem) {
 
       {activeTab === "fullItemView" && <FullItemView item={selectedItem} />}
 
-      {/* Popup */}
       {isCreateOpen && <CreateItemPopup onClose={() => setIsCreateOpen(false)} />}
     </div>
   );
 };
 
 export default RightPageInventory;
+
 
 
 
