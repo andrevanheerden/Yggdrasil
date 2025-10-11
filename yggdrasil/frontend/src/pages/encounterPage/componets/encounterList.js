@@ -10,6 +10,8 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
   const [campaign, setCampaign] = useState(null);
 
   useEffect(() => {
+      // 🧹 Clear encounter when viewing the encounter list
+  localStorage.removeItem("selectedEncounterId");
     const storedCampaign = localStorage.getItem("selectedCampaignData");
     if (!storedCampaign) {
       setError("You must open a campaign to see encounters.");

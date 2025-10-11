@@ -2,26 +2,23 @@ import React, { useState } from "react";
 import pageBg from "../../../assets/images/page.png"; 
 import "../encounter.css";
 
-
-
-// Import your right-page sub components
 import RightPageInventory from "./inventory";
 import RightPageSpells from "./spells";
 import RightPageActions from "./actions";
 
-const RightP = () => {
+const RightP = ({ selectedEncounter }) => {
   const [activeTab, setActiveTab] = useState("inventory");
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "inventory":
-        return <RightPageInventory />;
+        return <RightPageInventory selectedEncounter={selectedEncounter} />;
       case "spells":
-        return <RightPageSpells />;
+        return <RightPageSpells selectedEncounter={selectedEncounter} />;
       case "actions":
-        return <RightPageActions />;
+        return <RightPageActions selectedEncounter={selectedEncounter} />;
       default:
-        return <RightPageInventory />;
+        return <RightPageInventory selectedEncounter={selectedEncounter} />;
     }
   };
 
@@ -30,29 +27,22 @@ const RightP = () => {
       className="page right-page"
       style={{ backgroundImage: `url(${pageBg})` }}
     >
-      {/* Nav Container */}
       <div className="right-page-tabs2-container">
         <div className="right-page-tabs2">
           <button
-            className={`right-tab2-btn ${
-              activeTab === "inventory" ? "active" : ""
-            }`}
+            className={`right-tab2-btn ${activeTab === "inventory" ? "active" : ""}`}
             onClick={() => setActiveTab("inventory")}
           >
             Inventory
           </button>
           <button
-            className={`right-tab2-btn ${
-              activeTab === "spells" ? "active" : ""
-            }`}
+            className={`right-tab2-btn ${activeTab === "spells" ? "active" : ""}`}
             onClick={() => setActiveTab("spells")}
           >
             Spells
           </button>
           <button
-            className={`right-tab2-btn ${
-              activeTab === "actions" ? "active" : ""
-            }`}
+            className={`right-tab2-btn ${activeTab === "actions" ? "active" : ""}`}
             onClick={() => setActiveTab("actions")}
           >
             Actions
@@ -60,11 +50,11 @@ const RightP = () => {
         </div>
       </div>
 
-      {/* Render selected content */}
       {renderTabContent()}
     </div>
   );
 };
 
 export default RightP;
+
 

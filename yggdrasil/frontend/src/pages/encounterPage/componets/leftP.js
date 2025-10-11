@@ -43,11 +43,16 @@ const LeftP = ({ onCreateEncounter, onSelectEncounter }) => {
     <>
       <div className="encounter-left-tab-buttons">
         <button
-          className={`encounter-left-tab-btn ${activeTab === "encounters" ? "active" : ""}`}
-          onClick={() => setActiveTab("encounters")}
-        >
-          Encounters
-        </button>
+  className={`encounter-left-tab-btn ${activeTab === "encounters" ? "active" : ""}`}
+  onClick={() => {
+    setActiveTab("encounters");
+    setSelectedEncounter(null);          // 🧹 clear the selected encounter
+    if (onSelectEncounter) onSelectEncounter(null); // notify parent to clear right page
+  }}
+>
+  Encounters
+</button>
+
         <button
           className={`encounter-left-tab-btn ${activeTab === "sheet" ? "active" : ""}`}
           onClick={() => setActiveTab("sheet")}
