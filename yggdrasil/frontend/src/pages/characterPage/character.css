@@ -807,6 +807,7 @@ stroke: #000;
 
 .inventory-description-box {
   background: #d9d9d9;
+  width: 100%;
   border-radius: 12px;
   padding: 15px;
   height: 200px; /* fixed height */
@@ -1299,19 +1300,21 @@ stroke: #000;
 }
 
 .spell-effects-tab-btn {
-  background: #f0f0f0;
+  background: #05512c;
   border: 1px solid #ccc;
   border-radius: 8px 8px 0px 0;
   padding: 6px 12px;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  color: #fff;
 }
 
 .spell-effects-tab-btn.active {
   background: #199a6a;
-  color: #fff;
+  color: #000000;
   border-color: #199a6a;
+  font-weight: bold;
 }
 
 /* === class enegy === */
