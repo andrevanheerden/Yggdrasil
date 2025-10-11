@@ -76,7 +76,7 @@ useEffect(() => {
   {parsedDamageTypes.map((hex, idx) => (
     <div key={idx} className="damage-hexagon">
       <div className="background-hex-bonus">{hex}</div>
-      <div className="background-hex-label">Damage Type</div>
+      
     </div>
   ))}
 </div>
