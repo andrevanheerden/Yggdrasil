@@ -1,48 +1,64 @@
-// BackgroundDes.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import daggerImg from "../../../assets/images/dagger.jpg"; // Goblin dagger image
+import fallbackImg from "../../../assets/images/noItem.jpg";
 
-const FullItemView = () => {
-  const [description, setDescription] = useState(
-    "A jagged dagger fashioned from scrap metal. It’s rusted and uneven, but still sharp enough to be dangerous."
-  );
+const FullItemView = ({ item }) => {
+  const [description, setDescription] = useState("");
 
   const [activeTab, setActiveTab] = useState("Abilities");
+  const [tabs, setTabs] = useState({ Abilities: [] });
 
-  // Goblin dagger item
-  const item = {
-    name: "Crude Goblin Dagger",
-    type: "Weapon - Dagger",
-    image: daggerImg,
-    hexes: [
-      { label: "Damage", bonus: "1d4 Piercing" },
-    ],
-    abilities: ["Lightweight and easy to conceal", "Often coated with grime or poison"],
-  };
+const [parsedDamageTypes, setParsedDamageTypes] = useState([]);
 
-  const tabs = {
-    Abilities: item.abilities,
-  };
+useEffect(() => {
+  if (item) {
+    setDescription(item.item_description || "");
+
+    // Safely parse damage_types
+    let damage = [];
+    if (item.damage_types) {
+      if (Array.isArray(item.damage_types)) {
+        damage = item.damage_types;
+      } else if (typeof item.damage_types === "string") {
+        try {
+          damage = JSON.parse(item.damage_types);
+          if (!Array.isArray(damage)) damage = [damage];
+        } catch {
+          damage = item.damage_types.split(",").map((s) => s.trim()).filter(Boolean);
+        }
+      }
+    }
+
+    setParsedDamageTypes(damage);
+
+    setTabs({
+      Abilities: damage, // or separate abilities if you have them
+    });
+  } else {
+    setDescription("");
+    setParsedDamageTypes([]);
+    setTabs({ Abilities: [] });
+  }
+}, [item]);
 
   return (
     <div className="page left-page">
       {/* Header */}
       <div className="background-header">
         <div className="background-character-info">
-          <div className="background-character-name">{item.name}</div>
+          <div className="background-character-name">{item.item_name}</div>
           <div className="background-character-details">
-            <div className="background-character-background">{item.type}</div>
+            <div className="background-character-background">{item.item_type}</div>
           </div>
         </div>
         <img
-          src={item.image}
-          alt={item.name}
+          src={item.item_image || fallbackImg}
+          alt={item.item_name}
           className="background-portrait-img"
         />
       </div>
 
-      {/* Two-column layout: Description + Hexes/Abilities */}
+      {/* Main content */}
       <div className="background-main-content">
         {/* Description */}
         <div className="background-description-box">
@@ -54,24 +70,23 @@ const FullItemView = () => {
           />
         </div>
 
-        {/* Right column: Hexes + Abilities */}
+        {/* Right column: Hexes / Abilities */}
         <div className="background-right-column">
-          {/* Hexes */}
           <div className="background-hex-bonuses">
-            {item.hexes.map((hex, idx) => (
-              <div key={idx} className="damage-hexagon">
-                <div className="background-hex-bonus">{hex.bonus}</div>
-                <div className="background-hex-label">{hex.label}</div>
-              </div>
-            ))}
-          </div>
+  {parsedDamageTypes.map((hex, idx) => (
+    <div key={idx} className="damage-hexagon">
+      <div className="background-hex-bonus">{hex}</div>
+      <div className="background-hex-label">Damage Type</div>
+    </div>
+  ))}
+</div>
 
-          {/* Abilities */}
+          {/* Abilities (if any) */}
           <div className="background-skills-box">
             <div className="background-skills-content">
               <h3>{activeTab}</h3>
               <ul>
-                {tabs[activeTab].map((ability, idx) => (
+                {tabs[activeTab]?.map((ability, idx) => (
                   <li key={idx}>{ability}</li>
                 ))}
               </ul>
@@ -82,9 +97,7 @@ const FullItemView = () => {
                 {Object.keys(tabs).map((tab) => (
                   <button
                     key={tab}
-                    className={`background-skills-tab-btn ${
-                      activeTab === tab ? "active" : ""
-                    }`}
+                    className={`background-skills-tab-btn ${activeTab === tab ? "active" : ""}`}
                     onClick={() => setActiveTab(tab)}
                   >
                     {tab}

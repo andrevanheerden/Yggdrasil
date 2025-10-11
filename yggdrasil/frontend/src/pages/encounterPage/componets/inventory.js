@@ -163,6 +163,7 @@ const RightPageInventory = ({ selectedEncounter }) => {
       )}
 
       {activeTab === "fullItemView" && <FullItemView item={selectedItem} />}
+
       {isCreateOpen && <CreateItemPopup onClose={() => setIsCreateOpen(false)} />}
     </div>
   );
