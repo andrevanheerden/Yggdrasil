@@ -1,20 +1,16 @@
 const express = require("express");
 const router = express.Router();
-
-// ✅ Import controller
 const encounterActionsController = require("../controllers/encounterActionsController");
 
-const { 
-  createEncounterAction,
-  getActionsByEncounter,
-  getActionById,
-  deleteEncounterAction,
-  safeValue,
-} = require("../models/encounterActionsModel");
-
 router.post("/", encounterActionsController.create);
-router.get("/:encounterId", encounterActionsController.getByEncounter);
+
+// 👇 Specific route FIRST
 router.get("/id/:id", encounterActionsController.getById);
+
+// 👇 General route LAST
+router.get("/:encounterId", encounterActionsController.getByEncounter);
+
 router.delete("/:id", encounterActionsController.delete);
 
 module.exports = router;
+

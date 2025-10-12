@@ -1,6 +1,13 @@
 const cloudinary = require("../config/cloudinary");
 const fs = require("fs");
-const { createEncounterAction, safeValue } = require("../models/encounterActionsModel"); // <- added safeValue
+const {
+  createEncounterAction,
+  getActionsByEncounter,
+  getActionById,
+  deleteEncounterAction,
+  safeValue
+} = require("../models/encounterActionsModel");
+
 
 // Generate custom ID
 const generateEncounterActionId = () => {
@@ -76,15 +83,19 @@ const data = {
 
 
 // GET actions by encounter
+// GET actions by encounter
 exports.getByEncounter = async (req, res) => {
   try {
+    console.log("📥 Fetching actions for encounter:", req.params.encounterId);
     const actions = await getActionsByEncounter(req.params.encounterId);
+    console.log("✅ Actions fetched:", actions);
     res.json(actions);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: "Failed to fetch encounter actions" });
+    console.error("❌ Error in getByEncounter:", err.message, err.stack);
+    res.status(500).json({ error: "Failed to fetch encounter actions", details: err.message });
   }
 };
+
 
 // GET by ID
 exports.getById = async (req, res) => {

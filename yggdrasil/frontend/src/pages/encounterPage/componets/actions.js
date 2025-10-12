@@ -1,51 +1,45 @@
 import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import dashImg from "../../../assets/images/dash.jpg";
-import attackImg from "../../../assets/images/attack.jpg";
-import dodgeImg from "../../../assets/images/dodge.jpg";
+import axios from "axios";
 import FullActionView from "./fullActionView";
-import CreateActionPopup from "./actionCreater/actionCreatePopup"; // Make sure this exists
+import CreateActionPopup from "./actionCreater/actionCreatePopup";
+import noSpellImg from "../../../assets/images/noItem.jpg"; // <-- Add this line
 
-const RightPageActions = () => {
+const RightPageActions = ({ selectedEncounter }) => {
   const [activeTab, setActiveTab] = useState("actions");
-  const [actions] = useState([
-    {
-      id: 1,
-      name: "Dash",
-      actionType: "Movement",
-      image: dashImg,
-      description: "Move up to your speed in addition to your regular movement.",
-      effects: [{ type: "Movement Boost", range: "30f", area: "Immediate" }],
-    },
-    {
-      id: 2,
-      name: "Attack",
-      actionType: "Combat",
-      image: attackImg,
-      description: "Make a melee or ranged attack with your weapon or spell.",
-      effects: [{ type: "Damage", range: "Weapon/Spell", area: "Target" }],
-    },
-    {
-      id: 3,
-      name: "Dodge",
-      actionType: "Defense",
-      image: dodgeImg,
-      description:
-        "Focus entirely on avoiding attacks. Attack rolls against you have disadvantage until your next turn.",
-      effects: [{ type: "Defense Boost", range: "Self", area: "Until next turn" }],
-    },
-  ]);
-
+  const [actions, setActions] = useState([]);
   const [selectedAction, setSelectedAction] = useState(null);
   const [showCreateAction, setShowCreateAction] = useState(false);
 
+  // Fetch actions from backend when encounter changes
   useEffect(() => {
-    if (!selectedAction && actions.length > 0) setSelectedAction(actions[0]);
-  }, [actions, selectedAction]);
+    if (!selectedEncounter?.encounter_id) {
+      setActions([]);
+      setSelectedAction(null);
+      return;
+    }
+
+    const fetchActions = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/encounter-actions/${selectedEncounter.encounter_id}`
+        );
+        const fetchedActions = res.data || [];
+        setActions(fetchedActions);
+        setSelectedAction(fetchedActions[0] || null);
+      } catch (err) {
+        console.error("Error fetching actions:", err);
+        setActions([]);
+        setSelectedAction(null);
+      }
+    };
+
+    fetchActions();
+  }, [selectedEncounter]);
 
   return (
     <div className="page right-page" style={{ position: "relative" }}>
-      {/* Nav Tabs */}
+      {/* Tabs */}
       <div className="right-page-tabs">
         <button
           className={`right-tab-btn ${activeTab === "actions" ? "active" : ""}`}
@@ -61,64 +55,85 @@ const RightPageActions = () => {
         </button>
       </div>
 
-      {/* Actions List */}
-      {activeTab === "actions" && selectedAction && (
+      {/* Actions List Tab */}
+      {activeTab === "actions" && (
         <>
-          {/* Header */}
-          <div className="inventory-header">
-            <div className="inventory-title">
-              <div className="item-name">{selectedAction.name}</div>
-              <div className="item-type">{selectedAction.actionType}</div>
-            </div>
-            <div className="item-image-container">
-              <img src={selectedAction.image} alt={selectedAction.name} className="item-image" />
-            </div>
-          </div>
+          {!selectedEncounter ? (
+            <p style={{ textAlign: "center", marginTop: "20px", opacity: 0.7 }}>
+              Select an encounter to view actions.
+            </p>
+          ) : (
+            <>
+              {selectedAction && (
+                <>
+                  <div className="inventory-header">
+                    <div className="inventory-title">
+                      <div className="item-name">{selectedAction.action_name}</div>
+                      <div className="item-type">{selectedAction.action_type}</div>
+                    </div>
+                    <div className="item-image-container">
+                      <img
+                        src={selectedAction.action_image || noSpellImg}
+                        alt={selectedAction.action_name}
+                        className="item-image"
+                      />
+                    </div>
+                  </div>
 
-          {/* Middle Section */}
-          <div className="inventory-middle">
-            <div className="inventory-description-box scroll-box">{selectedAction.description}</div>
-          </div>
+                  <div className="inventory-middle">
+                    <div className="inventory-description-box">
+                      <div className="description-title">Description</div>
+                      {selectedAction.action_description}
+                    </div>
+                  </div>
+                </>
+              )}
 
-          {/* Actions Grid */}
-          <div className="spells-container">
-            <div className="spells-grid">
-              {actions.map((action) => (
-                <div
-                  key={action.id}
-                  className={`spells-slot ${selectedAction?.id === action.id ? "active" : ""}`}
-                  onClick={() => setSelectedAction(action)}
-                >
-                  <img src={action.image} alt={action.name} className="spells-img" />
-                  <div className="spells-info">
-                    <div className="spells-name">{action.name}</div>
-                    <div className="spells-class">{action.actionType}</div>
+              {/* Actions Grid */}
+              <div className="spells-container">
+                <div className="spells-grid">
+                  {actions.length > 0 &&
+                    actions.map((action) => (
+                      <div
+                        key={action.encounter_action_id}
+                        className={`spells-slot ${
+                          selectedAction?.encounter_action_id ===
+                          action.encounter_action_id
+                            ? "active"
+                            : ""
+                        }`}
+                        onClick={() => setSelectedAction(action)}
+                      >
+                        <img
+                          src={action.action_image || noSpellImg}
+                          alt={action.action_name}
+                          className="spells-img"
+                        />
+                        <div className="spells-info">
+                          <div className="spells-name">{action.action_name}</div>
+                          <div className="spells-class">{action.action_type}</div>
+                        </div>
+                      </div>
+                    ))}
+
+                  {/* Create Action Slot */}
+                  <div
+                    className="spells-slot create-slot"
+                    onClick={() => setShowCreateAction(true)}
+                  >
+                    + Create Action
                   </div>
                 </div>
-              ))}
-
-              {/* Create Action Slot */}
-              <div
-                className="spells-slot create-slot"
-                  style={{
-                  display: "flex",
-                  height: "55px",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  border: "2px solid #666",
-                  cursor: "pointer",
-                  padding: "10px",
-                  fontFamily: "'Caudex', serif",
-                  fontSize: "16px",
-                  color: "#333",
-                }}
-                onClick={() => setShowCreateAction(true)}
-              >
-                + Create Action
               </div>
-            </div>
-          </div>
+
+              {/* Message if no actions exist */}
+              {actions.length === 0 && (
+                <p style={{ textAlign: "center", marginTop: "20px", opacity: 0.6 }}>
+                  No actions created yet. Click "+ Create Action" to add one.
+                </p>
+              )}
+            </>
+          )}
         </>
       )}
 
@@ -129,7 +144,15 @@ const RightPageActions = () => {
 
       {/* Create Action Popup */}
       {showCreateAction && (
-        <CreateActionPopup onClose={() => setShowCreateAction(false)} />
+        <CreateActionPopup
+          onClose={() => setShowCreateAction(false)}
+          encounterId={selectedEncounter?.encounter_id}
+          onActionCreated={(newAction) => {
+            setActions([...actions, newAction]);
+            setSelectedAction(newAction);
+            setShowCreateAction(false);
+          }}
+        />
       )}
     </div>
   );

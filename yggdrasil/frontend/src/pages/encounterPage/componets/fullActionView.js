@@ -1,32 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import noSpellImg from "../../../assets/images/noItem.jpg";
 import "../encounter.css";
 
 const FullActionView = ({ action }) => {
-  const [description, setDescription] = useState(action.description);
-  const [activeTab, setActiveTab] = useState("Effects");
+  const [description, setDescription] = useState("");
+  const [activeEffectTab, setActiveEffectTab] = useState("Page1");
 
-  // Ensure effects is always an array
-  const tabs = {
-    Effects: Array.isArray(action.effects)
-      ? action.effects
-      : [action.effects || "No additional effects."]
-  };
+  useEffect(() => {
+    if (!action) return;
+    setDescription(action.action_description || "");
+  }, [action]);
+
+  if (!action) {
+    return (
+      <div className="page right-page" style={{ textAlign: "center", paddingTop: "50px" }}>
+        Select an action to view details.
+      </div>
+    );
+  }
 
   return (
     <div className="page right-page">
       {/* Header */}
       <div className="spell-header">
         <div className="spell-info">
-          <div className="spell-name">{action.name}</div>
+          <div className="spell-name">{action.action_name}</div>
           <div className="spell-details">
-            <div className="spell-class">{action.actionType}</div>
+            <div className="spell-class">{action.action_type}</div>
           </div>
         </div>
-        <img src={action.image} alt={action.name} className="spell-image" />
+        {action.action_image && (
+          <img src={action.action_image} alt={action.action_name} className="spell-image" />
+        )}
       </div>
 
-      {/* Description Section */}
-      <div className="spell-main-content" style={{ flexDirection: "row", gap: "20px", padding: "0 20px" }}>
+      {/* Main Content */}
+      <div className="spell-main-content" style={{ display: "flex", gap: "20px", padding: "0 20px" }}>
         <div className="spell-description-container" style={{ flex: 1 }}>
           <div className="spell-description-title">Description</div>
           <textarea
@@ -37,44 +46,49 @@ const FullActionView = ({ action }) => {
         </div>
       </div>
 
-      {/* Effects Section */}
-      <div
-        className="spell-effects-box"
-        style={{
-          width: "87%",
-          margin: "20px 0 0 20px",
-          display: "flex",
-          flexDirection: "column",
-          overflow: "visible",
-        }}
-      >
-        <div className="spell-effects-tabs" style={{ marginBottom: "10px" }}>
-          {Object.keys(tabs).map((tab) => (
-            <button
-              key={tab}
-              className={`spell-effects-tab-btn ${activeTab === tab ? "active" : ""}`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab}
-            </button>
-          ))}
+      {/* Effects Box with Tabs */}
+      <div className="spell-effects-box" style={{ width: "90%", marginTop: "20px", overflow: "visible" }}>
+        {/* Horizontal Tabs */}
+        <div
+          className="spell-effects-tabs"
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            gap: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          <button
+            className={`spell-effects-tab-btn ${activeEffectTab === "Page1" ? "active" : ""}`}
+            onClick={() => setActiveEffectTab("Page1")}
+          >
+            About
+          </button>
+          <button
+            className={`spell-effects-tab-btn ${activeEffectTab === "Page2" ? "active" : ""}`}
+            onClick={() => setActiveEffectTab("Page2")}
+          >
+            Effect
+          </button>
         </div>
+
+        {/* Page Content */}
         <div className="spell-effects-content">
-          <ul style={{ listStyle: "none", paddingLeft: 0, margin: 0 }}>
-            {tabs[activeTab].map((effect, idx) => (
-              <li key={idx} style={{ marginBottom: "12px" }}>
-                {typeof effect === "object" ? (
-                  <>
-                    <div><strong>Type:</strong> {effect.type}</div>
-                    <div><strong>Range:</strong> {effect.range}</div>
-                    <div><strong>Area:</strong> {effect.area}</div>
-                  </>
-                ) : (
-                  effect
-                )}
-              </li>
-            ))}
-          </ul>
+          {activeEffectTab === "Page1" && (
+            <>
+              <div><strong>Range:</strong> {action.action_range || "-"}</div>
+              <div><strong>Area:</strong> {action.action_area || "-"}</div>
+              <div><strong>Cost:</strong> {action.action_cost || "-"}</div>
+            </>
+          )}
+          {activeEffectTab === "Page2" && (
+            <div>
+              <strong>Effects:</strong>{" "}
+              {Array.isArray(action.action_effects)
+                ? action.action_effects.join(", ")
+                : action.action_effects || "-"}
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -82,3 +96,4 @@ const FullActionView = ({ action }) => {
 };
 
 export default FullActionView;
+
