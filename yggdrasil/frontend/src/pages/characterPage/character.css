@@ -1252,6 +1252,7 @@ stroke: #000;
 /* EFFECTS / ABILITIES BOX */
 .spell-effects-box {
   background: #d9d9d9;
+  width: 95%;
   border-radius: 12px;
   height: 150px;
   padding: 15px;
@@ -1785,4 +1786,34 @@ stroke: #000;
   justify-content: center;
   align-items: center;
   z-index: 9999; /* much higher than .top-block */
+}
+
+.spell-effects-tabs2 {
+  display: flex;
+  flex-direction: column; /* Stack vertically */
+  position: absolute;     /* Place it on the side */
+    transform: translateY(-50%) rotate(90deg); /* Rotate 90 degrees */
+  transform-origin: center center;          /* Rotate around center */
+
+  top: 85%;              /* Same padding as container */
+  right: -8.2%;           /* Adjust distance outside the box */
+  gap: 10px;
+}
+
+.spell-effects-tab2-btn {
+  background: #05512c;
+  border: 1px solid #ccc;
+  border-radius: 8px 8px 0px 0;
+  padding: 6px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.spell-effects-tab2-btn.active {
+  background: #199a6a;
+  color: #000000;
+  border-color: #199a6a;
+  font-weight: bold;
 }

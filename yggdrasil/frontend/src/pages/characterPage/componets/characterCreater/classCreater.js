@@ -14,14 +14,13 @@ const ClassCreation = ({
 
   // Energy system states
   const [energyName, setEnergyName] = useState("");
-  const [hasLevels, setHasLevels] = useState(false);
-  const [amountOfLevels, setAmountOfLevels] = useState(6);
+  const [amountOfLevels, setAmountOfLevels] = useState(1); // default to 1
+  const maxEnergyLevels = 6;
 
-  // Always keep 12 levels
-  const defaultLevels = Array.from({ length: 12 }, (_, i) => ({
+  // Always keep maxEnergyLevels levels in memory
+  const defaultLevels = Array.from({ length: maxEnergyLevels }, (_, i) => ({
     level: i + 1,
     amountReceive: 1,
-    energyLevel: "Ⅰ",
   }));
   const [levels, setLevels] = useState(defaultLevels);
 
@@ -43,39 +42,20 @@ const ClassCreation = ({
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
-  // Handle level changes
+  // Handle level field change
   const handleLevelChange = (index, field, value) => {
     const newLevels = [...levels];
     if (field === "amountReceive") {
-      const newValue = Math.min(parseInt(value) || 0, amountOfLevels); // cap by amountOfLevels
+      const newValue = parseInt(value) || 0;
       newLevels[index][field] = newValue;
-    } else if (field === "energyLevel") {
-      newLevels[index][field] = value;
     }
     setLevels(newLevels);
   };
 
-  // Update the maximum level amount
+  // Update how many levels exist (1–6)
   const handleAmountOfLevelsChange = (value) => {
-    const newAmount = Math.max(1, parseInt(value) || 1);
+    const newAmount = Math.max(1, Math.min(maxEnergyLevels, parseInt(value) || 1));
     setAmountOfLevels(newAmount);
-  };
-
-  // Handle checkbox toggle: remove or restore energyLevel
-  const handleHasLevelsChange = (checked) => {
-    setHasLevels(checked);
-    if (!checked) {
-      // Remove energyLevel from all levels
-      const newLevels = levels.map((lvl) => ({ ...lvl, energyLevel: "" }));
-      setLevels(newLevels);
-    } else {
-      // Restore default energyLevel if empty
-      const newLevels = levels.map((lvl) => ({
-        ...lvl,
-        energyLevel: lvl.energyLevel || "Ⅰ",
-      }));
-      setLevels(newLevels);
-    }
   };
 
   return (
@@ -150,7 +130,7 @@ const ClassCreation = ({
                   Settings
                 </button>
                 <button
-                  className={`skills-tab-btn ${energyTab === "Levels" ? "active" : ""}`}
+                  className={`skills-tab-btn3 ${energyTab === "Levels" ? "active" : ""}`}
                   onClick={() => setEnergyTab("Levels")}
                 >
                   Levels
@@ -163,6 +143,7 @@ const ClassCreation = ({
               {energyTab === "Settings" && (
                 <div>
                   <div style={{ marginBottom: "15px" }}>
+                    {/* Energy Name */}
                     <div style={{ marginBottom: "10px" }}>
                       <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
                         Energy Name
@@ -183,26 +164,15 @@ const ClassCreation = ({
                       />
                     </div>
 
-                    <div style={{ marginBottom: "10px" }}>
-                      <label style={{ display: "flex", alignItems: "center", fontSize: "14px" }}>
-                        <input
-                          type="checkbox"
-                          checked={hasLevels}
-                          onChange={(e) => handleHasLevelsChange(e.target.checked)}
-                          style={{ marginRight: "5px" }}
-                        />
-                        Remove Energy Levels
-                      </label>
-                    </div>
-
+                    {/* Amount of Levels */}
                     <div>
                       <label style={{ display: "block", marginBottom: "5px", fontSize: "14px" }}>
-                        Maximum amount per level
+                        Amount of Levels (max 6)
                       </label>
                       <input
                         type="number"
                         min="1"
-                        max="20"
+                        max={maxEnergyLevels}
                         value={amountOfLevels}
                         onChange={(e) => handleAmountOfLevelsChange(e.target.value)}
                         style={{
@@ -221,20 +191,27 @@ const ClassCreation = ({
 
               {energyTab === "Levels" && (
                 <div>
-                  <h4 style={{ margin: "10px 0", fontSize: "16px" }}>LEVEL</h4>
+                  <h4 style={{ margin: "10px 0", fontSize: "16px" }}>Levels</h4>
                   <div style={{ maxHeight: "250px", overflowY: "auto" }}>
-                    {levels.map((levelData, index) => (
+                    {levels.slice(0, amountOfLevels).map((levelData, index) => (
                       <div key={levelData.level} style={{ marginBottom: "8px", fontSize: "14px" }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "3px" }}>
-                          <span>lv{levelData.level}</span>
+                        <div
+                          style={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            marginBottom: "3px",
+                          }}
+                        >
+                          <span>Level {levelData.level}</span>
                           <div style={{ display: "flex", alignItems: "center" }}>
-                            <span style={{ marginRight: "5px" }}>Amount receive:</span>
+                            <span style={{ marginRight: "5px" }}>Amount :</span>
                             <input
                               type="number"
                               min="0"
-                              max={amountOfLevels}
                               value={levelData.amountReceive}
-                              onChange={(e) => handleLevelChange(index, "amountReceive", e.target.value)}
+                              onChange={(e) =>
+                                handleLevelChange(index, "amountReceive", e.target.value)
+                              }
                               style={{
                                 width: "40px",
                                 padding: "2px",
@@ -245,24 +222,6 @@ const ClassCreation = ({
                               }}
                             />
                           </div>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center" }}>
-                          <span style={{ marginRight: "5px" }}>Energy level:</span>
-                          <select
-                            value={levelData.energyLevel}
-                            onChange={(e) => handleLevelChange(index, "energyLevel", e.target.value)}
-                            style={{
-                              padding: "2px",
-                              borderRadius: "3px",
-                              border: "1px solid #ccc",
-                              fontFamily: "'Caudex', serif",
-                              fontSize: "12px",
-                            }}
-                          >
-                            <option value="Ⅰ">Ⅰ</option>
-                            <option value="Ⅱ">Ⅱ</option>
-                            <option value="Ⅲ">Ⅲ</option>
-                          </select>
                         </div>
                       </div>
                     ))}

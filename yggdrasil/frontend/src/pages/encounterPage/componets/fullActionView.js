@@ -50,7 +50,7 @@ const FullActionView = ({ action }) => {
       <div className="spell-effects-box" style={{ width: "90%", marginTop: "20px", overflow: "visible" }}>
         {/* Horizontal Tabs */}
         <div
-          className="spell-effects-tabs"
+          className="spell-effects-tabs2"
           style={{
             display: "flex",
             flexDirection: "row",
@@ -59,13 +59,13 @@ const FullActionView = ({ action }) => {
           }}
         >
           <button
-            className={`spell-effects-tab-btn ${activeEffectTab === "Page1" ? "active" : ""}`}
+            className={`spell-effects-tab2-btn ${activeEffectTab === "Page1" ? "active" : ""}`}
             onClick={() => setActiveEffectTab("Page1")}
           >
             About
           </button>
           <button
-            className={`spell-effects-tab-btn ${activeEffectTab === "Page2" ? "active" : ""}`}
+            className={`spell-effects-tab2-btn ${activeEffectTab === "Page2" ? "active" : ""}`}
             onClick={() => setActiveEffectTab("Page2")}
           >
             Effect
