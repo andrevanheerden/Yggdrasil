@@ -12,14 +12,35 @@ const CharacterSheetCreater = ({
   speed,
   activeTab,
   setActiveTab,
-  selectedSkills,
-  toggleSkill,
+  selectedSkills,         // skills for this page
+  toggleSkill,            // page-specific toggle
   initialSkills,
   abilityData,
   savingData,
   chartOptions,
   savingThrowOptions,
+  pageSelectedSkills,     // all pages selected skills
+  pageName                // name of the current page: "stats"
 }) => {
+
+  // Helper to get total modifier including other pages
+  const getSkillModifier = (skill) => {
+    const ability = Object.keys(initialSkills).find((key) => initialSkills[key].includes(skill));
+    let bonus = getModifier(abilityScores[ability]);
+
+    // +2 if selected on this page
+    if (selectedSkills.includes(skill)) bonus += 2;
+
+    // +2 if selected on other pages
+    Object.keys(pageSelectedSkills).forEach((page) => {
+      if (page !== pageName && pageSelectedSkills[page].includes(skill)) {
+        bonus += 2;
+      }
+    });
+
+    return bonus;
+  };
+
   return (
     <div className="character-main">
       <div className="top-section" style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
@@ -98,8 +119,7 @@ const CharacterSheetCreater = ({
               </div>
               <ul style={{ listStyle: "none", padding: 0 }}>
                 {initialSkills[activeTab].map((skill) => {
-                  const ability = Object.keys(initialSkills).find((key) => initialSkills[key].includes(skill));
-                  const bonus = getModifier(abilityScores[ability]) + (selectedSkills.includes(skill) ? 2 : 0);
+                  const bonus = getSkillModifier(skill);
                   const isSelected = selectedSkills.includes(skill);
 
                   return (
@@ -107,7 +127,12 @@ const CharacterSheetCreater = ({
                       <span>
                         {skill} <strong style={{ marginLeft: "5px" }}>+{bonus}</strong>
                       </span>
-                      <input type="checkbox"  checked={isSelected} onChange={() => toggleSkill(skill)} disabled={!isSelected && selectedSkills.length >= 2} />
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => toggleSkill(skill)}
+                        disabled={!isSelected && selectedSkills.length >= 2}
+                      />
                     </li>
                   );
                 })}

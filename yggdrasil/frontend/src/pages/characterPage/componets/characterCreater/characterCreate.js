@@ -3,9 +3,9 @@ import "../../character.css";
 import pageBg from "../../../../assets/images/page.png";
 import CharacterSheetCreater from "./characterSheetCreater";
 import CharacterDesCreater from "./characterDesCreater";
-import BackgroundCreation from "./backgroundCreater"; // ✅ Background page
-import RaceCreation from "./raceCreater"; // ✅ Race page
-import ClassCreation from "./classCreater"; // ✅ Class page
+import BackgroundCreation from "./backgroundCreater";
+import RaceCreation from "./raceCreater";
+import ClassCreation from "./classCreater";
 
 import {
   Chart as ChartJS,
@@ -49,17 +49,23 @@ const CharacterCreate = ({ onClose }) => {
   const [hp, setHp] = useState({ current: 10, max: 10 });
   const [acBase] = useState(10);
   const [speed] = useState(30);
-  const [selectedSkills, setSelectedSkills] = useState([]);
+
+  // Skills per page
+  const [pageSelectedSkills, setPageSelectedSkills] = useState({
+    stats: [],
+    background: [],
+    race: [],
+  });
+
   const [characterName, setCharacterName] = useState("New Character");
   const [characterImage, setCharacterImage] = useState(null);
-  const [backgroundName, setBackgroundName] = useState(""); // ✅ background name
-  const [raceName, setRaceName] = useState(""); // ✅ race name
-  const [className, setClassName] = useState(""); // ✅ class name
+  const [backgroundName, setBackgroundName] = useState("");
+  const [raceName, setRaceName] = useState("");
+  const [className, setClassName] = useState("");
   const [currentPage, setCurrentPage] = useState("stats"); 
   const fileInputRef = useRef(null);
-  const [progress, setProgress] = useState(20); // Adjusted initial progress
+  const [progress, setProgress] = useState(20);
 
-  // Image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -72,7 +78,6 @@ const CharacterCreate = ({ onClose }) => {
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
-  // Ability change
   const changeAbility = (ab, delta) => {
     setAbilityScores((prev) => {
       let newScore = prev[ab] + delta;
@@ -82,14 +87,10 @@ const CharacterCreate = ({ onClose }) => {
     });
   };
 
-  // HP change
   const changeHp = (type, delta) => {
     setHp((prev) => {
       if (type === "current") {
-        let newCurrent = Math.max(
-          0,
-          Math.min(prev.current + delta, prev.max)
-        );
+        let newCurrent = Math.max(0, Math.min(prev.current + delta, prev.max));
         return { ...prev, current: newCurrent };
       } else {
         let newMax = Math.max(1, prev.max + delta);
@@ -99,19 +100,24 @@ const CharacterCreate = ({ onClose }) => {
     });
   };
 
-  // Toggle skill selection
-  const toggleSkill = (skill) => {
-    setSelectedSkills((prev) => {
-      if (prev.includes(skill)) {
-        return prev.filter((s) => s !== skill);
+  // Toggle skill per page (max 2 per page)
+  const toggleSkill = (page, skill) => {
+    setPageSelectedSkills((prev) => {
+      const pageSkills = prev[page];
+      let newSkills;
+      if (pageSkills.includes(skill)) {
+        newSkills = pageSkills.filter((s) => s !== skill);
       } else {
-        if (prev.length < 2) return [...prev, skill];
-        return prev;
+        if (pageSkills.length < 2) {
+          newSkills = [...pageSkills, skill];
+        } else {
+          newSkills = pageSkills;
+        }
       }
+      return { ...prev, [page]: newSkills };
     });
   };
 
-  // Chart data
   const abilityData = {
     labels: abilities,
     datasets: [
@@ -152,41 +158,24 @@ const CharacterCreate = ({ onClose }) => {
     speed,
   };
 
-  // Navigation
   const handleNext = () => {
-    if (currentPage === "stats") {
-      setCurrentPage("description");
-      setProgress(40);
-    } else if (currentPage === "description") {
-      setCurrentPage("background");
-      setProgress(60);
-    } else if (currentPage === "background") {
-      setCurrentPage("race");
-      setProgress(80);
-    } else if (currentPage === "race") {
-      setCurrentPage("class"); // ✅ new class page
-      setProgress(100);
-    } else if (currentPage === "class") {
-      alert("Character creation complete!");
-    }
+    if (currentPage === "stats") setCurrentPage("description");
+    else if (currentPage === "description") setCurrentPage("background");
+    else if (currentPage === "background") setCurrentPage("race");
+    else if (currentPage === "race") setCurrentPage("class");
+    else if (currentPage === "class") alert("Character creation complete!");
+
+    setProgress((prev) => Math.min(prev + 20, 100));
   };
 
   const handlePrev = () => {
-    if (currentPage === "description") {
-      setCurrentPage("stats");
-      setProgress(20);
-    } else if (currentPage === "background") {
-      setCurrentPage("description");
-      setProgress(40);
-    } else if (currentPage === "race") {
-      setCurrentPage("background");
-      setProgress(60);
-    } else if (currentPage === "class") {
-      setCurrentPage("race");
-      setProgress(80);
-    } else {
-      setProgress(0);
-    }
+    if (currentPage === "description") setCurrentPage("stats");
+    else if (currentPage === "background") setCurrentPage("description");
+    else if (currentPage === "race") setCurrentPage("background");
+    else if (currentPage === "class") setCurrentPage("race");
+    else setProgress(0);
+
+    setProgress((prev) => Math.max(prev - 20, 0));
   };
 
   const handleExit = () => onClose && onClose();
@@ -209,17 +198,8 @@ const CharacterCreate = ({ onClose }) => {
           <div className="progress-fill" style={{ width: `${progress}%` }}></div>
         </div>
 
-        {/* Header: only show character name + image on stats & description */}
         {(currentPage === "stats" || currentPage === "description") && (
-          <div
-            className="character-header"
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "15px",
-            }}
-          >
+          <div className="character-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
             <input
               type="text"
               value={characterName}
@@ -228,10 +208,7 @@ const CharacterCreate = ({ onClose }) => {
               placeholder="Character Name"
               style={{ width: "50%", marginBottom: 0 }}
             />
-            <div
-              className="character-image-upload"
-              style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-            >
+            <div className="character-image-upload" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
               <div
                 className="character-image-preview"
                 onClick={currentPage === "stats" ? triggerFileInput : undefined}
@@ -261,7 +238,6 @@ const CharacterCreate = ({ onClose }) => {
           </div>
         )}
 
-        {/* Page content */}
         {currentPage === "stats" ? (
           <CharacterSheetCreater
             abilities={abilities}
@@ -274,37 +250,42 @@ const CharacterCreate = ({ onClose }) => {
             speed={speed}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
+            selectedSkills={pageSelectedSkills.stats}
+            toggleSkill={(skill) => toggleSkill("stats", skill)}
             initialSkills={initialSkills}
             abilityData={abilityData}
             savingData={savingData}
             chartOptions={chartOptions}
             savingThrowOptions={savingThrowOptions}
+            pageSelectedSkills={pageSelectedSkills}
           />
         ) : currentPage === "description" ? (
           <CharacterDesCreater />
         ) : currentPage === "background" ? (
           <BackgroundCreation
             initialSkills={initialSkills}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
+            selectedSkills={pageSelectedSkills.background}
+            toggleSkill={(skill) => toggleSkill("background", skill)}
             backgroundName={backgroundName}
             setBackgroundName={setBackgroundName}
+            abilityScores={abilityScores}
+            pageSelectedSkills={pageSelectedSkills}
           />
         ) : currentPage === "race" ? (
           <RaceCreation
             initialSkills={initialSkills}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
+            selectedSkills={pageSelectedSkills.race}
+            toggleSkill={(skill) => toggleSkill("race", skill)}
             raceName={raceName}
             setRaceName={setRaceName}
+            abilityScores={abilityScores}
+            pageSelectedSkills={pageSelectedSkills}
           />
         ) : currentPage === "class" ? (
           <ClassCreation
             initialSkills={initialSkills}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
+            selectedSkills={pageSelectedSkills.class}
+            toggleSkill={(skill) => toggleSkill("class", skill)}
             className={className}
             setClassName={setClassName}
           />
@@ -317,3 +298,4 @@ const CharacterCreate = ({ onClose }) => {
 };
 
 export default CharacterCreate;
+
