@@ -15,6 +15,11 @@ const encounterRoutes = require("./routes/encounterRoutes");
 const encounterInventoryRoutes = require("./routes/encounterInventoryRoutes");
 const encounterSpellsRoutes = require("./routes/encounterSpellsRoutes");
 const encounterActionsRoutes = require("./routes/encounterActionsRoutes");
+const characterRoutes = require("./routes/characterRoutes");
+const characterBackgroundRoutes = require("./routes/characterBackgroundRoutes");
+
+const characterRaceRoutes = require("./routes/characterRaceRoutes");
+const characterClassRoutes = require("./routes/characterClassRoutes");
 const app = express();
 
 // CORS
@@ -45,6 +50,11 @@ app.use("/api/encounters", encounterRoutes);
 app.use("/api/encounter-inventory", encounterInventoryRoutes); // moved above 404
 app.use("/api/encounter-spells", encounterSpellsRoutes);
 app.use("/api/encounter-actions", encounterActionsRoutes);
+app.use("/api/characters", characterRoutes);
+app.use("/api/character-backgrounds", characterBackgroundRoutes);
+app.use("/api/character-races", characterRaceRoutes);
+app.use("/api/character-classes", characterClassRoutes);
+
 
 // Test route
 app.get('/api/test', (req, res) => {
