@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import "../../character.css";
 
 const ClassCreation = ({
+  classData,
+  setClassData,
   initialSkills = {},
   selectedSkills = [],
   toggleSkill,
-  className,
-  setClassName,
 }) => {
   const [languagesArray, setLanguagesArray] = useState([""]);
   const [toolsArray, setToolsArray] = useState([""]);
@@ -58,14 +58,22 @@ const ClassCreation = ({
     setAmountOfLevels(newAmount);
   };
 
+  // When you want to update the class name:
+  const handleClassNameChange = (e) => {
+    setClassData((prev) => ({
+      ...prev,
+      name: e.target.value,
+    }));
+  };
+
   return (
     <div className="character-main">
       {/* Class Name Input */}
       <div style={{ marginBottom: "15px" }}>
         <input
           type="text"
-          value={className}
-          onChange={(e) => setClassName(e.target.value)}
+          value={classData.name}
+          onChange={handleClassNameChange}
           placeholder="Class Name"
           style={{
             width: "300px",

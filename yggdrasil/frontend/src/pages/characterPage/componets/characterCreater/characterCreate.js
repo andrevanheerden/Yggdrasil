@@ -46,8 +46,32 @@ const CharacterCreater = ({ onClose, campaignId }) => {
   const [level, setLevel] = useState(1);
   const [speed, setSpeed] = useState(30);
   const [activeTab, setActiveTab] = useState("Str");
-  const [description, setDescription] = useState("");
 
+  // Stats page data
+  const [statsSkills, setStatsSkills] = useState([]);
+  const [statsDescription, setStatsDescription] = useState(""); // If you want a description for stats
+  const [statsToolProficiencies, setStatsToolProficiencies] = useState([]);
+  const [statsLanguageProficiencies, setStatsLanguageProficiencies] = useState([]);
+
+  // Race page data
+  const [raceData, setRaceData] = useState({
+    name: "",
+    description: "",
+    toolProficiencies: [],
+    languageProficiencies: [],
+    selectedSkills: [],
+  });
+
+  // Background page data
+  const [backgroundData, setBackgroundData] = useState({
+    name: "",
+    description: "",
+    toolProficiencies: [],
+    languageProficiencies: [],
+    selectedSkills: [],
+  });
+
+  // Class page data
   const [classData, setClassData] = useState({
     name: "",
     description: "",
@@ -59,23 +83,9 @@ const CharacterCreater = ({ onClose, campaignId }) => {
     selectedSkills: [],
   });
 
-  const [raceData, setRaceData] = useState({
-    name: "",
-    description: "",
-    toolProficiencies: [],
-    languageProficiencies: [],
-    selectedSkills: [],
-  });
+  // Character description (for the main character, not background/race/class)
+  const [characterDescription, setCharacterDescription] = useState("");
 
-  const [backgroundData, setBackgroundData] = useState({
-    name: "",
-    description: "",
-    toolProficiencies: [],
-    languageProficiencies: [],
-    selectedSkills: [],
-  });
-
-  const [statsSkills, setStatsSkills] = useState([]);
   const fileInputRef = useRef(null);
   const [characterFile, setCharacterFile] = useState(null);
   const [characterImage, setCharacterImage] = useState(null);
@@ -104,6 +114,7 @@ const CharacterCreater = ({ onClose, campaignId }) => {
     });
   };
 
+  // Stats skills (main character skills)
   const toggleStatsSkill = (skill) => {
     setStatsSkills((prev) => {
       if (prev.includes(skill)) return prev.filter((s) => s !== skill);
@@ -165,6 +176,7 @@ const CharacterCreater = ({ onClose, campaignId }) => {
       return;
     }
     try {
+      // 1. Save main character
       const formData = new FormData();
       formData.append("campaign_id", latestCampaignId);
       formData.append("character_name", characterName);
@@ -176,14 +188,14 @@ const CharacterCreater = ({ onClose, campaignId }) => {
         formData.append(`ability_score_${ab.toLowerCase()}`, abilityScores[ab]);
       });
       formData.append("selected_skills", JSON.stringify(statsSkills));
-      formData.append("description", description);
+      formData.append("description", characterDescription);
 
       if (characterFile) formData.append("character_img", characterFile);
 
       const response = await axios.post("http://localhost:5000/api/characters", formData);
       const { character_id } = response.data;
 
-      // Send race, background, class
+      // 2. Save race (separate description, skills, tools, languages)
       await axios.post("http://localhost:5000/api/character-races", {
         character_id,
         race_name: raceData.name,
@@ -194,6 +206,7 @@ const CharacterCreater = ({ onClose, campaignId }) => {
         language_proficiencies: JSON.stringify(raceData.languageProficiencies),
       });
 
+      // 3. Save background (separate description, skills, tools, languages)
       await axios.post("http://localhost:5000/api/character-backgrounds", {
         character_id,
         background_name: backgroundData.name,
@@ -204,6 +217,7 @@ const CharacterCreater = ({ onClose, campaignId }) => {
         language_proficiencies: JSON.stringify(backgroundData.languageProficiencies),
       });
 
+      // 4. Save class (separate description, skills, tools, languages)
       await axios.post("http://localhost:5000/api/character-classes", {
         character_id,
         class_name: classData.name,
@@ -229,44 +243,74 @@ const CharacterCreater = ({ onClose, campaignId }) => {
     }
   };
 
-const handleNext = () => {
-  if (currentPage === "stats") {
-    setCurrentPage("description");
-    setProgress(40);
-  } else if (currentPage === "description") {
-    setCurrentPage("race");
-    setProgress(60);
-  } else if (currentPage === "race") {
-    setCurrentPage("background");
-    setProgress(80);
-  } else if (currentPage === "background") {
-    setCurrentPage("class");
-    setProgress(100);
-  } else if (currentPage === "class") {
-    saveCharacter();
-  }
-};
+  const handleNext = () => {
+    if (currentPage === "stats") {
+      setCurrentPage("description");
+      setProgress(40);
+    } else if (currentPage === "description") {
+      setCurrentPage("race");
+      setProgress(60);
+    } else if (currentPage === "race") {
+      setCurrentPage("background");
+      setProgress(80);
+    } else if (currentPage === "background") {
+      setCurrentPage("class");
+      setProgress(100);
+    } else if (currentPage === "class") {
+      saveCharacter();
+    }
+  };
 
-const handlePrev = () => {
-  if (currentPage === "description") {
-    setCurrentPage("stats");
-    setProgress(20);
-  } else if (currentPage === "race") {
-    setCurrentPage("description");
-    setProgress(40);
-  } else if (currentPage === "background") {
-    setCurrentPage("race");
-    setProgress(60);
-  } else if (currentPage === "class") {
-    setCurrentPage("background");
-    setProgress(80);
-  }
-};
-
+  const handlePrev = () => {
+    if (currentPage === "description") {
+      setCurrentPage("stats");
+      setProgress(20);
+    } else if (currentPage === "race") {
+      setCurrentPage("description");
+      setProgress(40);
+    } else if (currentPage === "background") {
+      setCurrentPage("race");
+      setProgress(60);
+    } else if (currentPage === "class") {
+      setCurrentPage("background");
+      setProgress(80);
+    }
+  };
 
   const handleExit = () => onClose && onClose();
 
   const character = { level, speed, ac: 10 + getModifier(abilityScores.Dex) };
+
+  // Add these toggle functions for each page
+  const toggleRaceSkill = (skill) => {
+    setRaceData((prev) => {
+      const already = prev.selectedSkills.includes(skill);
+      let updated;
+      if (already) {
+        updated = prev.selectedSkills.filter((s) => s !== skill);
+      } else if (prev.selectedSkills.length < 2) {
+        updated = [...prev.selectedSkills, skill];
+      } else {
+        updated = prev.selectedSkills;
+      }
+      return { ...prev, selectedSkills: updated };
+    });
+  };
+
+  const toggleBackgroundSkill = (skill) => {
+    setBackgroundData((prev) => {
+      const already = prev.selectedSkills.includes(skill);
+      let updated;
+      if (already) {
+        updated = prev.selectedSkills.filter((s) => s !== skill);
+      } else if (prev.selectedSkills.length < 2) {
+        updated = [...prev.selectedSkills, skill];
+      } else {
+        updated = prev.selectedSkills;
+      }
+      return { ...prev, selectedSkills: updated };
+    });
+  };
 
   return (
     <div className="character-popup-overlay">
@@ -342,19 +386,40 @@ const handlePrev = () => {
             savingThrowOptions={savingThrowOptions}
             level={level}
             setLevel={setLevel}
+            // If you want to add tool/language proficiencies for stats, pass them here
+            // toolProficiencies={statsToolProficiencies}
+            // setToolProficiencies={setStatsToolProficiencies}
+            // languageProficiencies={statsLanguageProficiencies}
+            // setLanguageProficiencies={setStatsLanguageProficiencies}
           />
         )}
         {currentPage === "description" && (
-          <CharacterDesCreater description={description} setDescription={setDescription} />
+          <CharacterDesCreater description={characterDescription} setDescription={setCharacterDescription} />
         )}
         {currentPage === "race" && (
-          <RaceCreation raceData={raceData} setRaceData={setRaceData} initialSkills={initialSkills} />
+          <RaceCreation
+            initialSkills={initialSkills}
+            selectedSkills={raceData.selectedSkills}
+            toggleSkill={toggleRaceSkill}
+            raceData={raceData}
+            setRaceData={setRaceData}
+          />
         )}
         {currentPage === "background" && (
-          <BackgroundCreation backgroundData={backgroundData} setBackgroundData={setBackgroundData} initialSkills={initialSkills} />
+          <BackgroundCreation
+            initialSkills={initialSkills}
+            selectedSkills={backgroundData.selectedSkills}
+            toggleSkill={toggleBackgroundSkill}
+            backgroundData={backgroundData}
+            setBackgroundData={setBackgroundData}
+          />
         )}
         {currentPage === "class" && (
-          <ClassCreation classData={classData} setClassData={setClassData} initialSkills={initialSkills} />
+          <ClassCreation
+            classData={classData}
+            setClassData={setClassData}
+            initialSkills={initialSkills}
+          />
         )}
       </div>
 
