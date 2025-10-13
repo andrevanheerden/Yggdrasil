@@ -2,16 +2,14 @@ import React, { useState } from "react";
 import "../../character.css";
 
 const BackgroundCreation = ({
+  backgroundData,
+  setBackgroundData,
   initialSkills = {},
-  selectedSkills = [],       // skills for this page
-  toggleSkill,               // page-specific toggle
-  pageSelectedSkills = {},   // all pages skills
-  pageName = "background"    // current page name
+  selectedSkills = [],
+  toggleSkill,
+  pageSelectedSkills = {},
+  pageName = "background"
 }) => {
-  const [backgroundName, setBackgroundName] = useState("");
-  const [languagesArray, setLanguagesArray] = useState([""]);
-  const [toolsArray, setToolsArray] = useState([""]);
-
   const defaultSkills = {
     Str: ["Athletics"],
     Dex: ["Acrobatics", "Sleight of Hand", "Stealth"],
@@ -27,46 +25,61 @@ const BackgroundCreation = ({
   const abilityLabels = { Str: "Str", Dex: "Dex", Con: "Con", Int: "Int", Wis: "Wis", Cha: "Cha" };
 
   const [activeTab, setActiveTab] = useState(abilities[0]);
-  const [abilityScores] = useState(abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {}));
   const [profTab, setProfTab] = useState("Languages");
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
   // Compute modifier including selections on other pages
-const getSkillModifier = (skill) => {
-  // find the ability, only if skills exists
-  const ability = abilities.find(
-    (ab) => skills[ab]?.includes(skill) // optional chaining
-  );
+  const getSkillModifier = (skill) => {
+    const ability = abilities.find((ab) => skills[ab]?.includes(skill));
+    let bonus = ability ? getModifier(10) : 0; // Default 10
+    if (selectedSkills.includes(skill)) bonus += 2;
+    if (pageSelectedSkills) {
+      Object.keys(pageSelectedSkills).forEach((page) => {
+        if (
+          page !== pageName &&
+          pageSelectedSkills[page]?.includes(skill)
+        ) {
+          bonus += 2;
+        }
+      });
+    }
+    return bonus;
+  };
 
-  let bonus = ability ? getModifier(abilityScores[ability]) : 0;
-
-  // +2 if selected on this page
-  if (selectedSkills.includes(skill)) bonus += 2;
-
-  // +2 if selected on other pages, only if pageSelectedSkills exists
-  if (pageSelectedSkills) {
-    Object.keys(pageSelectedSkills).forEach((page) => {
-      if (
-        page !== pageName &&
-        pageSelectedSkills[page]?.includes(skill) // optional chaining
-      ) {
-        bonus += 2;
-      }
-    });
-  }
-
-  return bonus;
-};
-
+  // Use parent state for all fields!
+  const handleNameChange = (e) =>
+    setBackgroundData((prev) => ({ ...prev, name: e.target.value }));
+  const handleDescriptionChange = (e) =>
+    setBackgroundData((prev) => ({ ...prev, description: e.target.value }));
+  const handleToolChange = (index, value) => {
+    const arr = [...(backgroundData.toolProficiencies || [])];
+    arr[index] = value;
+    setBackgroundData((prev) => ({ ...prev, toolProficiencies: arr }));
+  };
+  const handleAddTool = () =>
+    setBackgroundData((prev) => ({
+      ...prev,
+      toolProficiencies: [...(prev.toolProficiencies || []), ""],
+    }));
+  const handleLanguageChange = (index, value) => {
+    const arr = [...(backgroundData.languageProficiencies || [])];
+    arr[index] = value;
+    setBackgroundData((prev) => ({ ...prev, languageProficiencies: arr }));
+  };
+  const handleAddLanguage = () =>
+    setBackgroundData((prev) => ({
+      ...prev,
+      languageProficiencies: [...(prev.languageProficiencies || []), ""],
+    }));
 
   return (
     <div className="character-main">
       <div style={{ marginBottom: "15px" }}>
         <input
           type="text"
-          value={backgroundName}
-          onChange={(e) => setBackgroundName(e.target.value)}
+          value={backgroundData.name}
+          onChange={handleNameChange}
           placeholder="Background Name"
           style={{
             width: "300px",
@@ -79,7 +92,6 @@ const getSkillModifier = (skill) => {
           }}
         />
       </div>
-
       <div className="top-section" style={{ display: "flex", gap: "20px" }}>
         <div
           className="character-description-container"
@@ -110,10 +122,11 @@ const getSkillModifier = (skill) => {
               color: "#333",
               textAlign: "left",
             }}
+            value={backgroundData.description}
+            onChange={handleDescriptionChange}
             placeholder="Write a description of the background and its information here..."
           />
         </div>
-
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {/* Skills Box */}
           <div className="skills-box white-box3" style={{ width: "200px", height: "380px" }}>
@@ -187,19 +200,14 @@ const getSkillModifier = (skill) => {
                 </button>
               </div>
             </div>
-
             <div className="skills-tab-content2">
               {profTab === "Languages" &&
-                languagesArray.map((lang, index) => (
+                (backgroundData.languageProficiencies || []).map((lang, index) => (
                   <input
                     key={index}
                     type="text"
                     value={lang}
-                    onChange={(e) => {
-                      const newArr = [...languagesArray];
-                      newArr[index] = e.target.value.slice(0, 20);
-                      setLanguagesArray(newArr);
-                    }}
+                    onChange={e => handleLanguageChange(index, e.target.value)}
                     placeholder="Type language..."
                     maxLength={20}
                     style={{
@@ -215,7 +223,7 @@ const getSkillModifier = (skill) => {
                 ))}
               {profTab === "Languages" && (
                 <button
-                  onClick={() => setLanguagesArray([...languagesArray, ""])}
+                  onClick={handleAddLanguage}
                   style={{
                     marginTop: "5px",
                     width: "100%",
@@ -231,18 +239,13 @@ const getSkillModifier = (skill) => {
                   Add Language
                 </button>
               )}
-
               {profTab === "Tools" &&
-                toolsArray.map((tool, index) => (
+                (backgroundData.toolProficiencies || []).map((tool, index) => (
                   <input
                     key={index}
                     type="text"
                     value={tool}
-                    onChange={(e) => {
-                      const newArr = [...toolsArray];
-                      newArr[index] = e.target.value.slice(0, 20);
-                      setToolsArray(newArr);
-                    }}
+                    onChange={e => handleToolChange(index, e.target.value)}
                     placeholder="Type tool..."
                     maxLength={20}
                     style={{
@@ -258,7 +261,7 @@ const getSkillModifier = (skill) => {
                 ))}
               {profTab === "Tools" && (
                 <button
-                  onClick={() => setToolsArray([...toolsArray, ""])}
+                  onClick={handleAddTool}
                   style={{
                     marginTop: "5px",
                     width: "100%",

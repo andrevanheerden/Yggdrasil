@@ -2,17 +2,13 @@ import React, { useState } from "react";
 import "../../character.css";
 
 const RaceCreation = ({
+  raceData,
+  setRaceData,
   initialSkills = {},
-  selectedSkills = [],       // skills for this page
-  toggleSkill,               // page-specific toggle
-  pageSelectedSkills = {},   // all pages skills
-  pageName = "race"          // current page name
+  selectedSkills = [],
+  toggleSkill,
 }) => {
-  const [raceName, setRaceName] = useState("");
-  const [languagesArray, setLanguagesArray] = useState([""]);
-  const [toolsArray, setToolsArray] = useState([""]);
-
-  const defaultSkills = {
+  const skills = Object.keys(initialSkills).length > 0 ? initialSkills : {
     Str: ["Athletics"],
     Dex: ["Acrobatics", "Sleight of Hand", "Stealth"],
     Con: ["Endurance"],
@@ -20,52 +16,18 @@ const RaceCreation = ({
     Wis: ["Insight", "Perception", "Survival"],
     Cha: ["Deception", "Performance", "Persuasion"],
   };
-
-  const skills = Object.keys(initialSkills).length > 0 ? initialSkills : defaultSkills;
   const abilities = Object.keys(skills);
-  const abilityLabels = { Str: "Str", Dex: "Dex", Con: "Con", Int: "Int", Wis: "Wis", Cha: "Cha" };
-
   const [activeTab, setActiveTab] = useState(abilities[0]);
-  const [abilityScores] = useState(abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {}));
   const [profTab, setProfTab] = useState("Languages");
 
-  const getModifier = (score) => Math.floor((score - 10) / 2);
-
-  // Modifier including other pages
-const getSkillModifier = (skill) => {
-  // find the ability, only if skills exists
-  const ability = abilities.find(
-    (ab) => skills[ab]?.includes(skill) // optional chaining
-  );
-
-  let bonus = ability ? getModifier(abilityScores[ability]) : 0;
-
-  // +2 if selected on this page
-  if (selectedSkills.includes(skill)) bonus += 2;
-
-  // +2 if selected on other pages, only if pageSelectedSkills exists
-  if (pageSelectedSkills) {
-    Object.keys(pageSelectedSkills).forEach((page) => {
-      if (
-        page !== pageName &&
-        pageSelectedSkills[page]?.includes(skill) // optional chaining
-      ) {
-        bonus += 2;
-      }
-    });
-  }
-
-  return bonus;
-};
-
-
+  // All fields use parent state/setter!
   return (
     <div className="character-main">
       <div style={{ marginBottom: "15px" }}>
         <input
           type="text"
-          value={raceName}
-          onChange={(e) => setRaceName(e.target.value)}
+          value={raceData.name}
+          onChange={e => setRaceData(prev => ({ ...prev, name: e.target.value }))}
           placeholder="Race Name"
           style={{
             width: "300px",
@@ -78,24 +40,20 @@ const getSkillModifier = (skill) => {
           }}
         />
       </div>
-
       <div className="top-section" style={{ display: "flex", gap: "20px" }}>
-        <div
-          className="character-description-container"
-          style={{
-            width: "800px",
-            height: "721px",
-            background: "#D9D9D9",
-            padding: "10px",
-            borderRadius: "10px",
-            boxShadow: "0 4px 10px rgba(0,0,0,0.25)",
-            display: "flex",
-            flexDirection: "column",
-            fontFamily: "'Caudex', serif",
-            fontSize: "16px",
-            color: "#333",
-          }}
-        >
+        <div className="character-description-container" style={{
+          width: "800px",
+          height: "721px",
+          background: "#D9D9D9",
+          padding: "10px",
+          borderRadius: "10px",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.25)",
+          display: "flex",
+          flexDirection: "column",
+          fontFamily: "'Caudex', serif",
+          fontSize: "16px",
+          color: "#333",
+        }}>
           <textarea
             style={{
               flex: 1,
@@ -109,36 +67,30 @@ const getSkillModifier = (skill) => {
               color: "#333",
               textAlign: "left",
             }}
+            value={raceData.description}
+            onChange={e => setRaceData(prev => ({ ...prev, description: e.target.value }))}
             placeholder="Write a description of the race, traits, and characteristics here..."
           />
         </div>
-
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           {/* Skills Box */}
           <div className="skills-box white-box3" style={{ width: "200px", height: "380px" }}>
             <h3>Race Skills</h3>
             <div className="skills-tab-content">
               <div style={{ marginBottom: "5px" }}>
-                Selected Skills: {selectedSkills.length}/2
-                {selectedSkills.length > 0 && `: ${selectedSkills.join(", ")}`}
+                Selected Skills: {selectedSkills.length}/2 {selectedSkills.length > 0 && `: ${selectedSkills.join(", ")}`}
               </div>
               <ul style={{ listStyle: "none", padding: 0 }}>
                 {skills[activeTab]?.map((skill) => {
-                  const bonus = getSkillModifier(skill);
                   const isSelected = selectedSkills.includes(skill);
                   return (
-                    <li
-                      key={skill}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginBottom: "5px",
-                      }}
-                    >
-                      <span>
-                        {skill} <strong style={{ marginLeft: "5px" }}>+{bonus}</strong>
-                      </span>
+                    <li key={skill} style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "5px",
+                    }}>
+                      <span>{skill}</span>
                       <input
                         type="checkbox"
                         checked={isSelected}
@@ -150,7 +102,6 @@ const getSkillModifier = (skill) => {
                 })}
               </ul>
             </div>
-
             <div className="skills-tabs-container">
               <div className="skills-tab-buttons">
                 {abilities.map((ability) => (
@@ -159,13 +110,12 @@ const getSkillModifier = (skill) => {
                     className={`skills-tab-btn ${activeTab === ability ? "active" : ""}`}
                     onClick={() => setActiveTab(ability)}
                   >
-                    {abilityLabels[ability]}
+                    {ability}
                   </button>
                 ))}
               </div>
             </div>
           </div>
-
           {/* Languages & Tools */}
           <div className="skills-box white-box2" style={{ width: "200px", height: "500px" }}>
             <h3>Race Proficiencies</h3>
@@ -185,18 +135,17 @@ const getSkillModifier = (skill) => {
                 </button>
               </div>
             </div>
-
             <div className="skills-tab-content2">
               {profTab === "Languages" &&
-                languagesArray.map((lang, index) => (
+                (raceData.languageProficiencies || []).map((lang, index) => (
                   <input
                     key={index}
                     type="text"
                     value={lang}
-                    onChange={(e) => {
-                      const newArr = [...languagesArray];
+                    onChange={e => {
+                      const newArr = [...raceData.languageProficiencies];
                       newArr[index] = e.target.value.slice(0, 20);
-                      setLanguagesArray(newArr);
+                      setRaceData(prev => ({ ...prev, languageProficiencies: newArr }));
                     }}
                     placeholder="Type language..."
                     maxLength={20}
@@ -213,7 +162,10 @@ const getSkillModifier = (skill) => {
                 ))}
               {profTab === "Languages" && (
                 <button
-                  onClick={() => setLanguagesArray([...languagesArray, ""])}
+                  onClick={() => setRaceData(prev => ({
+                    ...prev,
+                    languageProficiencies: [...(prev.languageProficiencies || []), ""]
+                  }))}
                   style={{
                     marginTop: "5px",
                     width: "100%",
@@ -229,17 +181,16 @@ const getSkillModifier = (skill) => {
                   Add Language
                 </button>
               )}
-
               {profTab === "Tools" &&
-                toolsArray.map((tool, index) => (
+                (raceData.toolProficiencies || []).map((tool, index) => (
                   <input
                     key={index}
                     type="text"
                     value={tool}
-                    onChange={(e) => {
-                      const newArr = [...toolsArray];
+                    onChange={e => {
+                      const newArr = [...raceData.toolProficiencies];
                       newArr[index] = e.target.value.slice(0, 20);
-                      setToolsArray(newArr);
+                      setRaceData(prev => ({ ...prev, toolProficiencies: newArr }));
                     }}
                     placeholder="Type tool..."
                     maxLength={20}
@@ -256,7 +207,10 @@ const getSkillModifier = (skill) => {
                 ))}
               {profTab === "Tools" && (
                 <button
-                  onClick={() => setToolsArray([...toolsArray, ""])}
+                  onClick={() => setRaceData(prev => ({
+                    ...prev,
+                    toolProficiencies: [...(prev.toolProficiencies || []), ""]
+                  }))}
                   style={{
                     marginTop: "5px",
                     width: "100%",

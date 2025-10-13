@@ -10,44 +10,57 @@ const CharacterSheetCreater = ({
   changeHp,
   character,
   speed,
+  setSpeed,
   activeTab,
   setActiveTab,
-  selectedSkills,         // skills for this page
-  toggleSkill,            // page-specific toggle
+  selectedSkills,
+  toggleSkill,
   initialSkills,
   abilityData,
   savingData,
   chartOptions,
   savingThrowOptions,
-  pageSelectedSkills,     // all pages selected skills
-  pageName                // name of the current page: "stats"
+  pageSelectedSkills,
+  pageName,
+  toolProficiencies = [],
+  setToolProficiencies,
+  languageProficiencies = [],
+  setLanguageProficiencies,
 }) => {
+  // Tool proficiencies handlers
+  const handleToolChange = (index, value) => {
+    const arr = [...toolProficiencies];
+    arr[index] = value;
+    setToolProficiencies && setToolProficiencies(arr);
+  };
+  const handleAddTool = () => setToolProficiencies && setToolProficiencies([...toolProficiencies, ""]);
+
+  // Language proficiencies handlers
+  const handleLanguageChange = (index, value) => {
+    const arr = [...languageProficiencies];
+    arr[index] = value;
+    setLanguageProficiencies && setLanguageProficiencies(arr);
+  };
+  const handleAddLanguage = () => setLanguageProficiencies && setLanguageProficiencies([...languageProficiencies, ""]);
 
   // Helper to get total modifier including other pages
-const getSkillModifier = (skill) => {
-  const ability = abilities.find((ab) => initialSkills[ab]?.includes(skill)); // <- use initialSkills here
-  let bonus = ability ? getModifier(abilityScores[ability]) : 0;
-
-  // +2 if selected on this page
-  if (selectedSkills?.includes(skill)) bonus += 2;
-
-  // +2 if selected on other pages
-  if (pageSelectedSkills && typeof pageSelectedSkills === "object") {
-    Object.keys(pageSelectedSkills).forEach((page) => {
-      if (
-        page !== pageName &&
-        Array.isArray(pageSelectedSkills[page]) &&
-        pageSelectedSkills[page].includes(skill)
-      ) {
-        bonus += 2;
-      }
-    });
-  }
-
-  return bonus;
-};
-
-
+  const getSkillModifier = (skill) => {
+    const ability = abilities.find((ab) => initialSkills[ab]?.includes(skill));
+    let bonus = ability ? getModifier(abilityScores[ability]) : 0;
+    if (selectedSkills?.includes(skill)) bonus += 2;
+    if (pageSelectedSkills && typeof pageSelectedSkills === "object") {
+      Object.keys(pageSelectedSkills).forEach((page) => {
+        if (
+          page !== pageName &&
+          Array.isArray(pageSelectedSkills[page]) &&
+          pageSelectedSkills[page].includes(skill)
+        ) {
+          bonus += 2;
+        }
+      });
+    }
+    return bonus;
+  };
 
   return (
     <div className="character-main">
@@ -157,6 +170,40 @@ const getSkillModifier = (skill) => {
               </div>
             </div>
           </div>
+
+          {/* Tool Proficiencies */}
+          {setToolProficiencies && (
+            <div className="skills-box white-box" style={{ width: "300px", marginTop: "10px" }}>
+              <h4>Tool Proficiencies</h4>
+              {(toolProficiencies || []).map((tool, idx) => (
+                <input
+                  key={idx}
+                  value={tool}
+                  onChange={e => handleToolChange(idx, e.target.value)}
+                  placeholder="Tool"
+                  style={{ width: "100%", marginBottom: "5px" }}
+                />
+              ))}
+              <button onClick={handleAddTool} style={{ width: "100%" }}>Add Tool</button>
+            </div>
+          )}
+
+          {/* Language Proficiencies */}
+          {setLanguageProficiencies && (
+            <div className="skills-box white-box" style={{ width: "300px", marginTop: "10px" }}>
+              <h4>Language Proficiencies</h4>
+              {(languageProficiencies || []).map((lang, idx) => (
+                <input
+                  key={idx}
+                  value={lang}
+                  onChange={e => handleLanguageChange(idx, e.target.value)}
+                  placeholder="Language"
+                  style={{ width: "100%", marginBottom: "5px" }}
+                />
+              ))}
+              <button onClick={handleAddLanguage} style={{ width: "100%" }}>Add Language</button>
+            </div>
+          )}
         </div>
       </div>
     </div>

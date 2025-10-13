@@ -1,6 +1,6 @@
 import React from "react";
 
-const CharacterDesCreater = () => {
+const CharacterDesCreater = ({ description, setDescription }) => {
   return (
     <div
       className="character-description-container"
@@ -33,7 +33,9 @@ const CharacterDesCreater = () => {
           color: "#333",
           textAlign: "left",
         }}
-        placeholder="Write your character's backstory personality, and appearance here..."
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Write your character's backstory, personality, and appearance here..."
       />
     </div>
   );
