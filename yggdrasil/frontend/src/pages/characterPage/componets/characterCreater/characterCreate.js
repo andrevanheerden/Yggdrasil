@@ -5,6 +5,8 @@ import pageBg from "../../../../assets/images/page.png";
 import CharacterSheetCreater from "./characterSheetCreater";
 import ClassCreation from "./classCreater";
 import CharacterDesCreater from "./characterDesCreater";
+import RaceCreation from "./raceCreater";
+import BackgroundCreation from "./backgroundCreater";
 import axios from "axios";
 
 import {
@@ -33,7 +35,7 @@ const CharacterCreater = ({ onClose, campaignId }) => {
   const latestCampaignId = campaignId || localStorage.getItem("selectedCampaignId");
 
   const [currentPage, setCurrentPage] = useState("stats");
-  const [progress, setProgress] = useState(33);
+  const [progress, setProgress] = useState(20);
 
   // Character base data
   const [characterName, setCharacterName] = useState("New Character");
@@ -44,11 +46,36 @@ const CharacterCreater = ({ onClose, campaignId }) => {
   const [level, setLevel] = useState(1);
   const [speed, setSpeed] = useState(30);
   const [activeTab, setActiveTab] = useState("Str");
-
-  const [selectedSkills, setSelectedSkills] = useState([]);
-  const [className, setClassName] = useState("");
   const [description, setDescription] = useState("");
 
+  const [classData, setClassData] = useState({
+    name: "",
+    description: "",
+    energyName: "",
+    maxEnergyLevel: 6,
+    energyLevels: Array(6).fill(0),
+    toolProficiencies: [],
+    languageProficiencies: [],
+    selectedSkills: [],
+  });
+
+  const [raceData, setRaceData] = useState({
+    name: "",
+    description: "",
+    toolProficiencies: [],
+    languageProficiencies: [],
+    selectedSkills: [],
+  });
+
+  const [backgroundData, setBackgroundData] = useState({
+    name: "",
+    description: "",
+    toolProficiencies: [],
+    languageProficiencies: [],
+    selectedSkills: [],
+  });
+
+  const [statsSkills, setStatsSkills] = useState([]);
   const fileInputRef = useRef(null);
   const [characterFile, setCharacterFile] = useState(null);
   const [characterImage, setCharacterImage] = useState(null);
@@ -77,8 +104,8 @@ const CharacterCreater = ({ onClose, campaignId }) => {
     });
   };
 
-  const toggleSkill = (skill) => {
-    setSelectedSkills((prev) => {
+  const toggleStatsSkill = (skill) => {
+    setStatsSkills((prev) => {
       if (prev.includes(skill)) return prev.filter((s) => s !== skill);
       if (prev.length < 2) return [...prev, skill];
       return prev;
@@ -137,7 +164,6 @@ const CharacterCreater = ({ onClose, campaignId }) => {
       alert("You must be in a campaign to save a character.");
       return;
     }
-
     try {
       const formData = new FormData();
       formData.append("campaign_id", latestCampaignId);
@@ -149,46 +175,94 @@ const CharacterCreater = ({ onClose, campaignId }) => {
       abilities.forEach((ab) => {
         formData.append(`ability_score_${ab.toLowerCase()}`, abilityScores[ab]);
       });
-      formData.append("selected_skills", JSON.stringify(selectedSkills));
-      formData.append("class_name", className);
+      formData.append("selected_skills", JSON.stringify(statsSkills));
       formData.append("description", description);
 
       if (characterFile) formData.append("character_img", characterFile);
 
-      const response = await axios.post("http://localhost:5000/api/characters", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+      const response = await axios.post("http://localhost:5000/api/characters", formData);
+      const { character_id } = response.data;
+
+      // Send race, background, class
+      await axios.post("http://localhost:5000/api/character-races", {
+        character_id,
+        race_name: raceData.name,
+        race_description: raceData.description,
+        race_skill_1: raceData.selectedSkills[0] || "",
+        race_skill_2: raceData.selectedSkills[1] || "",
+        tool_proficiencies: JSON.stringify(raceData.toolProficiencies),
+        language_proficiencies: JSON.stringify(raceData.languageProficiencies),
       });
 
-      console.log("Character saved:", response.data);
+      await axios.post("http://localhost:5000/api/character-backgrounds", {
+        character_id,
+        background_name: backgroundData.name,
+        background_description: backgroundData.description,
+        skill_selected_1: backgroundData.selectedSkills[0] || "",
+        skill_selected_2: backgroundData.selectedSkills[1] || "",
+        tool_proficiencies: JSON.stringify(backgroundData.toolProficiencies),
+        language_proficiencies: JSON.stringify(backgroundData.languageProficiencies),
+      });
+
+      await axios.post("http://localhost:5000/api/character-classes", {
+        character_id,
+        class_name: classData.name,
+        class_description: classData.description,
+        energy_name: classData.energyName,
+        max_energy_level: classData.maxEnergyLevel,
+        amount_lv1: classData.energyLevels[0],
+        amount_lv2: classData.energyLevels[1],
+        amount_lv3: classData.energyLevels[2],
+        amount_lv4: classData.energyLevels[3],
+        amount_lv5: classData.energyLevels[4],
+        amount_lv6: classData.energyLevels[5],
+        tool_proficiencies: JSON.stringify(classData.toolProficiencies),
+        language_proficiencies: JSON.stringify(classData.languageProficiencies),
+        selected_skills: JSON.stringify(classData.selectedSkills),
+      });
+
       alert("Character saved successfully!");
       onClose && onClose();
     } catch (err) {
-      console.error("Error saving character:", err);
+      console.error(err);
       alert("Failed to save character.");
     }
   };
 
-  const handleNext = () => {
-    if (currentPage === "stats") {
-      setCurrentPage("description");
-      setProgress(66);
-    } else if (currentPage === "description") {
-      setCurrentPage("class");
-      setProgress(100);
-    } else if (currentPage === "class") {
-      saveCharacter();
-    }
-  };
+const handleNext = () => {
+  if (currentPage === "stats") {
+    setCurrentPage("description");
+    setProgress(40);
+  } else if (currentPage === "description") {
+    setCurrentPage("race");
+    setProgress(60);
+  } else if (currentPage === "race") {
+    setCurrentPage("background");
+    setProgress(80);
+  } else if (currentPage === "background") {
+    setCurrentPage("class");
+    setProgress(100);
+  } else if (currentPage === "class") {
+    saveCharacter();
+  }
+};
 
-  const handlePrev = () => {
-    if (currentPage === "description") {
-      setCurrentPage("stats");
-      setProgress(33);
-    } else if (currentPage === "class") {
-      setCurrentPage("description");
-      setProgress(66);
-    }
-  };
+const handlePrev = () => {
+  if (currentPage === "description") {
+    setCurrentPage("stats");
+    setProgress(20);
+  } else if (currentPage === "race") {
+    setCurrentPage("description");
+    setProgress(40);
+  } else if (currentPage === "background") {
+    setCurrentPage("race");
+    setProgress(60);
+  } else if (currentPage === "class") {
+    setCurrentPage("background");
+    setProgress(80);
+  }
+};
+
 
   const handleExit = () => onClose && onClose();
 
@@ -246,7 +320,7 @@ const CharacterCreater = ({ onClose, campaignId }) => {
           </div>
         )}
 
-        {currentPage === "stats" ? (
+        {currentPage === "stats" && (
           <CharacterSheetCreater
             abilities={abilities}
             abilityScores={abilityScores}
@@ -259,8 +333,8 @@ const CharacterCreater = ({ onClose, campaignId }) => {
             setSpeed={setSpeed}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
+            selectedSkills={statsSkills}
+            toggleSkill={toggleStatsSkill}
             initialSkills={initialSkills}
             abilityData={abilityData}
             savingData={savingData}
@@ -269,17 +343,19 @@ const CharacterCreater = ({ onClose, campaignId }) => {
             level={level}
             setLevel={setLevel}
           />
-        ) : currentPage === "description" ? (
+        )}
+        {currentPage === "description" && (
           <CharacterDesCreater description={description} setDescription={setDescription} />
-        ) : currentPage === "class" ? (
-          <ClassCreation
-            className={className}
-            setClassName={setClassName}
-            selectedSkills={selectedSkills}
-            toggleSkill={toggleSkill}
-            initialSkills={initialSkills}
-          />
-        ) : null}
+        )}
+        {currentPage === "race" && (
+          <RaceCreation raceData={raceData} setRaceData={setRaceData} initialSkills={initialSkills} />
+        )}
+        {currentPage === "background" && (
+          <BackgroundCreation backgroundData={backgroundData} setBackgroundData={setBackgroundData} initialSkills={initialSkills} />
+        )}
+        {currentPage === "class" && (
+          <ClassCreation classData={classData} setClassData={setClassData} initialSkills={initialSkills} />
+        )}
       </div>
 
       <button className="nav-arrow right" onClick={handleNext}>▶</button>
@@ -288,4 +364,3 @@ const CharacterCreater = ({ onClose, campaignId }) => {
 };
 
 export default CharacterCreater;
-

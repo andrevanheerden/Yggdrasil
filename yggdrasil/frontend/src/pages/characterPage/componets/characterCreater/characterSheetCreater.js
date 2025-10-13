@@ -24,22 +24,30 @@ const CharacterSheetCreater = ({
 }) => {
 
   // Helper to get total modifier including other pages
-  const getSkillModifier = (skill) => {
-    const ability = Object.keys(initialSkills).find((key) => initialSkills[key].includes(skill));
-    let bonus = getModifier(abilityScores[ability]);
+const getSkillModifier = (skill) => {
+  const ability = abilities.find((ab) => initialSkills[ab]?.includes(skill)); // <- use initialSkills here
+  let bonus = ability ? getModifier(abilityScores[ability]) : 0;
 
-    // +2 if selected on this page
-    if (selectedSkills.includes(skill)) bonus += 2;
+  // +2 if selected on this page
+  if (selectedSkills?.includes(skill)) bonus += 2;
 
-    // +2 if selected on other pages
+  // +2 if selected on other pages
+  if (pageSelectedSkills && typeof pageSelectedSkills === "object") {
     Object.keys(pageSelectedSkills).forEach((page) => {
-      if (page !== pageName && pageSelectedSkills[page].includes(skill)) {
+      if (
+        page !== pageName &&
+        Array.isArray(pageSelectedSkills[page]) &&
+        pageSelectedSkills[page].includes(skill)
+      ) {
         bonus += 2;
       }
     });
+  }
 
-    return bonus;
-  };
+  return bonus;
+};
+
+
 
   return (
     <div className="character-main">

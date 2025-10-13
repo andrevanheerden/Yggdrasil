@@ -33,20 +33,32 @@ const BackgroundCreation = ({
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
   // Compute modifier including selections on other pages
-  const getSkillModifier = (skill) => {
-    const ability = abilities.find((ab) => skills[ab].includes(skill));
-    let bonus = getModifier(abilityScores[ability]);
+const getSkillModifier = (skill) => {
+  // find the ability, only if skills exists
+  const ability = abilities.find(
+    (ab) => skills[ab]?.includes(skill) // optional chaining
+  );
 
-    // +2 if selected on this page
-    if (selectedSkills.includes(skill)) bonus += 2;
+  let bonus = ability ? getModifier(abilityScores[ability]) : 0;
 
-    // +2 if selected on other pages
+  // +2 if selected on this page
+  if (selectedSkills.includes(skill)) bonus += 2;
+
+  // +2 if selected on other pages, only if pageSelectedSkills exists
+  if (pageSelectedSkills) {
     Object.keys(pageSelectedSkills).forEach((page) => {
-      if (page !== pageName && pageSelectedSkills[page].includes(skill)) bonus += 2;
+      if (
+        page !== pageName &&
+        pageSelectedSkills[page]?.includes(skill) // optional chaining
+      ) {
+        bonus += 2;
+      }
     });
+  }
 
-    return bonus;
-  };
+  return bonus;
+};
+
 
   return (
     <div className="character-main">
