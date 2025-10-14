@@ -20,6 +20,9 @@ const characterBackgroundRoutes = require("./routes/characterBackgroundRoutes");
 
 const characterRaceRoutes = require("./routes/characterRaceRoutes");
 const characterClassRoutes = require("./routes/characterClassRoutes");
+const characterInventoryRoutes = require("./routes/characterInventoryRoutes");
+const characterSpellsRoutes = require("./routes/characterSpellsRoutes");
+const characterActionsRoutes = require("./routes/characterActionsRoutes");
 const app = express();
 
 // CORS
@@ -54,6 +57,9 @@ app.use("/api/characters", characterRoutes);
 app.use("/api/character-backgrounds", characterBackgroundRoutes);
 app.use("/api/character-races", characterRaceRoutes);
 app.use("/api/character-classes", characterClassRoutes);
+app.use("/api/character-inventory", characterInventoryRoutes); 
+app.use("/api/character-spells", characterSpellsRoutes);
+app.use("/api/character-actions", characterActionsRoutes);
 
 
 // Test route

@@ -41,8 +41,13 @@ const CharacterList = ({ campaignId, onSelectCharacter, onCreateCharacter }) => 
         <div
           key={char.character_id}
           className="encounter-box"
-          onClick={() => onSelectCharacter(char)} // ✅ triggers LeftP to switch tab
-        >
+    onClick={() => {
+      // Save selected character ID to localStorage
+      localStorage.setItem("selectedCharacterId", char.character_id);
+      // Call parent callback
+      onSelectCharacter(char);
+    }}
+  >
           <div className="encounter-img-container">
             <img src={char.character_img || rose} alt={char.character_name} className="encounter-img" />
           </div>
