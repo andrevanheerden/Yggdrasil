@@ -184,11 +184,27 @@ const CharacterCreater = ({ onClose, campaignId }) => {
       formData.append("speed", speed);
       formData.append("current_hp", hp.current);
       formData.append("max_hp", hp.max);
-      abilities.forEach((ab) => {
-        formData.append(`ability_score_${ab.toLowerCase()}`, abilityScores[ab]);
-      });
-      formData.append("selected_skills", JSON.stringify(statsSkills));
-      formData.append("description", characterDescription);
+abilities.forEach((ab) => {
+  const lower = ab.toLowerCase();
+  formData.append(`encounter_ability_score_${lower}`, abilityScores[ab]);
+  formData.append(`encounter_saving_throw_${lower}`, getModifier(abilityScores[ab]));
+});
+
+formData.append("character_AC", character.ac);
+formData.append("character_level", level);
+formData.append("character_speed", speed);
+formData.append("character_current_HP", hp.current);
+formData.append("character_max_HP", hp.max);
+
+// Save skill slots safely
+    const skillsToSave = statsSkills.slice(0, 2); // capture first 2 selected skills
+    formData.append("skill_selected_1", skillsToSave[0] || "");
+    formData.append("skill_selected_2", skillsToSave[1] || "");
+
+// Save character story/description
+formData.append("character_description", characterDescription);
+
+
 
       if (characterFile) formData.append("character_img", characterFile);
 

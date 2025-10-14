@@ -11,6 +11,8 @@ const CharacterSheetCreater = ({
   character,
   speed,
   setSpeed,
+    level,
+  setLevel,
   activeTab,
   setActiveTab,
   selectedSkills,
@@ -92,8 +94,44 @@ const CharacterSheetCreater = ({
             <div className="stats-container" style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
               <div className="stats-row" style={{ display: "flex", gap: "10px" }}>
                 <div className="stat-box hex">AC {character.ac}</div>
-                <div className="stat-box hex">Level {character.level}</div>
-                <div className="stat-box hex">Speed {speed}</div>
+                <div className="stat-box hex" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={level}
+                    onChange={(e) => setLevel(Number(e.target.value))}
+                    style={{
+                      width: "40px",
+                      textAlign: "center",
+                      border: "1px solid #ccc",
+                      borderRadius: "3px",
+                      outline: "none",
+                      marginBottom: "2px"
+                    }}
+                  />
+                  Level
+                </div>
+
+                <div className="stat-box hex" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <input
+                    type="text"
+                    value={speed}
+                    onChange={(e) => setSpeed(Number(e.target.value))}
+                    style={{
+                      width: "42px",
+                      textAlign: "center",
+                      border: "1px solid #ccc",
+                      borderRadius: "3px",
+                      outline: "none",
+                      marginBottom: "2px"
+                    }}
+                  />
+                  Speed
+                </div>
+
+
+
+
+
               </div>
 
               <div className="hp-container" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
