@@ -1,17 +1,16 @@
-import React, { useState } from "react"; // React import
+import React, { useState } from "react";
 import OPcover from "../../assets/images/OPcover.png"; 
 import LeftP from "./componets/leftP";  
 import RightP from "./componets/rightP";
 import Navbar from "../homePage/components/Navbar";
 import BookmarkNav from "../bookmarkNav/bookmarkNav";
-import CreateCharacterPopup from "./componets/characterCreater/characterCreate"; // import popup
+import CreateCharacterPopup from "./componets/characterCreater/characterCreate";
 import "./character.css";
 
 function Character() {
-  const [activeTab, setActiveTab] = useState("character"); // default to Character Sheet
-  const [showPopup, setShowPopup] = useState(false); // popup visibility
+  const [activeTab, setActiveTab] = useState("characterList"); // default tab
+  const [showPopup, setShowPopup] = useState(false);
 
-  // called when user clicks "Create New Character" in CharacterList
   const handleOpenPopup = () => setShowPopup(true);
   const handleClosePopup = () => setShowPopup(false);
   const handleCreateCharacter = (newCharacter) => {
@@ -75,12 +74,15 @@ function Character() {
       >
         <div className="top-block"></div>
         <div className="book-wrapper">
-          <LeftP activeTab={activeTab} onCreateCharacter={handleOpenPopup} />  
+          <LeftP
+            activeTab={activeTab}
+            setActiveTab={setActiveTab} // ✅ pass setActiveTab so LeftP can switch tabs
+            onCreateCharacter={handleOpenPopup}
+          />  
           <RightP />
         </div>
       </div>
 
-      {/* Popup renders at top level so it’s above everything */}
       {showPopup && (
         <CreateCharacterPopup
           onClose={handleClosePopup}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../character.css";
 import { Radar } from "react-chartjs-2";
-import rose from "../../../assets/images/rose.jpg"; // Example portrait
+import defaultPortrait from "../../../assets/images/rose.jpg";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -12,68 +12,66 @@ import {
   Legend,
 } from "chart.js";
 
-ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend
-);
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-const CharacterSheet = () => {
+const CharacterSheet = ({ character }) => {
   const [activeTab, setActiveTab] = useState("Str");
 
-  const character = {
-    name: "Alex Black",
-    class: "Shinobi",
-    race: "Human",
-    background: "Scholar",
-    portrait: rose,
-    ac: 19,
-    level: 1,
-    hp: { current: 19, max: 25 },
-    speed: 30,
+  if (!character) {
+    return <p>No character selected.</p>;
+  }
+
+  // --- Ability Scores & Modifier ---
+  const abilityScores = {
+    Str: character.abilityScores?.Str || 10,
+    Dex: character.abilityScores?.Dex || 10,
+    Con: character.abilityScores?.Con || 10,
+    Int: character.abilityScores?.Int || 10,
+    Wis: character.abilityScores?.Wis || 10,
+    Cha: character.abilityScores?.Cha || 10,
   };
 
-  // Skills by ability
-  const skillsByAbility = {
-    Str: [{ name: "Athletics", bonus: "+2" }],
-    Dex: [
-      { name: "Acrobatics", bonus: "+3" },
-      { name: "Sleight of Hand", bonus: "+2" },
-      { name: "Stealth", bonus: "+4" },
-    ],
-    Con: [{ name: "Endurance", bonus: "+2" }],
-    Int: [
-      { name: "Arcana", bonus: "+1" },
-      { name: "History", bonus: "+1" },
-      { name: "Investigation", bonus: "+2" },
-      { name: "Nature", bonus: "+1" },
-      { name: "Religion", bonus: "+0" },
-    ],
-    Wis: [
-      { name: "Animal Handling", bonus: "+1" },
-      { name: "Insight", bonus: "+2" },
-      { name: "Medicine", bonus: "+1" },
-      { name: "Perception", bonus: "+3" },
-      { name: "Survival", bonus: "+1" },
-    ],
-    Cha: [
-      { name: "Deception", bonus: "+0" },
-      { name: "Intimidation", bonus: "+1" },
-      { name: "Performance", bonus: "+2" },
-      { name: "Persuasion", bonus: "+1" },
-    ],
+  const getModifier = (score) => Math.floor((score - 10) / 2);
+
+  // --- Standard skills per ability ---
+  const allSkills = {
+    Str: ["Athletics"],
+    Dex: ["Acrobatics", "Sleight of Hand", "Stealth"],
+    Con: ["Endurance"],
+    Int: ["Arcana", "History", "Investigation", "Nature", "Religion"],
+    Wis: ["Animal Handling", "Insight", "Medicine", "Perception", "Survival"],
+    Cha: ["Deception", "Intimidation", "Performance", "Persuasion"],
   };
 
-  // Ability Scores chart
+  // --- Extra modifiers from character ---
+  const extraModifiers = [
+    character.skill_modefed_1,
+    character.skill_modefed_2,
+    character.race_skill_modefed_1,
+    character.race_skill_modefed_2,
+  ].filter(Boolean);
+
+  // --- Build skills with total values ---
+  const skillsByAbility = {};
+  Object.keys(allSkills).forEach((ability) => {
+    const abilityMod = getModifier(abilityScores[ability]);
+    skillsByAbility[ability] = allSkills[ability].map((skill) => {
+      const extra = extraModifiers.includes(skill) ? 2 : 0;
+      return { name: skill, value: abilityMod + extra };
+    });
+  });
+
+  // --- Chart Data ---
+  const savingThrows = Object.fromEntries(
+    Object.entries(abilityScores).map(([k, v]) => [k, getModifier(v)])
+  );
+
   const abilityData = {
-    labels: ["Str", "Dex", "Con", "Int", "Wis", "Cha"],
+    labels: Object.keys(abilityScores),
     datasets: [
       {
-        label: "Ability Score",
-        data: [14, 13, 15, 10, 12, 8],
+        label: "Ability Scores",
+        data: Object.values(abilityScores),
         backgroundColor: "rgba(0, 128, 255, 0.3)",
         borderColor: "rgba(0, 128, 255, 1)",
         borderWidth: 2,
@@ -81,13 +79,12 @@ const CharacterSheet = () => {
     ],
   };
 
-  // Saving Throws chart
   const savingData = {
-    labels: ["Str", "Dex", "Con", "Int", "Wis", "Cha"],
+    labels: Object.keys(savingThrows),
     datasets: [
       {
         label: "Saving Throws",
-        data: [2, 1, 3, 0, 1, -1],
+        data: Object.values(savingThrows),
         backgroundColor: "rgba(0, 200, 100, 0.3)",
         borderColor: "rgba(0, 200, 100, 1)",
         borderWidth: 2,
@@ -96,24 +93,15 @@ const CharacterSheet = () => {
   };
 
   const chartOptions = {
-    scales: {
-      r: {
-        angleLines: { display: true },
-        suggestedMin: 0,
-        suggestedMax: 20,
-      },
-    },
-    plugins: {
-      legend: { display: false },
-    },
+    scales: { r: { angleLines: { display: true }, suggestedMin: -2, suggestedMax: 20 } },
+    plugins: { legend: { display: false } },
   };
 
   return (
     <div className="page left-page">
-      {/* Header with portrait */}
+      {/* Header */}
       <div className="character-header-with-portrait">
         <div className="header-dropdowns">
-          {/* ✅ All static text now */}
           <div className="static-info">{character.name}</div>
           <div className="static-info">{character.class}</div>
           <div className="two-column-inline">
@@ -121,9 +109,8 @@ const CharacterSheet = () => {
             <div className="static-info">{character.background}</div>
           </div>
         </div>
-
         <img
-          src={character.portrait}
+          src={character.portrait || defaultPortrait}
           alt="Portrait"
           className="portrait-img-header"
         />
@@ -135,7 +122,6 @@ const CharacterSheet = () => {
           <div className="ability-chart white-box">
             <Radar data={abilityData} options={chartOptions} />
           </div>
-
           <div className="saving-chart white-box">
             <Radar data={savingData} options={chartOptions} />
           </div>
@@ -144,55 +130,49 @@ const CharacterSheet = () => {
         {/* Stats + Skills */}
         <div className="portrait-column">
           <div className="stats-hp-wrapper">
-            {/* Hex stats */}
             <div className="hex-stack">
               <div className="stat-box hex">AC {character.ac}</div>
               <div className="stat-box hex">Level {character.level}</div>
               <div className="stat-box hex">Speed {character.speed}</div>
             </div>
-
-            {/* HP Bar */}
             <div className="hp-bar-container">
               <div
                 className="hp-bar-fill"
                 style={{
-                  height: `${(character.hp.current / character.hp.max) * 100}%`,
+                  height: character.hp?.max
+                    ? `${(character.hp.current / character.hp.max) * 100}%`
+                    : "0%",
                 }}
               ></div>
               <div className="hp-bar-label">
-                {character.hp.current}/{character.hp.max}
+                {character.hp?.current}/{character.hp?.max}
               </div>
             </div>
           </div>
 
+          {/* Skills */}
           <div className="skills-box white-box">
-            {/* Content inside */}
             <div className="skills-tab-content">
               <h3>{activeTab} Skills</h3>
               <ul>
                 {skillsByAbility[activeTab].map((skill, idx) => (
                   <li key={idx}>
-                    {skill.name} {skill.bonus}
+                    {skill.name} {skill.value >= 0 ? "+" : ""}
+                    {skill.value}
                   </li>
                 ))}
               </ul>
             </div>
-
-            {/* Tabs outside */}
             <div className="skills-tabs-container">
-              <div className="skills-tab-buttons">
-                {Object.keys(skillsByAbility).map((ability) => (
-                  <button
-                    key={ability}
-                    className={`skills-tab-btn ${
-                      activeTab === ability ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab(ability)}
-                  >
-                    {ability}
-                  </button>
-                ))}
-              </div>
+              {Object.keys(skillsByAbility).map((ability) => (
+                <button
+                  key={ability}
+                  className={`skills-tab-btn ${activeTab === ability ? "active" : ""}`}
+                  onClick={() => setActiveTab(ability)}
+                >
+                  {ability}
+                </button>
+              ))}
             </div>
           </div>
         </div>

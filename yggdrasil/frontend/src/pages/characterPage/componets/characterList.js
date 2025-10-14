@@ -1,68 +1,77 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../character.css";
-import rose from "../../../assets/images/rose.jpg"; // Portrait from CharacterSheet
+import rose from "../../../assets/images/rose.jpg";
+import axios from "axios";
 
-const CharacterList = ({ onSelectCharacter, onCreateCharacter }) => {
-  const [character] = useState({
-    id: 1,
-    name: "Alex Black",
-    race: "Human",
-    class: "Shinobi",
-    background: "Scholar",
-    level: 1,
-    ac: 19,
-    hp: { current: 19, max: 25 },
-    speed: 30,
-    image: rose,
-  });
+const CharacterList = ({ campaignId, onSelectCharacter, onCreateCharacter }) => {
+  const [characters, setCharacters] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (!campaignId) {
+      setLoading(false);
+      return;
+    }
+
+    const fetchCharacters = async () => {
+      setLoading(true);
+      try {
+        const res = await axios.get(`http://localhost:5000/api/characters/${campaignId}`);
+        setCharacters(Array.isArray(res.data) ? res.data : []);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to fetch characters");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCharacters();
+  }, [campaignId]);
+
+  if (loading) return <p>Loading characters...</p>;
+  if (error) return <p className="error-message">{error}</p>;
 
   return (
     <div className="encounter-list-wrapper">
-      <h2 className="encounter-list-title">Character</h2>
+      <h2 className="encounter-list-title">Characters</h2>
 
-      {/* Existing Character */}
-      <div
-        className="encounter-box"
-        onClick={() => onSelectCharacter && onSelectCharacter(character)}
-      >
-        <div className="encounter-img-container">
-          <img
-            src={character.image}
-            alt={character.name}
-            className="encounter-img"
-          />
-        </div>
+      {characters.map((char) => (
+        <div
+          key={char.character_id}
+          className="encounter-box"
+          onClick={() => onSelectCharacter(char)} // ✅ triggers LeftP to switch tab
+        >
+          <div className="encounter-img-container">
+            <img src={char.character_img || rose} alt={char.character_name} className="encounter-img" />
+          </div>
 
-        <div className="encounter-info">
-          <div className="encounter-name">{character.name}</div>
-          <div className="encounter-race">{character.race}</div>
-          <div className="encounter-class">{character.class}</div>
-          <div className="encounter-bg">{character.background}</div>
-        </div>
+          <div className="encounter-info">
+            <div className="encounter-name">{char.character_name}</div>
+            <div className="encounter-race">{char.race || "-"}</div>
+            <div className="encounter-class">{char.class || "-"}</div>
+            <div className="encounter-bg">{char.background || "-"}</div>
+          </div>
 
-        <div className="encounter-stats">
-          <div className="encounter-level">Lvl {character.level}</div>
-          <div className="encounter-ac">AC {character.ac}</div>
-          <div className="encounter-speed">Speed {character.speed}</div>
-          <div className="encounter-hp">
-            HP {character.hp.current}/{character.hp.max}
+          <div className="encounter-stats">
+            <div className="encounter-level">Lvl {char.character_level}</div>
+            <div className="encounter-ac">AC {char.character_AC}</div>
+            <div className="encounter-speed">Speed {char.character_speed}</div>
+            <div className="encounter-hp">HP {char.character_current_HP}/{char.character_max_HP}</div>
           </div>
         </div>
-      </div>
+      ))}
 
       {/* ➕ Create New Character */}
-<div
-  className="encounter-box create-new"
-  onClick={() => onCreateCharacter && onCreateCharacter()}
->
-  <div className="encounter-img-container">
-    <div className="encounter-img placeholder">+</div>
-  </div>
-  <div className="encounter-info">
-    <div className="encounter-name">Create New Character</div>
-  </div>
-</div>
-
+      <div className="encounter-box create-new" onClick={() => onCreateCharacter && onCreateCharacter()}>
+        <div className="encounter-img-container">
+          <div className="encounter-img placeholder">+</div>
+        </div>
+        <div className="encounter-info">
+          <div className="encounter-name">Create New Character</div>
+        </div>
+      </div>
     </div>
   );
 };
