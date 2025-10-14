@@ -56,7 +56,7 @@ const handleSubmit = async () => {
       { headers: { "Content-Type": "multipart/form-data" } }
     );
 
-    alert("Character action/item created!");
+    alert("Character item created!");
     if (onItemCreated) onItemCreated(res.data);
 
     // Reset form
