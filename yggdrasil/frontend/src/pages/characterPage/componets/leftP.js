@@ -25,9 +25,10 @@ const LeftP = ({ activeTab, setActiveTab, onCreateCharacter, latestCampaignId })
     }
   }, [latestCampaignId]);
 
-  // Map backend character to the structure expected by CharacterSheet
+  // When user clicks a character in the list
   const handleSelectCharacter = (char) => {
     const mappedCharacter = {
+      id: char.character_id, // ✅ store character_id for background fetch
       name: char.character_name || "-",
       class: char.class || "-",
       race: char.race || "-",
@@ -77,7 +78,7 @@ const LeftP = ({ activeTab, setActiveTab, onCreateCharacter, latestCampaignId })
       {activeTab === "characterList" && campaignId && (
         <CharacterList
           campaignId={campaignId}
-          onSelectCharacter={handleSelectCharacter} // Called when character clicked
+          onSelectCharacter={handleSelectCharacter}
           onCreateCharacter={onCreateCharacter}
         />
       )}
@@ -86,7 +87,7 @@ const LeftP = ({ activeTab, setActiveTab, onCreateCharacter, latestCampaignId })
       <div className="char-left-tab-content">
         {activeTab === "character" && <CharacterSheet character={selectedCharacter} />}
         {activeTab === "desc" && <CharacterDes character={selectedCharacter} />}
-        {activeTab === "background" && <BackgroundDes character={selectedCharacter} />}
+        {activeTab === "background" && <BackgroundDes character={selectedCharacter} />} {/* ✅ pass character */}
         {activeTab === "class" && <ClassDes character={selectedCharacter} />}
         {activeTab === "race" && <RaceDes character={selectedCharacter} />}
       </div>

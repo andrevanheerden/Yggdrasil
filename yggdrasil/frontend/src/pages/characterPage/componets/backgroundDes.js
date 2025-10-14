@@ -1,106 +1,156 @@
-// BackgroundDes.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import "../character.css";
-import rose from "../../../assets/images/rose.jpg"; // Portrait placeholder
+import defaultPortrait from "../../../assets/images/rose.jpg";
 
-const BackgroundDes = () => {
-  const [description, setDescription] = useState(
-    "You have dedicated your life to the pursuit of knowledge—be it arcane, historical, natural, or philosophical. Whether you were trained at a grand university, mentored by a wise master, or self-taught in dusty corners of forgotten libraries, your mind is your greatest weapon. Others may swing swords or cast spells with flair, but you shape the world with reason, insight, and understanding."
-  );
-
+const BackgroundDes = ({ character }) => {
+  const [backgroundData, setBackgroundData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("Tools");
 
-  const character = {
-    name: "Alex Black",
-
-
-    background: "Scholar",
-    portrait: rose,
+  // ✅ Helper to safely parse double-encoded JSON arrays
+  const parseJSONorArray = (val) => {
+    if (!val) return [];
+    try {
+      const parsed = JSON.parse(val); // first parse
+      if (Array.isArray(parsed)) return parsed; // already array
+      if (typeof parsed === "string") {
+        const doubleParsed = JSON.parse(parsed); // second parse
+        return Array.isArray(doubleParsed) ? doubleParsed : [];
+      }
+      return [];
+    } catch (err) {
+      console.warn("Failed to parse tools/languages:", val);
+      return [];
+    }
   };
 
-  const hexBonuses = [
-    { label: "Insight", bonus: "+2" },
-    { label: "History", bonus: "+2" },
-  ];
+  useEffect(() => {
+    if (!character || !character.id) {
+      console.warn("⚠️ No character ID provided to BackgroundDes");
+      setLoading(false);
+      return;
+    }
 
-  const toolProficiencies = ["Calligrapher's supplies"];
-  const languages = ["Common", "Elvish"];
+    const fetchBackground = async () => {
+      try {
+        console.log("Fetching background for character:", character.id);
+        const res = await axios.get(
+          `http://localhost:5000/api/character-backgrounds/character/${character.id}`
+        );
+
+        console.log("✅ Background response:", res.data);
+
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          const bg = res.data[0];
+          setBackgroundData({
+            name: bg.background_name,
+            description: bg.background_description,
+            skill1: bg.skill_selected_1,
+            skill2: bg.skill_selected_2,
+            tools: parseJSONorArray(bg.tool_proficiencies),
+            languages: parseJSONorArray(bg.language_proficiencies),
+          });
+        } else {
+          console.warn("❌ No background rows returned for this character");
+          setBackgroundData(null);
+        }
+      } catch (err) {
+        console.error("🚨 Failed to fetch background:", err);
+        setBackgroundData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBackground();
+  }, [character]);
+
+  if (loading) return <div>Loading background...</div>;
+  if (!backgroundData)
+    return <div>No background data found for this character.</div>;
 
   const tabs = {
-    Tools: toolProficiencies,
-    Languages: languages,
+    Tools: backgroundData.tools,
+    Languages: backgroundData.languages,
   };
 
   return (
     <div className="page left-page">
       {/* Header */}
-{/* Header */}
-<div className="background-header">
-  <div className="background-character-info">
-    <div className="background-character-name">{character.name}</div>
-    {/* Remove class and race */}
-    <div className="background-character-details">
-      <div className="background-character-background">{character.background}</div>
-    </div>
-  </div>
-  <img
-    src={character.portrait}
-    alt="Portrait"
-    className="background-portrait-img"
-  />
-</div>
+      <div className="background-header">
+        <div className="background-character-info">
+          <div className="background-character-name">
+            {character?.name || "Unknown"}
+          </div>
+          <div className="background-character-details">
+            <div className="background-character-background">
+              {backgroundData.name || "No Background"}
+            </div>
+          </div>
+        </div>
+        <img
+          src={character?.portrait || defaultPortrait}
+          alt="Portrait"
+          className="background-portrait-img"
+        />
+      </div>
 
-
-      {/* Two-column layout: Description + Hexes/Skills */}
+      {/* Description and Skills */}
       <div className="background-main-content">
-{/* Description */}
-<div className="background-description-box">
-  <div className="background-description-title-inside">Description</div>
-  <textarea
-    value={description}
-    onChange={(e) => setDescription(e.target.value)}
-    className="background-description-textarea"
-  />
-</div>
+        <div className="background-description-box">
+          <div className="background-description-title-inside">Description</div>
+          <textarea
+            value={backgroundData.description || ""}
+            readOnly
+            className="background-description-textarea"
+          />
+        </div>
 
-
-        {/* Right column: Hexes + Tools/Languages */}
         <div className="background-right-column">
-          {/* Hex bonuses */}
+          {/* Skills */}
           <div className="background-hex-bonuses">
-            {hexBonuses.map((hex, idx) => (
-              <div key={idx} className="background-hex">
-                <div className="background-hex-bonus">{hex.bonus}</div>
-                <div className="background-hex-label">{hex.label}</div>
+            {backgroundData.skill1 && (
+              <div className="background-hex">
+                <div className="background-hex-bonus">+2</div>
+                <div className="background-hex-label">{backgroundData.skill1}</div>
               </div>
-            ))}
+            )}
+            {backgroundData.skill2 && (
+              <div className="background-hex">
+                <div className="background-hex-bonus">+2</div>
+                <div className="background-hex-label">{backgroundData.skill2}</div>
+              </div>
+            )}
           </div>
 
           {/* Tools / Languages */}
           <div className="background-skills-box">
             <div className="background-skills-content">
               <h3>{activeTab}</h3>
-              <ul>
-                {tabs[activeTab].map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
+              {Array.isArray(tabs[activeTab]) && tabs[activeTab].length > 0 ? (
+                <ul>
+                  {tabs[activeTab].map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No {activeTab.toLowerCase()} listed.</p>
+              )}
             </div>
 
             <div className="background-skills-tabs-container">
-              <div className="background-skills-tab-buttons">
-                {Object.keys(tabs).map((tab) => (
-                  <button
-                    key={tab}
-                    className={`background-skills-tab-btn ${
-                      activeTab === tab ? "active" : ""
-                    }`}
-                    onClick={() => setActiveTab(tab)}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
+              {Object.keys(tabs).map((tab) => (
+                <button
+                  key={tab}
+                  className={`background-skills-tab-btn ${
+                    activeTab === tab ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -110,4 +160,3 @@ const BackgroundDes = () => {
 };
 
 export default BackgroundDes;
-
