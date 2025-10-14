@@ -1,11 +1,16 @@
-// CreateItemPopup.jsx
-import React from "react";
+import React, { useRef } from "react";
 import ReactDOM from "react-dom";
 import "../../character.css";
 import pageBg from "../../../../assets/images/page.png";
 import CreateActionPage from "./craeteActionPage";
 
-const CreateActionPopup = ({ onClose }) => {
+const CreateActionPopup = ({ onClose, onActionCreated }) => {
+  const pageRef = useRef();
+
+  const handleSubmitClick = () => {
+    if (pageRef.current) pageRef.current.handleSubmit();
+  };
+
   return ReactDOM.createPortal(
     <div
       className="character-popup-overlay"
@@ -22,19 +27,46 @@ const CreateActionPopup = ({ onClose }) => {
         zIndex: 9999,
       }}
     >
-      {/* Exit button */}
-      <button
-        className="exit-x-btn"
-        onClick={onClose}
+      {/* Submit + Close buttons */}
+      <div
         style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
+          position: "absolute",
+          top: "94%",
+          right: 20,
+          display: "flex",
+          gap: "10px",
           zIndex: 10000,
         }}
       >
-        ✖
-      </button>
+        <button
+          onClick={handleSubmitClick}
+          style={{
+            padding: "8px 16px",
+            fontFamily: "'Caudex', serif",
+            backgroundColor: "#199a6a",
+            color: "#fff",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          Submit
+        </button>
+        <button
+          onClick={onClose}
+          style={{
+            padding: "8px 16px",
+            fontFamily: "'Caudex', serif",
+            backgroundColor: "#c0392b",
+            color: "#fff",
+            borderRadius: "5px",
+            border: "none",
+            cursor: "pointer",
+          }}
+        >
+          ✖
+        </button>
+      </div>
 
       <div
         className="character-popup"
@@ -46,10 +78,10 @@ const CreateActionPopup = ({ onClose }) => {
           zIndex: 10000,
         }}
       >
-        <CreateActionPage />
+        <CreateActionPage ref={pageRef} onActionCreated={onActionCreated} />
       </div>
     </div>,
-    document.body // ✅ Render outside React tree so it is above .top-block
+    document.body
   );
 };
 

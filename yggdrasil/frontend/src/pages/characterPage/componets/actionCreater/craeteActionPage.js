@@ -1,22 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import "../../character.css";
+import axios from "axios";
 
-const CreateActionPage = () => {
+const CreateActionPage = forwardRef(({ onActionCreated }, ref) => {
   const [actionName, setActionName] = useState("");
   const [actionType, setActionType] = useState("");
   const [actionImage, setActionImage] = useState(null);
   const [description, setDescription] = useState("");
+  const [effectA, setEffectA] = useState([""]); // damage types
+  const [effectB, setEffectB] = useState([{ level: "", range: "", area: "", cost: "", effect: "" }]);
+  const [characterId, setCharacterId] = useState(null);
 
-  const [effectA, setEffectA] = useState([""]);
-  const [effectB, setEffectB] = useState([
-    { level: 0, range: "", area: "", cost: "", effect: "" }
-  ]);
+  // Load character ID from localStorage
+  useEffect(() => {
+    const storedId = localStorage.getItem("selectedCharacterId");
+    if (storedId) setCharacterId(storedId);
+    else console.warn("⚠️ No character selected in localStorage");
+  }, []);
+
+  // Expose handleSubmit to parent
+  useImperativeHandle(ref, () => ({ handleSubmit }));
+
+  const handleSubmit = async () => {
+    if (!characterId) {
+      alert("No character selected. Please select a character first.");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("character_id", characterId);
+      formData.append("action_name", actionName);
+      formData.append("action_type", actionType);
+      formData.append("action_description", description);
+
+      const firstEffect = effectB[0] || {};
+      formData.append("action_range", firstEffect.range || "");
+      formData.append("action_area", firstEffect.area || "");
+      formData.append("action_cost", firstEffect.cost || "");
+
+      // effect text array
+      const allEffectTexts = effectB.map(e => e.effect || "");
+      formData.append("effects", JSON.stringify(allEffectTexts));
+
+      // Damage types array
+      formData.append("damage_types", JSON.stringify(effectA.filter(d => d.trim() !== "")));
+
+      // Image
+      if (actionImage) formData.append("action_image", actionImage);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/character-actions",
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      alert("Action created successfully!");
+      if (onActionCreated) onActionCreated(res.data);
+
+      // Reset form
+      setActionName("");
+      setActionType("");
+      setActionImage(null);
+      setDescription("");
+      setEffectA([""]);
+      setEffectB([{ level: "", range: "", area: "", cost: "", effect: "" }]);
+    } catch (err) {
+      console.error("❌ Create action error:", err);
+      alert("Failed to create action.");
+    }
+  };
 
   return (
     <div className="character-main">
-      {/* Top Bar: Name & Type, Image on Right */}
+      {/* Top Bar */}
       <div style={{ display: "flex", gap: "20px", marginBottom: "20px", alignItems: "flex-start" }}>
-        {/* Name & Type (stacked vertically) */}
         <div style={{ display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
           <input
             type="text"
@@ -48,7 +106,6 @@ const CreateActionPage = () => {
           />
         </div>
 
-        {/* Image Block on Right */}
         <div
           style={{
             width: "125px",
@@ -56,10 +113,7 @@ const CreateActionPage = () => {
             borderRadius: "50%",
             overflow: "hidden",
             border: "2px solid #333",
-            position: "relative",
             cursor: "pointer",
-            flexShrink: 0,
-            right: '30px',
           }}
           onClick={() => document.getElementById("action-image").click()}
         >
@@ -81,7 +135,6 @@ const CreateActionPage = () => {
                 fontFamily: "'Caudex', serif",
                 color: "#666",
                 textAlign: "center",
-                padding: "5px",
               }}
             >
               Click to choose image
@@ -97,11 +150,10 @@ const CreateActionPage = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Section */}
       <div className="top-section" style={{ display: "flex", gap: "20px" }}>
         {/* Left: Description */}
         <div
-          className="character-description-container"
           style={{
             width: "800px",
             height: "625px",
@@ -129,181 +181,90 @@ const CreateActionPage = () => {
               fontFamily: "'Caudex', serif",
               fontSize: "16px",
               color: "#333",
-              textAlign: "left",
             }}
-            placeholder="Write a description of the action and its information here..."
+            placeholder="Write action description..."
           />
         </div>
 
-        {/* Right Column: Effect & Damage */}
+        {/* Right Column: Damage & Effects */}
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Effect Section */}
+          {/* Damage */}
           <div className="skills-box white-box3" style={{ width: "240px", height: "200px" }}>
             <h3>Damage</h3>
-            {effectA.map((eff, index) => (
+            {effectA.map((eff, idx) => (
               <input
-                key={index}
+                key={idx}
                 type="text"
                 value={eff}
                 onChange={(e) => {
-                  const newArr = [...effectA];
-                  newArr[index] = e.target.value.slice(0, 20);
-                  setEffectA(newArr);
+                  const arr = [...effectA];
+                  arr[idx] = e.target.value.slice(0, 20);
+                  setEffectA(arr);
                 }}
                 placeholder="Damage type..."
                 maxLength={20}
-                style={{
-                  width: "100%",
-                  padding: "5px",
-                  borderRadius: "5px",
-                  border: "1px solid #ccc",
-                  fontFamily: "'Caudex', serif",
-                  fontSize: "16px",
-                  marginBottom: "5px",
-                }}
+                style={{ width: "100%", padding: "5px", borderRadius: "5px", border: "1px solid #ccc", fontFamily: "'Caudex', serif", fontSize: "16px", marginBottom: "5px" }}
               />
             ))}
             <button
               onClick={() => setEffectA([...effectA, ""])}
-              style={{
-                marginTop: "5px",
-                width: "100%",
-                padding: "5px",
-                borderRadius: "5px",
-                border: "none",
-                backgroundColor: "#199a6a",
-                color: "#fff",
-                fontFamily: "'Caudex', serif",
-                cursor: "pointer",
-              }}
+              style={{ width: "100%", padding: "5px", borderRadius: "5px", border: "none", backgroundColor: "#199a6a", color: "#fff", fontFamily: "'Caudex', serif", cursor: "pointer" }}
             >
               Add Damage type
             </button>
           </div>
 
-          {/* Abilities Section with Level Dropdown */}
+          {/* Effects */}
           <div className="skills-box white-box3" style={{ width: "260px", height: "395px", overflowY: "auto", padding: "5px" }}>
             <h3>Effects</h3>
             {effectB.map((eff, index) => (
-              <div
-                key={index}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: "5px",
-                  marginBottom: "10px",
-                }}
-              >
-{/* Level dropdown changed to Action Type dropdown */}
-<select
-  value={eff.level}  // You might want to rename 'level' to 'actionType' for clarity
-  onChange={(e) => {
-    const newArr = [...effectB];
-    newArr[index].level = e.target.value;  // store the string value now
-    setEffectB(newArr);
-  }}
-  style={{
-    width: "100%",
-    height: "30px",
-    padding: "5px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
-    fontFamily: "'Caudex', serif",
-    fontSize: "14px",
-    backgroundColor: "transparent",
-    marginTop: "8px",
-  }}
->
-  <option value="">Action Type</option>
-  <option value="Movement">Movement</option>
-  <option value="Defense">Defense</option>
-  <option value="Combat">Combat</option>
-</select>
-
-
+              <div key={index} style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "5px", marginBottom: "10px" }}>
                 <input
                   type="text"
                   value={eff.range}
                   onChange={(e) => {
-                    const newArr = [...effectB];
-                    newArr[index].range = e.target.value.slice(0, 18);
-                    setEffectB(newArr);
+                    const arr = [...effectB];
+                    arr[index].range = e.target.value.slice(0, 18);
+                    setEffectB(arr);
                   }}
                   placeholder="Range"
                   maxLength={18}
-                  style={{
-                    width: "100%",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    border: "1px solid #ccc",
-                    fontFamily: "'Caudex', serif",
-                    fontSize: "14px",
-                  }}
+                  style={{ width: "100%", padding: "5px", borderRadius: "5px", border: "1px solid #ccc", fontFamily: "'Caudex', serif", fontSize: "14px" }}
                 />
-
                 <input
                   type="text"
                   value={eff.area}
                   onChange={(e) => {
-                    const newArr = [...effectB];
-                    newArr[index].area = e.target.value.slice(0, 18);
-                    setEffectB(newArr);
+                    const arr = [...effectB];
+                    arr[index].area = e.target.value.slice(0, 18);
+                    setEffectB(arr);
                   }}
                   placeholder="Area"
                   maxLength={18}
-                  style={{
-                    width: "100%",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    border: "1px solid #ccc",
-                    fontFamily: "'Caudex', serif",
-                    fontSize: "14px",
-                  }}
+                  style={{ width: "100%", padding: "5px", borderRadius: "5px", border: "1px solid #ccc", fontFamily: "'Caudex', serif", fontSize: "14px" }}
                 />
-
                 <input
                   type="text"
                   value={eff.cost}
                   onChange={(e) => {
-                    const newArr = [...effectB];
-                    newArr[index].cost = e.target.value.slice(0, 18);
-                    setEffectB(newArr);
+                    const arr = [...effectB];
+                    arr[index].cost = e.target.value.slice(0, 18);
+                    setEffectB(arr);
                   }}
-                  placeholder="cost"
+                  placeholder="Cost"
                   maxLength={18}
-                  style={{
-                    width: "100%",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    border: "1px solid #ccc",
-                    fontFamily: "'Caudex', serif",
-                    fontSize: "14px",
-                  }}
+                  style={{ width: "100%", padding: "5px", borderRadius: "5px", border: "1px solid #ccc", fontFamily: "'Caudex', serif', fontSize: '14px" }}
                 />
-
                 <textarea
                   value={eff.effect}
                   onChange={(e) => {
-                    const newArr = [...effectB];
-                    newArr[index].effect = e.target.value.slice(0, 420);
-                    setEffectB(newArr);
+                    const arr = [...effectB];
+                    arr[index].effect = e.target.value.slice(0, 420);
+                    setEffectB(arr);
                   }}
                   placeholder="Effect"
                   maxLength={420}
-                  style={{
-                    width: "240px",
-                    height: "200px",
-                    padding: "5px",
-                    borderRadius: "5px",
-                    border: "1px solid #ccc",
-                    fontFamily: "'Caudex', serif",
-                    fontSize: "14px",
-                    gridColumn: "span 2",
-                    resize: "vertical",
-                    overflowY: "auto",
-                    verticalAlign: "top",
-                    backgroundColor: "transparent",
-                  }}
+                  style={{ width: "240px", height: "200px", padding: "5px", borderRadius: "5px", border: "1px solid #ccc", fontFamily: "'Caudex', serif", fontSize: "14px", gridColumn: "span 2", resize: "vertical", overflowY: "auto", backgroundColor: "transparent" }}
                 />
               </div>
             ))}
@@ -312,6 +273,6 @@ const CreateActionPage = () => {
       </div>
     </div>
   );
-};
+});
 
 export default CreateActionPage;
