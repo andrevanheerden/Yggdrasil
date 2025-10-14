@@ -122,11 +122,12 @@ const ClassDes = ({ character }) => {
               {Object.entries(classData.levels).map(([level, count]) => (
                 <div key={level} className="energy-level">
                   <span className="energy-level-label">Lv {level}</span>
-                  <div className="energy-circles">
-                    {Array.from({ length: count }).map((_, idx) => (
-                      <div key={idx} className="energy-circle"></div>
-                    ))}
-                  </div>
+<div className="energy-circles-grid">
+  {Array.from({ length: count }).map((_, idx) => (
+    <div key={idx} className="energy-circle"></div>
+  ))}
+</div>
+
                 </div>
               ))}
             </div>

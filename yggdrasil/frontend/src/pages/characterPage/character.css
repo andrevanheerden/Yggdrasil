@@ -1368,6 +1368,11 @@ stroke: #000;
   border: 1px solid #333;
 }
 
+.energy-circles-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 14px); /* 9 circles per row */
+  gap: 4px;
+}
 
 
 
