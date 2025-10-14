@@ -1,43 +1,85 @@
-// BackgroundDes.js
-import React, { useState } from "react";
+// ClassDes.js
+import React, { useState, useEffect } from "react";
 import "../character.css";
-import rose from "../../../assets/images/rose.jpg"; // Portrait placeholder
+import rose from "../../../assets/images/rose.jpg";
+import axios from "axios";
 
-const ClassDes = () => {
-  const [description, setDescription] = useState(
-    "You have dedicated your life to the pursuit of knowledge—be it arcane, historical, natural, or philosophical. Whether you were trained at a grand university, mentored by a wise master, or self-taught in dusty corners of forgotten libraries, your mind is your greatest weapon. Others may swing swords or cast spells with flair, but you shape the world with reason, insight, and understanding."
-  );
+const ClassDes = ({ character }) => {
+  const [classData, setClassData] = useState({
+    name: "-",
+    description: "",
+    energyName: "Energy",
+    maxEnergyLevel: 0,
+    levels: {},
+    tools: [],
+    languages: [],
+    portrait: rose,
+  });
+
+  
 
   const [activeTab, setActiveTab] = useState("Tools");
 
-  const character = {
-    name: "Alex Black",
-    class: "Shinobi",
-    portrait: rose,
+  // Helper to safely parse JSON arrays from the backend
+  const parseJSONorArray = (val) => {
+    if (!val) return [];
+    try {
+      const parsed = JSON.parse(val);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (err) {
+      console.warn("Failed to parse tools/languages:", val);
+      return [];
+    }
   };
 
-  // Energy resource (replaces hex bonuses)
-  const energyResource = {
-    name: "Chakra Energy",
-    levels: {
-      1: 4,
-      2: 3,
-      3: 5,
-      4: 2,
-      5: 6,
-      6: 3,
-      7: 4,
-      8: 5,
-      9: 7,
-    },
+ useEffect(() => {
+  if (!character || !character.id) return;
+
+  const fetchClass = async () => {
+    try {
+      const res = await axios.get(
+        `http://localhost:5000/api/character-classes/character/${character.id}`
+      );
+
+      console.log("Raw backend response:", res.data); // ✅ LOG RAW RESPONSE
+
+      const cls = Array.isArray(res.data) && res.data.length > 0 ? res.data[0] : null;
+      if (!cls) return;
+
+      // Build energy levels up to max level (max 6)
+      const levels = {};
+      for (let i = 1; i <= Math.min(cls.max_energy_level || 0, 6); i++) {
+        levels[i] = cls[`amount_lv${i}`] || 0;
+      }
+
+      const newClassData = {
+        name: cls.class_name || "-",
+        description: cls.class_description || "",
+        energyName: cls.energy_name || "Energy",
+        maxEnergyLevel: cls.max_energy_level || 0,
+        levels,
+        tools: parseJSONorArray(cls.tool_proficiencies),
+        languages: parseJSONorArray(cls.language_proficiencies),
+        portrait: character.portrait || rose,
+      };
+
+      console.log("Parsed class data:", newClassData); // ✅ LOG PARSED DATA
+
+      setClassData(newClassData);
+
+    } catch (err) {
+      console.error("Failed to fetch class data:", err);
+    }
   };
 
-  const toolProficiencies = ["Calligrapher's supplies"];
-  const languages = ["Common", "Elvish"];
+  fetchClass();
+}, [character]);
+
+
 
   const tabs = {
-    Tools: toolProficiencies,
-    Languages: languages,
+    Tools: classData.tools,
+    Languages: classData.languages,
   };
 
   return (
@@ -45,40 +87,39 @@ const ClassDes = () => {
       {/* Header */}
       <div className="background-header">
         <div className="background-character-info">
-          <div className="background-character-name">{character.name}</div>
-          {/* Remove class and race */}
+          <div className="background-character-name">{character?.name || "-"}</div>
           <div className="background-character-details">
-            <div className="background-character-background">
-              {character.class}
-            </div>
+            <div className="background-character-background">{classData.name}</div>
           </div>
         </div>
         <img
-          src={character.portrait}
+          src={classData.portrait}
           alt="Portrait"
           className="background-portrait-img"
         />
       </div>
 
-      {/* Two-column layout: Description + Right column */}
+      {/* Two-column layout */}
       <div className="background-main-content">
         {/* Description */}
         <div className="background-description-box">
           <div className="background-description-title-inside">Description</div>
           <textarea
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
+            value={classData.description}
+            onChange={(e) =>
+              setClassData({ ...classData, description: e.target.value })
+            }
             className="background-description-textarea"
           />
         </div>
 
         {/* Right column: Energy Resource + Tools/Languages */}
         <div className="background-right-column">
-          {/* Energy Resource Box */}
+          {/* Energy Resource */}
           <div className="energy-box">
-            <h3 className="energy-title">{energyResource.name}</h3>
+            <h3 className="energy-title">{classData.energyName}</h3>
             <div className="energy-levels">
-              {Object.entries(energyResource.levels).map(([level, count]) => (
+              {Object.entries(classData.levels).map(([level, count]) => (
                 <div key={level} className="energy-level">
                   <span className="energy-level-label">Lv {level}</span>
                   <div className="energy-circles">
@@ -95,11 +136,15 @@ const ClassDes = () => {
           <div className="background-skills-box" style={{ height: "282px" }}>
             <div className="background-skills-content">
               <h3>{activeTab}</h3>
-              <ul>
-                {tabs[activeTab].map((item, idx) => (
-                  <li key={idx}>{item}</li>
-                ))}
-              </ul>
+              {tabs[activeTab].length > 0 ? (
+                <ul>
+                  {tabs[activeTab].map((item, idx) => (
+                    <li key={idx}>{item}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No {activeTab.toLowerCase()} listed.</p>
+              )}
             </div>
 
             <div className="background-skills-tabs-container">
