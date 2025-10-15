@@ -9,8 +9,14 @@ import RaceDes from "./raceDes";
 import CharacterList from "./characterList";
 import defaultPortrait from "../../../assets/images/rose.jpg";
 
-const LeftP = ({ activeTab, setActiveTab, onCreateCharacter, latestCampaignId }) => {
-  const [selectedCharacter, setSelectedCharacter] = useState(null);
+const LeftP = ({
+  activeTab,
+  setActiveTab,
+  onCreateCharacter,
+  latestCampaignId,
+  selectedCharacter,
+  setSelectedCharacter, // ✅ passed from parent
+}) => {
   const [campaignId, setCampaignId] = useState(latestCampaignId || null);
 
   useEffect(() => {
@@ -28,7 +34,7 @@ const LeftP = ({ activeTab, setActiveTab, onCreateCharacter, latestCampaignId })
   // When user clicks a character in the list
   const handleSelectCharacter = (char) => {
     const mappedCharacter = {
-      id: char.character_id, // ✅ store character_id for background fetch
+      id: char.character_id,
       name: char.character_name || "-",
       class: char.class || "-",
       race: char.race || "-",
@@ -69,7 +75,7 @@ const LeftP = ({ activeTab, setActiveTab, onCreateCharacter, latestCampaignId })
     };
 
     setSelectedCharacter(mappedCharacter);
-    if (setActiveTab) setActiveTab("character"); // Switch to Character Sheet
+    if (setActiveTab) setActiveTab("character");
   };
 
   return (
@@ -87,7 +93,7 @@ const LeftP = ({ activeTab, setActiveTab, onCreateCharacter, latestCampaignId })
       <div className="char-left-tab-content">
         {activeTab === "character" && <CharacterSheet character={selectedCharacter} />}
         {activeTab === "desc" && <CharacterDes character={selectedCharacter} />}
-        {activeTab === "background" && <BackgroundDes character={selectedCharacter} />} {/* ✅ pass character */}
+        {activeTab === "background" && <BackgroundDes character={selectedCharacter} />}
         {activeTab === "class" && <ClassDes character={selectedCharacter} />}
         {activeTab === "race" && <RaceDes character={selectedCharacter} />}
       </div>

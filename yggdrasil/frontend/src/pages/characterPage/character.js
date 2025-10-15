@@ -8,8 +8,9 @@ import CreateCharacterPopup from "./componets/characterCreater/characterCreate";
 import "./character.css";
 
 function Character() {
-  const [activeTab, setActiveTab] = useState("characterList"); // default tab
+  const [activeTab, setActiveTab] = useState("characterList");
   const [showPopup, setShowPopup] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState(null);
 
   const handleOpenPopup = () => setShowPopup(true);
   const handleClosePopup = () => setShowPopup(false);
@@ -23,11 +24,13 @@ function Character() {
       <BookmarkNav />
       <Navbar />
 
-      {/* Top tabs above the book */}
       <div className="char-left-tab-buttons">
         <button
           className={`char-left-tab-btn ${activeTab === "characterList" ? "active" : ""}`}
-          onClick={() => setActiveTab("characterList")}
+          onClick={() => {
+            setActiveTab("characterList");
+            setSelectedCharacter(null); // ✅ reset when switching to character list
+          }}
         >
           Character List
         </button>
@@ -63,38 +66,28 @@ function Character() {
         </button>
       </div>
 
-      {/* Book pages */}
-      <div
-        className="campaign-container"
-        style={{
-          backgroundImage: `url(${OPcover})`,
-          marginTop: "20px",
-          overflow: "visible",
-        }}
-      >
+      <div className="campaign-container" style={{ backgroundImage: `url(${OPcover})`, marginTop: "20px", overflow: "visible" }}>
         <div className="top-block"></div>
         <div className="book-wrapper">
           <LeftP
             activeTab={activeTab}
-            setActiveTab={setActiveTab} // ✅ pass setActiveTab so LeftP can switch tabs
+            setActiveTab={setActiveTab}
             onCreateCharacter={handleOpenPopup}
-          />  
-          <RightP />
+            selectedCharacter={selectedCharacter}
+            setSelectedCharacter={setSelectedCharacter} // ✅ pass setter so LeftP updates selection
+          />
+          <RightP selectedCharacter={selectedCharacter} /> {/* ✅ pass selectedCharacter */}
         </div>
       </div>
 
       {showPopup && (
-        <CreateCharacterPopup
-          onClose={handleClosePopup}
-          onCreate={handleCreateCharacter}
-        />
+        <CreateCharacterPopup onClose={handleClosePopup} onCreate={handleCreateCharacter} />
       )}
     </>
   );
 }
 
 export default Character;
-
 
 
 

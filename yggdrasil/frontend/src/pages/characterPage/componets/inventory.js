@@ -1,50 +1,43 @@
 import React, { useState, useEffect } from "react";
 import "../character.css";
+import axios from "axios";
 import FullItemView from "./fullItemView";
 import CreateItemPopup from "./itemCreater/itemCreatePopup";
-import axios from "axios";
 import fallbackImg from "../../../assets/images/noItem.jpg";
 
-const RightPageInventory = () => {
+const RightPageInventory = ({ selectedCharacter }) => {
   const [items, setItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeTab, setActiveTab] = useState("inventory");
   const [isCreateOpen, setIsCreateOpen] = useState(false);
 
-  const [characterId, setCharacterId] = useState(null);
-
+  // Fetch inventory when selectedCharacter changes
   useEffect(() => {
-    // Load selected character ID from localStorage
-    const storedId = localStorage.getItem("selectedCharacterId");
-    if (storedId) setCharacterId(storedId);
-  }, []);
-
-  useEffect(() => {
-    if (!characterId) {
+    if (!selectedCharacter?.id) {
       setItems([]);
       setSelectedItem(null);
       return;
     }
 
-    const fetchItems = async () => {
+    const fetchInventory = async () => {
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/character-inventory/character/${characterId}`
+          `http://localhost:5000/api/character-inventory/character/${selectedCharacter.id}`
         );
         const fetchedItems = res.data || [];
         setItems(fetchedItems);
         setSelectedItem(fetchedItems[0] || null);
       } catch (err) {
-        console.error("Error fetching character items:", err);
+        console.error("Error fetching inventory:", err);
         setItems([]);
         setSelectedItem(null);
       }
     };
 
-    fetchItems();
-  }, [characterId]);
+    fetchInventory();
+  }, [selectedCharacter]);
 
-  // handle damage types
+  // Parse damage types safely
   let damageTypes = [];
   if (selectedItem) {
     if (Array.isArray(selectedItem.damage_types)) {
@@ -69,7 +62,6 @@ const RightPageInventory = () => {
 
   return (
     <div className="page right-page" style={{ position: "relative" }}>
-      {/* Tabs */}
       <div className="right-page-tabs">
         <button
           className={`right-tab-btn ${activeTab === "inventory" ? "active" : ""}`}
@@ -87,14 +79,15 @@ const RightPageInventory = () => {
 
       {activeTab === "inventory" && (
         <>
-          {items.length === 0 ? (
+          {!selectedCharacter ? (
             <div className="inventory-empty-message">
               <p style={{ textAlign: "center", marginTop: "20px", opacity: 0.7 }}>
-                No items found for this character.
+                Select a character to view inventory.
               </p>
             </div>
           ) : (
             <>
+              {/* Selected Item Info (if exists) */}
               {selectedItem && (
                 <>
                   <div className="inventory-header">
@@ -115,40 +108,45 @@ const RightPageInventory = () => {
                     <div className="inventory-description-container">
                       <div className="inventory-description-box">
                         <div className="inventory-description-title">Description</div>
-                        {selectedItem.item_description}
+                        {selectedItem.item_description || "-"}
                       </div>
                     </div>
 
                     <div className="damage-container">
                       {damageTypes.slice(0, 3).map((dmg, i) => (
-                        <div key={i} className="damage-hexagon">
-                          {dmg}
-                        </div>
+                        <div key={i} className="damage-hexagon">{dmg}</div>
                       ))}
                     </div>
                   </div>
                 </>
               )}
 
+              {/* Inventory Grid (always visible) */}
               <div className="inventory-container scroll-box">
                 <div className="inventory-grid">
-                  {items.map((item) => (
-                    <div
-                      key={item.character_inventory_id}
-                      className={`inventory-slot ${
-                        selectedItem?.character_inventory_id === item.character_inventory_id
-                          ? "active"
-                          : ""
-                      }`}
-                      onClick={() => setSelectedItem(item)}
-                    >
-                      <img
-                        src={item.item_image || fallbackImg}
-                        alt={item.item_name}
-                        className="inventory-img"
-                      />
+                  {items.length > 0 ? (
+                    items.map((item) => (
+                      <div
+                        key={item.character_inventory_id}
+                        className={`inventory-slot ${
+                          selectedItem?.character_inventory_id === item.character_inventory_id
+                            ? "active"
+                            : ""
+                        }`}
+                        onClick={() => setSelectedItem(item)}
+                      >
+                        <img
+                          src={item.item_image || fallbackImg}
+                          alt={item.item_name}
+                          className="inventory-img"
+                        />
+                      </div>
+                    ))
+                  ) : (
+                    <div className="inventory-slot-placeholder">
+                      <p style={{ textAlign: "center", opacity: 0.5 }}>No items yet</p>
                     </div>
-                  ))}
+                  )}
 
                   {/* Create Item Slot */}
                   <div
@@ -166,7 +164,12 @@ const RightPageInventory = () => {
 
       {activeTab === "fullItemView" && <FullItemView item={selectedItem} />}
 
-      {isCreateOpen && <CreateItemPopup onClose={() => setIsCreateOpen(false)} />}
+      {isCreateOpen && (
+        <CreateItemPopup
+          characterId={selectedCharacter?.id}
+          onClose={() => setIsCreateOpen(false)}
+        />
+      )}
     </div>
   );
 };
