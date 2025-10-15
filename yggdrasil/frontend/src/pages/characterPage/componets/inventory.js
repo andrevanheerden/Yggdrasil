@@ -1,44 +1,75 @@
 import React, { useState, useEffect } from "react";
 import "../character.css";
-import swordImg from "../../../assets/images/sword.jpg";
-import ringImg from "../../../assets/images/ring.jpg";
-import FullItemView from "./fullItemView"; // import your full item view
-import CreateItemPopup from "./itemCreater/itemCreatePopup"; // new popup import
+import FullItemView from "./fullItemView";
+import CreateItemPopup from "./itemCreater/itemCreatePopup";
+import axios from "axios";
+import fallbackImg from "../../../assets/images/noItem.jpg";
 
 const RightPageInventory = () => {
-  const [items] = useState([
-    {
-      id: 1,
-      name: "Sword of the Night",
-      type: "Weapon - Longsword",
-      image: swordImg,
-      description:
-        "Forged in shadow and quenched in the thirst of dying stars, the Sword of the Night is a blade that drinks the light around it.",
-      damage: ["2d6 Slashing", "1d4 Cold"],
-    },
-    {
-      id: 2,
-      name: "Golden Ring",
-      type: "Accessory",
-      image: ringImg,
-      description: "An ornate golden ring, humming with a faint magical aura.",
-      damage: [],
-    },
-  ]);
-
+  const [items, setItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const [activeTab, setActiveTab] = useState("inventory");
-  const [showCreateItem, setShowCreateItem] = useState(false);
+  const [isCreateOpen, setIsCreateOpen] = useState(false);
+
+  const [characterId, setCharacterId] = useState(null);
 
   useEffect(() => {
-    if (!selectedItem && items.length > 0) {
-      setSelectedItem(items[0]);
+    // Load selected character ID from localStorage
+    const storedId = localStorage.getItem("selectedCharacterId");
+    if (storedId) setCharacterId(storedId);
+  }, []);
+
+  useEffect(() => {
+    if (!characterId) {
+      setItems([]);
+      setSelectedItem(null);
+      return;
     }
-  }, [items, selectedItem]);
+
+    const fetchItems = async () => {
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/character-inventory/character/${characterId}`
+        );
+        const fetchedItems = res.data || [];
+        setItems(fetchedItems);
+        setSelectedItem(fetchedItems[0] || null);
+      } catch (err) {
+        console.error("Error fetching character items:", err);
+        setItems([]);
+        setSelectedItem(null);
+      }
+    };
+
+    fetchItems();
+  }, [characterId]);
+
+  // handle damage types
+  let damageTypes = [];
+  if (selectedItem) {
+    if (Array.isArray(selectedItem.damage_types)) {
+      damageTypes = selectedItem.damage_types;
+    } else if (typeof selectedItem.damage_types === "string") {
+      try {
+        damageTypes = JSON.parse(selectedItem.damage_types);
+        if (!Array.isArray(damageTypes)) {
+          damageTypes = selectedItem.damage_types
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean);
+        }
+      } catch {
+        damageTypes = selectedItem.damage_types
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+      }
+    }
+  }
 
   return (
     <div className="page right-page" style={{ position: "relative" }}>
-      {/* Nav Tabs */}
+      {/* Tabs */}
       <div className="right-page-tabs">
         <button
           className={`right-tab-btn ${activeTab === "inventory" ? "active" : ""}`}
@@ -54,77 +85,90 @@ const RightPageInventory = () => {
         </button>
       </div>
 
-      {/* Tab Content */}
-      {activeTab === "inventory" && selectedItem && (
+      {activeTab === "inventory" && (
         <>
-          {/* Header */}
-          <div className="inventory-header">
-            <div className="inventory-title">
-              <div className="item-name">{selectedItem.name}</div>
-              <div className="item-type">{selectedItem.type}</div>
+          {items.length === 0 ? (
+            <div className="inventory-empty-message">
+              <p style={{ textAlign: "center", marginTop: "20px", opacity: 0.7 }}>
+                No items found for this character.
+              </p>
             </div>
-            <div className="item-image-container">
-              <img
-                src={selectedItem.image}
-                alt={selectedItem.name}
-                className="item-image"
-              />
-            </div>
-          </div>
+          ) : (
+            <>
+              {selectedItem && (
+                <>
+                  <div className="inventory-header">
+                    <div className="inventory-title">
+                      <div className="item-name">{selectedItem.item_name}</div>
+                      <div className="item-type">{selectedItem.item_type}</div>
+                    </div>
+                    <div className="item-image-container">
+                      <img
+                        src={selectedItem.item_image || fallbackImg}
+                        alt={selectedItem.item_name}
+                        className="item-image"
+                      />
+                    </div>
+                  </div>
 
-          {/* Middle Section */}
-          <div className="inventory-middle">
-            <div className="inventory-description-container">
-              <div className="inventory-description-box">
-                <div className="inventory-description-title">Description</div>
-                {selectedItem.description}
-              </div>
-            </div>
+                  <div className="inventory-middle">
+                    <div className="inventory-description-container">
+                      <div className="inventory-description-box">
+                        <div className="inventory-description-title">Description</div>
+                        {selectedItem.item_description}
+                      </div>
+                    </div>
 
-            <div className="damage-container">
-              {selectedItem.damage.slice(0, 3).map((dmg, i) => (
-                <div key={i} className="damage-hexagon">
-                  {dmg}
+                    <div className="damage-container">
+                      {damageTypes.slice(0, 3).map((dmg, i) => (
+                        <div key={i} className="damage-hexagon">
+                          {dmg}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+
+              <div className="inventory-container scroll-box">
+                <div className="inventory-grid">
+                  {items.map((item) => (
+                    <div
+                      key={item.character_inventory_id}
+                      className={`inventory-slot ${
+                        selectedItem?.character_inventory_id === item.character_inventory_id
+                          ? "active"
+                          : ""
+                      }`}
+                      onClick={() => setSelectedItem(item)}
+                    >
+                      <img
+                        src={item.item_image || fallbackImg}
+                        alt={item.item_name}
+                        className="inventory-img"
+                      />
+                    </div>
+                  ))}
+
+                  {/* Create Item Slot */}
+                  <div
+                    className="inventory-slot create-new"
+                    onClick={() => setIsCreateOpen(true)}
+                  >
+                    <span>+ Create Item</span>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Inventory Grid */}
-          <div className="inventory-container scroll-box">
-            <div className="inventory-grid">
-              {items.map((item) => (
-                <div
-                  key={item.id}
-                  className={`inventory-slot ${selectedItem?.id === item.id ? "active" : ""}`}
-                  onClick={() => setSelectedItem(item)}
-                >
-                  <img src={item.image} alt={item.name} className="inventory-img" />
-                </div>
-              ))}
-
-              {/* Create Item Slot */}
-              <div
-                className="inventory-slot create-new"
-                onClick={() => setShowCreateItem(true)}
-              >
-                + Create Item
               </div>
-            </div>
-          </div>
+            </>
+          )}
         </>
       )}
 
       {activeTab === "fullItemView" && <FullItemView item={selectedItem} />}
 
-      {/* Create Item Popup */}
-      {showCreateItem && (
-        <CreateItemPopup onClose={() => setShowCreateItem(false)} />
-      )}
+      {isCreateOpen && <CreateItemPopup onClose={() => setIsCreateOpen(false)} />}
     </div>
   );
 };
 
 export default RightPageInventory;
-
-
