@@ -328,6 +328,8 @@ formData.append("character_description", characterDescription);
     });
   };
 
+  
+
   return (
     <div className="character-popup-overlay">
       <button className="exit-x-btn" onClick={handleExit}>✖</button>
