@@ -274,6 +274,35 @@ const fetchMyRoles = async (req, res) => {
   }
 };
 
+// controllers/campaignController.js
+
+const getCampaignPlayers = async (req, res) => {
+  try {
+    const { campaign_id } = req.params;
+
+    // Get player IDs from campaign_roles
+    const [roles] = await pool.query(
+      "SELECT user_id FROM campaign_roles WHERE campaign_id = ? AND role = 'player'",
+      [campaign_id]
+    );
+
+    if (!roles.length) return res.json([]);
+
+    // Extract user_ids
+    const userIds = roles.map(r => r.user_id);
+
+    // Fetch usernames & profile images from users table
+    const [players] = await pool.query(
+      "SELECT user_id, username, profile_img FROM users WHERE user_id IN (?)",
+      [userIds]
+    );
+
+    res.json(players);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};
 
 
 
@@ -308,6 +337,7 @@ module.exports = {
   getCampaignDm,
   getCampaignRoles,
   invitePlayerToCampaign,
-  getMyCampaigns
+  getMyCampaigns,
+  getCampaignPlayers
 };
 
