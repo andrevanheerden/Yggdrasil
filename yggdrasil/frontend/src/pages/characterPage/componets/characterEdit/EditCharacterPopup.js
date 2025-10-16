@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useRef } from "react";
 import ReactDOM from "react-dom";
 import pageBg from "../../../../assets/images/page.png";
 import EditCharacterPage from "./EditCharacterPage";
 import "../../character.css";
 
 const EditCharacterPopup = ({ character, onClose, chartOptions = {}, savingThrowOptions = {} }) => {
-  const pageRef = React.createRef();
+  const pageRef = useRef(null);
 
   const handleSubmitClick = () => {
     if (pageRef.current && pageRef.current.handleSubmit) {
@@ -15,7 +15,6 @@ const EditCharacterPopup = ({ character, onClose, chartOptions = {}, savingThrow
 
   return ReactDOM.createPortal(
     <div className="character-popup-overlay">
-      {/* Buttons top-right */}
       <div
         style={{
           position: "absolute",
@@ -54,7 +53,6 @@ const EditCharacterPopup = ({ character, onClose, chartOptions = {}, savingThrow
         </button>
       </div>
 
-      {/* Popup content */}
       <div className="character-popup" style={{ backgroundImage: `url(${pageBg})`, width: "800px" }}>
         <EditCharacterPage
           ref={pageRef}
