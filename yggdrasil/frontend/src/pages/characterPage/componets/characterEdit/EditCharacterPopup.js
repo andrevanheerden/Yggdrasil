@@ -4,7 +4,7 @@ import pageBg from "../../../../assets/images/page.png";
 import EditCharacterPage from "./EditCharacterPage";
 import "../../character.css";
 
-const EditCharacterPopup = ({ characterId, onClose, chartOptions = {}, savingThrowOptions = {} }) => {
+const EditCharacterPopup = ({ character, onClose, chartOptions = {}, savingThrowOptions = {} }) => {
   const pageRef = React.createRef();
 
   const handleSubmitClick = () => {
@@ -58,7 +58,7 @@ const EditCharacterPopup = ({ characterId, onClose, chartOptions = {}, savingThr
       <div className="character-popup" style={{ backgroundImage: `url(${pageBg})`, width: "800px" }}>
         <EditCharacterPage
           ref={pageRef}
-          characterId={characterId}
+          character={character || {}}
           chartOptions={chartOptions}
           savingThrowOptions={savingThrowOptions}
         />
