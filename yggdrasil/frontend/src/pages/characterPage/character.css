@@ -1395,13 +1395,14 @@ stroke: #000;
 
 .character-popup {
   width: 80%;
-  max-width: 950px;
+  max-width: 1400px;
   height: 93%;
   background: #f0f0f0;
   padding: 20px;
   border-radius: 10px;
   overflow-y: auto;
   margin-top: 13px;
+
 }
 
 .ability-input > div {
@@ -1692,6 +1693,45 @@ stroke: #000;
 }
 
 
+/* Tabs container inside skills box */
+.skills-tabs-container4 {
+  position: absolute;
+  top: 45%;
+  right: 35.6%; /* outside to the right */
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  z-index: 10;
+}
+
+/* Tab buttons */
+.skills-tab-buttons4 {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 5px;
+}
+
+.skills-tab-btn4 {
+  writing-mode: vertical-rl; /* text runs vertically */
+  transform: rotate(0deg);  /* upright text */
+  background: #05512c;
+  color: #fff;
+  border: none;
+  border-radius: 0px 10px 10px 0px;
+  padding: 10px 6px;
+  cursor: pointer;
+  font-family: "Caudex", serif;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.skills-tab-btn4.active {
+  background: #199a6a;
+  color: #000;
+  font-weight: bold;
+  padding: 25px 8px;
+}
 
 
 

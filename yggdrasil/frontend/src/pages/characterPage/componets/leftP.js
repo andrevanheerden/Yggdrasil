@@ -13,9 +13,10 @@ const LeftP = ({
   activeTab,
   setActiveTab,
   onCreateCharacter,
+  onEditCharacter, // ✅ Added
   latestCampaignId,
   selectedCharacter,
-  setSelectedCharacter, // ✅ passed from parent
+  setSelectedCharacter,
 }) => {
   const [campaignId, setCampaignId] = useState(latestCampaignId || null);
 
@@ -31,7 +32,6 @@ const LeftP = ({
     }
   }, [latestCampaignId]);
 
-  // When user clicks a character in the list
   const handleSelectCharacter = (char) => {
     const mappedCharacter = {
       id: char.character_id,
@@ -48,14 +48,6 @@ const LeftP = ({
         current: char.character_current_HP || 0,
         max: char.character_max_HP || 0,
       },
-      skills: {
-        Str: char.skill_selected_1 ? [{ name: char.skill_selected_1, bonus: 0 }] : [],
-        Dex: char.skill_selected_2 ? [{ name: char.skill_selected_2, bonus: 0 }] : [],
-        Con: [],
-        Int: [],
-        Wis: [],
-        Cha: [],
-      },
       abilityScores: {
         Str: char.encounter_ability_score_str || 10,
         Dex: char.encounter_ability_score_dex || 10,
@@ -63,14 +55,6 @@ const LeftP = ({
         Int: char.encounter_ability_score_int || 10,
         Wis: char.encounter_ability_score_wis || 10,
         Cha: char.encounter_ability_score_cha || 10,
-      },
-      savingThrows: {
-        Str: char.encounter_saving_throw_str || 0,
-        Dex: char.encounter_saving_throw_dex || 0,
-        Con: char.encounter_saving_throw_con || 0,
-        Int: char.encounter_saving_throw_int || 0,
-        Wis: char.encounter_saving_throw_wis || 0,
-        Cha: char.encounter_saving_throw_cha || 0,
       },
     };
 
@@ -80,7 +64,6 @@ const LeftP = ({
 
   return (
     <div className="page left-page" style={{ backgroundImage: `url(${pageBg})` }}>
-      {/* Character List */}
       {activeTab === "characterList" && campaignId && (
         <CharacterList
           campaignId={campaignId}
@@ -89,9 +72,13 @@ const LeftP = ({
         />
       )}
 
-      {/* Character Sheet / Other Tabs */}
       <div className="char-left-tab-content">
-        {activeTab === "character" && <CharacterSheet character={selectedCharacter} />}
+        {activeTab === "character" && (
+          <CharacterSheet
+            character={selectedCharacter}
+            onEdit={onEditCharacter} // ✅ Connected to Character.js
+          />
+        )}
         {activeTab === "desc" && <CharacterDes character={selectedCharacter} />}
         {activeTab === "background" && <BackgroundDes character={selectedCharacter} />}
         {activeTab === "class" && <ClassDes character={selectedCharacter} />}

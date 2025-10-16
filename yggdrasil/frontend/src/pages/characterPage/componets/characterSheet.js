@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import "../character.css";
 import { Radar } from "react-chartjs-2";
 import defaultPortrait from "../../../assets/images/rose.jpg";
+import { useNavigate } from "react-router-dom";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -14,8 +15,9 @@ import {
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-const CharacterSheet = ({ character }) => {
+const CharacterSheet = ({ character , onEdit }) => {
   const [activeTab, setActiveTab] = useState("Str");
+  const navigate = useNavigate();
 
   if (!character) {
     return <p>No character selected.</p>;
@@ -98,7 +100,27 @@ const CharacterSheet = ({ character }) => {
   };
 
   return (
-    <div className="page left-page">
+    <div className="page left-page" style={{ position: "relative" }}>
+      {/* Floating Edit Button */}
+<button
+  style={{
+    position: "absolute",
+    top: "10px",
+    right: "20px",
+    zIndex: 1000,
+    padding: "8px 12px",
+    background: "#2a6ca6",
+    color: "#fff",
+    border: "none",
+    borderRadius: "5px",
+    cursor: "pointer",
+  }}
+  onClick={onEdit}
+>
+  Edit
+</button>
+
+
       {/* Header */}
       <div className="character-header-with-portrait">
         <div className="header-dropdowns">
@@ -182,3 +204,4 @@ const CharacterSheet = ({ character }) => {
 };
 
 export default CharacterSheet;
+
