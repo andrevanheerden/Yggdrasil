@@ -3,6 +3,8 @@ import "../encounter.css";
 import axios from "axios";
 import FullSpellView from "./fullSpellView";
 import CreateSpellPopup from "./spellCreater/spellCreatePopup";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RightPageSpells = ({ selectedEncounter }) => {
   const [activeTab, setActiveTab] = useState("spells");
@@ -23,11 +25,12 @@ const RightPageSpells = ({ selectedEncounter }) => {
         const res = await axios.get(
           `http://localhost:5000/api/encounter-spells/encounter/${selectedEncounter.encounter_id}`
         );
-        const fetchedSpells = res.data || [];
+        const fetchedSpells = Array.isArray(res.data) ? res.data : [];
         setSpells(fetchedSpells);
         setSelectedSpell(fetchedSpells[0] || null);
       } catch (err) {
         console.error("Error fetching spells:", err);
+        toast.error("Failed to fetch spells.");
         setSpells([]);
         setSelectedSpell(null);
       }
@@ -86,27 +89,29 @@ const RightPageSpells = ({ selectedEncounter }) => {
                 <>
                   <div className="inventory-header">
                     <div className="inventory-title">
-                      <div className="item-name">{selectedSpell.spell_name}</div>
+                      <div className="item-name">{selectedSpell.spell_name || "Unknown Spell"}</div>
                       <div className="item-type">
                         {selectedSpell.spell_level === "Cantrip"
                           ? "Cantrip"
-                          : `Lvl ${selectedSpell.spell_level}`}{" "}
-                        - {selectedSpell.spell_type}
+                          : `Lvl ${selectedSpell.spell_level || "?"}`}{" "}
+                        - {selectedSpell.spell_type || "Unknown"}
                       </div>
                     </div>
                     <div className="item-image-container">
-                      <img
-                        src={selectedSpell.spell_image}
-                        alt={selectedSpell.spell_name}
-                        className="item-image"
-                      />
+                      {selectedSpell.spell_image && (
+                        <img
+                          src={selectedSpell.spell_image}
+                          alt={selectedSpell.spell_name}
+                          className="item-image"
+                        />
+                      )}
                     </div>
                   </div>
 
                   <div className="inventory-middle">
                     <div className="inventory-description-box">
                       <div className="description-title">Description</div>
-                      {selectedSpell.spell_description}
+                      {selectedSpell.spell_description || "No description available."}
                     </div>
                     <div className="damage-container">
                       {damageTypes.slice(0, 3).map((dmg, i) => (
@@ -119,11 +124,12 @@ const RightPageSpells = ({ selectedEncounter }) => {
                 </>
               )}
 
-              {/* Spells Grid (always visible) */}
+              {/* Spells Grid (safe mapping) */}
               <div className="spells-container">
                 <div className="spells-grid">
-                  {spells.length > 0 &&
-                    spells.map((spell) => (
+                  {(spells || [])
+                    .filter(spell => spell && spell.encounter_spell_id)
+                    .map((spell) => (
                       <div
                         key={spell.encounter_spell_id}
                         className={`spells-slot ${
@@ -141,13 +147,11 @@ const RightPageSpells = ({ selectedEncounter }) => {
                           />
                         )}
                         <div className="spells-info">
-                          <div className="spells-name">{spell.spell_name}</div>
-                          <div className="spells-class">{spell.spell_type}</div>
+                          <div className="spells-name">{spell.spell_name || "Unnamed Spell"}</div>
+                          <div className="spells-class">{spell.spell_type || "Unknown"}</div>
                         </div>
                         <div className="spells-level">
-                          {spell.spell_level === "Cantrip"
-                            ? "Cantrip"
-                            : `Lvl ${spell.spell_level}`}
+                          {spell.spell_level === "Cantrip" ? "Cantrip" : `Lvl ${spell.spell_level || "?"}`}
                         </div>
                       </div>
                     ))}
@@ -163,7 +167,7 @@ const RightPageSpells = ({ selectedEncounter }) => {
               </div>
 
               {/* Message if no spells exist */}
-              {spells.length === 0 && (
+              {(!spells || spells.length === 0) && (
                 <p style={{ textAlign: "center", marginTop: "20px", opacity: 0.6 }}>
                   No spells created yet. Click "+ Create Spell" to add one.
                 </p>
@@ -174,9 +178,7 @@ const RightPageSpells = ({ selectedEncounter }) => {
       )}
 
       {/* Full Spell View Tab */}
-      {activeTab === "fullSpellView" && selectedSpell && (
-        <FullSpellView spell={selectedSpell} />
-      )}
+      {activeTab === "fullSpellView" && selectedSpell && <FullSpellView spell={selectedSpell} />}
 
       {/* Create Spell Popup */}
       {showCreatePopup && (
@@ -184,8 +186,11 @@ const RightPageSpells = ({ selectedEncounter }) => {
           onClose={() => setShowCreatePopup(false)}
           encounterId={selectedEncounter?.encounter_id}
           onSpellCreated={(newSpell) => {
-            setSpells([...spells, newSpell]);
-            setSelectedSpell(newSpell); // auto-select newly created spell
+            if (newSpell) {
+              setSpells([...spells, newSpell]);
+              setSelectedSpell(newSpell); // auto-select newly created spell
+              toast.success("Spell created successfully!");
+            }
             setShowCreatePopup(false);
           }}
         />
@@ -195,4 +200,3 @@ const RightPageSpells = ({ selectedEncounter }) => {
 };
 
 export default RightPageSpells;
-
