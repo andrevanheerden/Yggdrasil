@@ -4,7 +4,7 @@ require("dotenv").config();
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD || "", // leave empty if no password
+  password: process.env.DB_PASSWORD, // do NOT default to ""
   database: process.env.DB_NAME,
   waitForConnections: true,
   connectionLimit: 10,
@@ -16,6 +16,5 @@ pool.getConnection()
   .catch(err => console.error("DB connection error:", err));
 
 module.exports = pool;
-
 
 
