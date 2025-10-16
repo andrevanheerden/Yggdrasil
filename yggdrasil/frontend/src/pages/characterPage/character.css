@@ -1697,7 +1697,7 @@ stroke: #000;
 .skills-tabs-container4 {
   position: absolute;
   top: 45%;
-  right: 36.9%; /* outside to the right */
+  right: 35.6%; /* outside to the right */
   display: flex;
   flex-direction: column;
   gap: 5px;

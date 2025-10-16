@@ -4,23 +4,30 @@ import LeftP from "./componets/leftP";
 import RightP from "./componets/rightP";
 import Navbar from "../homePage/components/Navbar";
 import BookmarkNav from "../bookmarkNav/bookmarkNav";
-import EncounterCreater from "./componets/encounterCreater/encounterCreater"; // ✅ fixed import
+import EncounterCreater from "./componets/encounterCreater/encounterCreater"; 
+import EditEncounterPopup from "./componets/encounterEdit/EditEncounterPopup";
 import "./encounter.css";
 
 function Encounter() {
-  const [showPopup, setShowPopup] = useState(false); // popup visibility
+  const [showCreatePopup, setShowCreatePopup] = useState(false);
+  const [showEditPopup, setShowEditPopup] = useState(false);
   const [selectedEncounter, setSelectedEncounter] = useState(null);
 
-  const handleOpenPopup = () => setShowPopup(true);
-  const handleClosePopup = () => setShowPopup(false);
+  // --- Create Popup ---
+  const handleOpenCreatePopup = () => setShowCreatePopup(true);
+  const handleCloseCreatePopup = () => setShowCreatePopup(false);
 
   const handleCreateEncounter = (newEncounter) => {
     console.log("Encounter created:", newEncounter);
-    setShowPopup(false);
+    setShowCreatePopup(false);
   };
 
+  // --- Edit Popup ---
+  const handleOpenEditPopup = () => setShowEditPopup(true);
+  const handleCloseEditPopup = () => setShowEditPopup(false);
+
   return (
-    <>      
+    <>
       <BookmarkNav />
       <Navbar />
 
@@ -31,20 +38,28 @@ function Encounter() {
         <div className="top-block"></div>
 
         <div className="book-wrapper">
-          {/* pass handler into LeftP so EncounterList can open the popup */}
           <LeftP 
-            onCreateEncounter={handleOpenPopup} 
+            onCreateEncounter={handleOpenCreatePopup} 
             onSelectEncounter={setSelectedEncounter} 
+            onEditEncounter={handleOpenEditPopup} // Added for editing
           />
-          <RightP selectedEncounter={selectedEncounter} /> {/* ✅ now uses the state */}
+          <RightP selectedEncounter={selectedEncounter} />
         </div>
       </div>
 
-      {/* Popup at top level */}
-      {showPopup && (
-        <EncounterCreater   // ✅ use EncounterCreater not EncounterPopup
-          onClose={handleClosePopup} 
-          onCreate={handleCreateEncounter} 
+      {/* Create Encounter Popup */}
+      {showCreatePopup && (
+        <EncounterCreater
+          onClose={handleCloseCreatePopup}
+          onCreate={handleCreateEncounter}
+        />
+      )}
+
+      {/* Edit Encounter Popup */}
+      {showEditPopup && selectedEncounter && (
+        <EditEncounterPopup
+          encounter={selectedEncounter}
+          onClose={handleCloseEditPopup}
         />
       )}
     </>
@@ -52,5 +67,6 @@ function Encounter() {
 }
 
 export default Encounter;
+
 
 

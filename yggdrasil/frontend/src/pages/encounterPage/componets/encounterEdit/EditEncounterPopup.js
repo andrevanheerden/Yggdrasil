@@ -1,10 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import pageBg from "../../../../assets/images/page.png";
-import EditCharacterPage from "./EditCharacterPage";
-import "../../character.css";
+import EditCharacterPage from "./EditEncounterPage";
+import "../../encounter.css";
 
-const EditCharacterPopup = ({ character, onClose, chartOptions = {}, savingThrowOptions = {} }) => {
+const EditEncounterPopup = ({ character, onClose, chartOptions = {}, savingThrowOptions = {} }) => {
   const pageRef = React.createRef();
 
   const handleSubmitClick = () => {
@@ -68,4 +68,4 @@ const EditCharacterPopup = ({ character, onClose, chartOptions = {}, savingThrow
   );
 };
 
-export default EditCharacterPopup;
+export default EditEncounterPopup;

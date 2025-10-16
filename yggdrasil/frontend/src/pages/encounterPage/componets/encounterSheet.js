@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../encounter.css";
 import { Radar } from "react-chartjs-2";
-import fallbackImg from "../../../assets/images/profile.jpg"; // fallback image
+import fallbackImg from "../../../assets/images/profile.jpg";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -14,12 +14,12 @@ import {
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
-const EncounterSheet = ({ encounter }) => {
+const EncounterSheet = ({ encounter, onEdit }) => {
   const [activeTab, setActiveTab] = useState("Str");
 
   if (!encounter) return <p>Select an encounter to view details.</p>;
 
-  // --- Ability Scores from DB ---
+  // --- Ability Scores & Modifier ---
   const abilityScores = {
     Str: encounter.encounter_ability_score_str || 10,
     Dex: encounter.encounter_ability_score_dex || 10,
@@ -31,7 +31,7 @@ const EncounterSheet = ({ encounter }) => {
 
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
-  // --- Standard skills per ability ---
+  // --- Skills ---
   const allSkills = {
     Str: ["Athletics"],
     Dex: ["Acrobatics", "Sleight of Hand", "Stealth"],
@@ -41,23 +41,19 @@ const EncounterSheet = ({ encounter }) => {
     Cha: ["Deception", "Intimidation", "Performance", "Persuasion"],
   };
 
-  // --- Extra modifiers from DB ---
   const extraModifiers = [
     encounter.skill_modefed_1,
     encounter.skill_modefed_2,
     encounter.race_skill_modefed_1,
     encounter.race_skill_modefed_2,
-  ].filter(Boolean); // remove nulls
+  ].filter(Boolean);
 
-  // --- Build skills with values ---
   const skillsByAbility = {};
   Object.keys(allSkills).forEach((ability) => {
     const abilityMod = getModifier(abilityScores[ability]);
     skillsByAbility[ability] = allSkills[ability].map((skill) => {
-      // check if skill has extra +2 from DB
       const extra = extraModifiers.includes(skill) ? 2 : 0;
-      const total = abilityMod + extra;
-      return { name: skill, value: total };
+      return { name: skill, value: abilityMod + extra };
     });
   });
 
@@ -98,7 +94,28 @@ const EncounterSheet = ({ encounter }) => {
   };
 
   return (
-    <div className="page left-page">
+    <div className="page left-page" style={{ position: "relative" }}>
+      {/* Floating Edit Button */}
+      {onEdit && (
+        <button
+          style={{
+            position: "absolute",
+            top: "10px",
+            right: "20px",
+            zIndex: 1000,
+            padding: "8px 12px",
+            background: "#2a6ca6",
+            color: "#fff",
+            border: "none",
+            borderRadius: "5px",
+            cursor: "pointer",
+          }}
+          onClick={onEdit}
+        >
+          Edit
+        </button>
+      )}
+
       {/* Header */}
       <div className="encounter-header-with-portrait">
         <div className="header-text">
@@ -136,9 +153,7 @@ const EncounterSheet = ({ encounter }) => {
                 className="hp-bar-fill"
                 style={{
                   height: `${
-                    ((encounter.encounter_current_HP || 0) /
-                      (encounter.encounter_max_HP || 1)) *
-                    100
+                    ((encounter.encounter_current_HP || 0) / (encounter.encounter_max_HP || 1)) * 100
                   }%`,
                 }}
               ></div>
@@ -180,5 +195,3 @@ const EncounterSheet = ({ encounter }) => {
 };
 
 export default EncounterSheet;
-
-
