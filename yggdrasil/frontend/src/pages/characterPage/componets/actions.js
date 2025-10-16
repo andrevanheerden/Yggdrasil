@@ -4,6 +4,8 @@ import axios from "axios";
 import FullActionView from "./fullActionView";
 import CreateActionPopup from "./actionCreater/actionCreatePopup";
 import fallbackImg from "../../../assets/images/noItem.jpg";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const RightPageActions = ({ selectedCharacter }) => {
   const [activeTab, setActiveTab] = useState("actions");
@@ -11,7 +13,7 @@ const RightPageActions = ({ selectedCharacter }) => {
   const [selectedAction, setSelectedAction] = useState(null);
   const [showCreateAction, setShowCreateAction] = useState(false);
 
-  // Fetch actions from backend whenever character changes
+  // Fetch actions
   useEffect(() => {
     if (!selectedCharacter?.id) {
       setActions([]);
@@ -24,11 +26,12 @@ const RightPageActions = ({ selectedCharacter }) => {
         const res = await axios.get(
           `http://localhost:5000/api/character-actions/${selectedCharacter.id}`
         );
-        const fetchedActions = res.data || [];
+        const fetchedActions = Array.isArray(res.data) ? res.data : [];
         setActions(fetchedActions);
         setSelectedAction(fetchedActions[0] || null);
       } catch (err) {
         console.error("Error fetching character actions:", err);
+        toast.error("Failed to load actions.");
         setActions([]);
         setSelectedAction(null);
       }
@@ -64,9 +67,9 @@ const RightPageActions = ({ selectedCharacter }) => {
             </p>
           ) : (
             <>
+              {/* Selected action */}
               {selectedAction && (
-                <>
-                  {/* Selected Action Header */}
+                <div>
                   <div className="inventory-header">
                     <div className="inventory-title">
                       <div className="item-name">{selectedAction.action_name}</div>
@@ -81,39 +84,42 @@ const RightPageActions = ({ selectedCharacter }) => {
                     </div>
                   </div>
 
-                  {/* Description */}
                   <div className="inventory-middle">
                     <div className="inventory-description-box scroll-box">
                       {selectedAction.action_description || "No description available."}
                     </div>
                   </div>
-                </>
+                </div>
               )}
 
               {/* Actions Grid */}
               <div className="spells-container">
                 <div className="spells-grid">
-                  {actions.map((action) => (
-                    <div
-                      key={action.character_action_id}
-                      className={`spells-slot ${
-                        selectedAction?.character_action_id === action.character_action_id
-                          ? "active"
-                          : ""
-                      }`}
-                      onClick={() => setSelectedAction(action)}
-                    >
-                      <img
-                        src={action.action_image || fallbackImg}
-                        alt={action.action_name}
-                        className="spells-img"
-                      />
-                      <div className="spells-info">
-                        <div className="spells-name">{action.action_name}</div>
-                        <div className="spells-class">{action.action_type}</div>
-                      </div>
-                    </div>
-                  ))}
+                  {actions.length > 0 &&
+                    actions.map((action, idx) => {
+                      const actionId = action?.character_action_id || action?.id || idx;
+                      return (
+                        <div
+                          key={actionId}
+                          className={`spells-slot ${
+                            selectedAction?.character_action_id === action?.character_action_id
+                              ? "active"
+                              : ""
+                          }`}
+                          onClick={() => setSelectedAction(action)}
+                        >
+                          <img
+                            src={action?.action_image || fallbackImg}
+                            alt={action?.action_name || "Action"}
+                            className="spells-img"
+                          />
+                          <div className="spells-info">
+                            <div className="spells-name">{action?.action_name || "Unnamed"}</div>
+                            <div className="spells-class">{action?.action_type || "Unknown"}</div>
+                          </div>
+                        </div>
+                      );
+                    })}
 
                   {/* Create Action Slot */}
                   <div
@@ -144,11 +150,13 @@ const RightPageActions = ({ selectedCharacter }) => {
       {showCreateAction && (
         <CreateActionPopup
           onClose={() => setShowCreateAction(false)}
-          characterId={selectedCharacter?.id}
           onActionCreated={(newAction) => {
-            setActions([...actions, newAction]);
-            setSelectedAction(newAction);
-            setShowCreateAction(false);
+            if (newAction) {
+              setActions([...actions, newAction]);
+              setSelectedAction(newAction);
+              setShowCreateAction(false);
+              toast.success("Action created successfully!");
+            }
           }}
         />
       )}
