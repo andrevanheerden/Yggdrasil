@@ -5,6 +5,9 @@ import pageBg from "../../../../assets/images/page.png";
 import EncounterSheetCreater from "./encounterSheetCreater";
 import RaceCreation from "./raceCreater";
 import axios from "axios";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import LoadingScreen from "../../../loadingPopup/loadingScreen";
 
 import {
   Chart as ChartJS,
@@ -18,6 +21,7 @@ import {
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
+// --- Constants ---
 const abilities = ["Str", "Dex", "Con", "Int", "Wis", "Cha"];
 const initialSkills = {
   Str: ["Athletics"],
@@ -31,6 +35,7 @@ const initialSkills = {
 const EncounterCreater = ({ onClose, campaignId }) => {
   const latestCampaignId = campaignId || localStorage.getItem("selectedCampaignId");
 
+  // --- States ---
   const [activeTab, setActiveTab] = useState("Str");
   const [abilityScores, setAbilityScores] = useState(
     abilities.reduce((acc, ab) => ({ ...acc, [ab]: 10 }), {})
@@ -39,26 +44,24 @@ const EncounterCreater = ({ onClose, campaignId }) => {
   const [acBase] = useState(10);
   const [level, setLevel] = useState(1);
   const [speed, setSpeed] = useState(30);
-
   const [encounterSkills, setEncounterSkills] = useState([]);
   const [raceSkills, setRaceSkills] = useState([]);
-
   const [encounterName, setEncounterName] = useState("New Encounter");
   const [encounterImage, setEncounterImage] = useState(null);
   const [encounterFile, setEncounterFile] = useState(null);
-  const fileInputRef = useRef(null);
-
   const [currentPage, setCurrentPage] = useState("stats");
   const [progress, setProgress] = useState(33);
-
   const [raceName, setRaceName] = useState("");
   const [languagesArray, setLanguagesArray] = useState([""]);
   const [toolsArray, setToolsArray] = useState([""]);
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  const fileInputRef = useRef(null);
+
+  // --- Helper Functions ---
   const getModifier = (score) => Math.floor((score - 10) / 2);
 
-  // Image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -100,6 +103,7 @@ const EncounterCreater = ({ onClose, campaignId }) => {
     });
   };
 
+  // --- Chart Data ---
   const abilityData = {
     labels: abilities,
     datasets: [
@@ -136,13 +140,15 @@ const EncounterCreater = ({ onClose, campaignId }) => {
     plugins: { legend: { display: false } },
   };
 
+  // --- Save Encounter ---
   const saveEncounter = async () => {
     if (!latestCampaignId) {
-      alert("You must be in a campaign to create an encounter.");
+      toast.error("You must be in a campaign to create an encounter.");
       return;
     }
 
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append("campaign_id", latestCampaignId);
       formData.append("encounter_name", encounterName);
@@ -157,33 +163,33 @@ const EncounterCreater = ({ onClose, campaignId }) => {
       formData.append("encounter_ability_score_int", abilityScores.Int);
       formData.append("encounter_ability_score_wis", abilityScores.Wis);
       formData.append("encounter_ability_score_cha", abilityScores.Cha);
-formData.append("skill_modefed_1", encounterSkills[0] || "");
-formData.append("skill_modefed_2", encounterSkills[1] || "");
-
+      formData.append("skill_modefed_1", encounterSkills[0] || "");
+      formData.append("skill_modefed_2", encounterSkills[1] || "");
       formData.append("encounter_dec", description);
-
       formData.append("race_name", raceName);
       formData.append("race_dec", description);
-formData.append("race_skill_modefed_1", raceSkills[0] || "");
-formData.append("race_skill_modefed_2", raceSkills[1] || "");
+      formData.append("race_skill_modefed_1", raceSkills[0] || "");
+      formData.append("race_skill_modefed_2", raceSkills[1] || "");
       formData.append("race_proficiencie_languages", JSON.stringify(languagesArray));
       formData.append("race_proficiencie_tools", JSON.stringify(toolsArray));
 
       if (encounterFile) formData.append("encounter_img", encounterFile);
 
-      const response = await axios.post("http://localhost:5000/api/encounters", formData, {
+      await axios.post("http://localhost:5000/api/encounters", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 
-      console.log("Encounter saved:", response.data);
-      alert("Encounter saved successfully!");
-      onClose && onClose();
+      toast.success("Encounter saved successfully!");
+      onClose && onClose(); // auto-close after success
     } catch (err) {
       console.error("Error saving encounter:", err);
-      alert("Failed to save encounter.");
+      toast.error("Failed to save encounter.");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // --- Navigation ---
   const handleNext = () => {
     if (currentPage === "stats") {
       setCurrentPage("description");
@@ -216,110 +222,126 @@ formData.append("race_skill_modefed_2", raceSkills[1] || "");
   };
 
   return (
-    <div className="character-popup-overlay">
-      <button className="exit-x-btn" onClick={handleExit}>✖</button>
-      <button className="nav-arrow left" onClick={handlePrev}>◀</button>
+    <>
+      <LoadingScreen isVisible={loading} />
 
-      <div
-        className="character-popup"
-        style={{
-          backgroundImage: `url(${pageBg})`,
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          position: "relative",
-        }}
-      >
-        <div className="progress-bar">
-          <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+      <div className="character-popup-overlay">
+        <button className="exit-x-btn" onClick={handleExit}>✖</button>
+        <button className="nav-arrow left" onClick={handlePrev}>◀</button>
+
+        <div
+          className="character-popup"
+          style={{
+            backgroundImage: `url(${pageBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            position: "relative",
+          }}
+        >
+          <div className="progress-bar">
+            <div className="progress-fill" style={{ width: `${progress}%` }}></div>
+          </div>
+
+          {(currentPage === "stats" || currentPage === "description") && (
+            <div className="character-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+              <input
+                type="text"
+                value={encounterName}
+                onChange={(e) => setEncounterName(e.target.value)}
+                className="character-name-input"
+                placeholder="Encounter Name"
+                style={{ width: "50%", marginBottom: 0 }}
+              />
+              <div className="character-image-upload" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                <div
+                  className="character-image-preview"
+                  onClick={currentPage === "stats" ? triggerFileInput : undefined}
+                  style={{
+                    width: "125px",
+                    height: "125px",
+                    borderRadius: "50%",
+                    backgroundColor: "#ddd",
+                    backgroundImage: encounterImage ? `url(${encounterImage})` : "none",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                    cursor: currentPage === "stats" ? "pointer" : "default",
+                    border: "2px solid #333",
+                    marginBottom: "5px",
+                  }}
+                >
+                  {!encounterImage && <span>{currentPage === "stats" ? "Click to upload" : "No Image"}</span>}
+                </div>
+                <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" style={{ display: "none" }} />
+              </div>
+            </div>
+          )}
+
+          {currentPage === "stats" && (
+            <EncounterSheetCreater
+              abilities={abilities}
+              abilityScores={abilityScores}
+              changeAbility={changeAbility}
+              getModifier={getModifier}
+              hp={hp}
+              changeHp={changeHp}
+              character={encounter}
+              speed={speed}
+              setSpeed={setSpeed}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              selectedSkills={encounterSkills}
+              toggleSkill={toggleEncounterSkill}
+              initialSkills={initialSkills}
+              abilityData={abilityData}
+              savingData={savingData}
+              chartOptions={chartOptions}
+              savingThrowOptions={savingThrowOptions}
+              level={level}
+              setLevel={setLevel}
+            />
+          )}
+
+          {currentPage === "description" && (
+            <div className="character-description-container" style={{
+              width: "800px", height: "650px", background: "#D9D9D9",
+              padding: "10px", borderRadius: "10px",
+              boxShadow: "0 4px 10px rgba(0,0,0,0.25)",
+              textAlign: "center", margin: "20px auto",
+              fontFamily: "'Caudex', serif", fontSize: "16px", color: "#333",
+              display: "flex", flexDirection: "column"
+            }}>
+              <textarea
+                style={{
+                  flex: 1, width: "100%", border: "none", outline: "none", background: "transparent",
+                  resize: "none", fontFamily: "'Caudex', serif", fontSize: "16px", color: "#333", textAlign: "left"
+                }}
+                placeholder="Write your encounter's description here..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+          )}
+
+          {currentPage === "race" && (
+            <RaceCreation
+              initialSkills={initialSkills}
+              selectedSkills={raceSkills}
+              abilityScores={abilityScores}
+              raceName={raceName}
+              setRaceName={setRaceName}
+              languagesArray={languagesArray}
+              setLanguagesArray={setLanguagesArray}
+              toolsArray={toolsArray}
+              setToolsArray={setToolsArray}
+              onChangeSelectedSkills={(skills) => setRaceSkills(skills)}
+            />
+          )}
         </div>
 
-        {(currentPage === "stats" || currentPage === "description") && (
-          <div className="character-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
-            <input
-              type="text"
-              value={encounterName}
-              onChange={(e) => setEncounterName(e.target.value)}
-              className="character-name-input"
-              placeholder="Encounter Name"
-              style={{ width: "50%", marginBottom: 0 }}
-            />
-            <div className="character-image-upload" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <div
-                className="character-image-preview"
-                onClick={currentPage === "stats" ? triggerFileInput : undefined}
-                style={{
-                  width: "125px",
-                  height: "125px",
-                  borderRadius: "50%",
-                  backgroundColor: "#ddd",
-                  backgroundImage: encounterImage ? `url(${encounterImage})` : "none",
-                  backgroundSize: "cover",
-                  backgroundPosition: "center",
-                  cursor: currentPage === "stats" ? "pointer" : "default",
-                  border: "2px solid #333",
-                  marginBottom: "5px",
-                }}
-              >
-                {!encounterImage && <span>{currentPage === "stats" ? "Click to upload" : "No Image"}</span>}
-              </div>
-              <input type="file" ref={fileInputRef} onChange={handleImageUpload} accept="image/*" style={{ display: "none" }} />
-            </div>
-          </div>
-        )}
-
-        {currentPage === "stats" ? (
-          <EncounterSheetCreater
-            abilities={abilities}
-            abilityScores={abilityScores}
-            changeAbility={changeAbility}
-            getModifier={getModifier}
-            hp={hp}
-            changeHp={changeHp}
-            character={encounter}
-            speed={speed}
-            setSpeed={setSpeed}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            selectedSkills={encounterSkills}
-            toggleSkill={toggleEncounterSkill}
-            initialSkills={initialSkills}
-            abilityData={abilityData}
-            savingData={savingData}
-            chartOptions={chartOptions}
-            savingThrowOptions={savingThrowOptions}
-            level={level}
-            setLevel={setLevel}
-          />
-        ) : currentPage === "description" ? (
-          <div className="character-description-container" style={{ width: "800px", height: "650px", background: "#D9D9D9", padding: "10px", borderRadius: "10px", boxShadow: "0 4px 10px rgba(0,0,0,0.25)", textAlign: "center", margin: "20px auto", fontFamily: "'Caudex', serif", fontSize: "16px", color: "#333", display: "flex", flexDirection: "column" }}>
-            <textarea
-              style={{ flex: 1, width: "100%", border: "none", outline: "none", background: "transparent", resize: "none", fontFamily: "'Caudex', serif", fontSize: "16px", color: "#333", textAlign: "left" }}
-              placeholder="Write your encounter's description here..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-        ) : currentPage === "race" ? (
-          <RaceCreation
-            initialSkills={initialSkills}
-            selectedSkills={raceSkills}
-            abilityScores={abilityScores}
-            raceName={raceName}
-            setRaceName={setRaceName}
-            languagesArray={languagesArray}
-            setLanguagesArray={setLanguagesArray}
-            toolsArray={toolsArray}
-            setToolsArray={setToolsArray}
-            onChangeSelectedSkills={(skills) => setRaceSkills(skills)}
-          />
-        ) : null}
+        <button className="nav-arrow right" onClick={handleNext}>▶</button>
       </div>
-
-      <button className="nav-arrow right" onClick={handleNext}>▶</button>
-    </div>
+    </>
   );
 };
 
 export default EncounterCreater;
-
-
