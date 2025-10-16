@@ -224,19 +224,34 @@
   word-wrap: break-word;
 }
 
-
 /* DM notes */
 
 .dm-notes-container {
   width: 100%;
   max-width: 600px;   /* adjust width to fit your page layout */
   margin: 20px auto;  /* center horizontally */
-
-
-
-
   display: flex;
   flex-direction: column;
+  position: relative; /* for absolutely positioning button */
+  padding-top: 50px;  /* space for the save button */
+}
+
+.save-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 1; /* ensure it stays above textarea */
+}
+
+.save-btn:hover {
+  background-color: #45a049;
 }
 
 .dm-notes-title {
@@ -247,7 +262,7 @@
 
 .dm-notes-textarea {
   width: 95%;
-  height: 700px;        /* fixed height */
+  height: 650px;        /* fixed height */
   background: repeating-linear-gradient(
       to bottom,
       #ffffff70,
@@ -649,6 +664,8 @@
   flex-direction: column;
 
 }
+
+
 
 
 
