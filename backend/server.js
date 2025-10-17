@@ -17,18 +17,30 @@ const encounterSpellsRoutes = require("./routes/encounterSpellsRoutes");
 const encounterActionsRoutes = require("./routes/encounterActionsRoutes");
 const characterRoutes = require("./routes/characterRoutes");
 const characterBackgroundRoutes = require("./routes/characterBackgroundRoutes");
-
 const characterRaceRoutes = require("./routes/characterRaceRoutes");
 const characterClassRoutes = require("./routes/characterClassRoutes");
 const characterInventoryRoutes = require("./routes/characterInventoryRoutes");
 const characterSpellsRoutes = require("./routes/characterSpellsRoutes");
 const characterActionsRoutes = require("./routes/characterActionsRoutes");
 const dmNoteRoutes = require("./routes/dmNoteRoutes");
+
 const app = express();
 
-// CORS
+// CORS setup
+const allowedOrigins = [
+  'http://localhost:3000',           // local dev
+  process.env.FRONTEND_URL            // deployed frontend
+];
+
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: function(origin, callback) {
+    if (!origin) return callback(null, true); // allow Postman, curl, etc.
+    if (allowedOrigins.indexOf(origin) === -1) {
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
   credentials: true
 }));
 
@@ -39,7 +51,7 @@ app.use(express.urlencoded({ extended: true }));
 // File upload middleware
 app.use(fileUpload({
   useTempFiles: true,
-  tempFileDir: path.join(__dirname, '/tmp/'), // safer cross-platform path
+  tempFileDir: path.join(__dirname, '/tmp/'),
 }));
 
 // Serve static files
@@ -51,7 +63,7 @@ app.use('/api/campaigns', campaignRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/invites', inviteRoutes);
 app.use("/api/encounters", encounterRoutes);
-app.use("/api/encounter-inventory", encounterInventoryRoutes); // moved above 404
+app.use("/api/encounter-inventory", encounterInventoryRoutes);
 app.use("/api/encounter-spells", encounterSpellsRoutes);
 app.use("/api/encounter-actions", encounterActionsRoutes);
 app.use("/api/characters", characterRoutes);
@@ -63,14 +75,12 @@ app.use("/api/character-spells", characterSpellsRoutes);
 app.use("/api/character-actions", characterActionsRoutes);
 app.use("/api/dm-notes", dmNoteRoutes);
 
-
-
 // Test route
 app.get('/api/test', (req, res) => {
   res.json({ message: 'Backend is working!' });
 });
 
-// 404 handler (must be after all other routes)
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ error: 'Endpoint not found' });
 });
