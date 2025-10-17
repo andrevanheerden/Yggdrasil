@@ -1896,3 +1896,32 @@ stroke: #000;
 }
 
 
+
+
+.character-list-scroll {
+  max-height: 70vh; /* adjust as needed */
+  overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+  scrollbar-color: #666 #c2c2c2;
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* vertical gap between each character box */
+}
+
+.character-list-scroll::-webkit-scrollbar {
+  width: 12px;
+}
+
+.character-list-scroll::-webkit-scrollbar-track {
+  background: #c2c2c2;
+  border-radius: 10px;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.character-list-scroll::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 10px;
+  border: 2px solid #d9d9d9;
+}

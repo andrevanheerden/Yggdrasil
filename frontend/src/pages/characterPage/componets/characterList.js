@@ -37,44 +37,54 @@ const CharacterList = ({ campaignId, onSelectCharacter, onCreateCharacter }) => 
     <div className="encounter-list-wrapper">
       <h2 className="encounter-list-title">Characters</h2>
 
-      {characters.map((char) => (
+      {/* Scrollable container */}
+      <div className="character-list-scroll">
+        {characters.map((char) => (
+          <div
+            key={char.character_id}
+            className="encounter-box"
+            onClick={() => {
+              localStorage.setItem("selectedCharacterId", char.character_id);
+              onSelectCharacter(char);
+            }}
+          >
+            <div className="encounter-img-container">
+              <img
+                src={char.character_img || rose}
+                alt={char.character_name}
+                className="encounter-img"
+              />
+            </div>
+
+            <div className="encounter-info">
+              <div className="encounter-name">{char.character_name}</div>
+              <div className="encounter-race">{char.race || "-"}</div>
+              <div className="encounter-class">{char.class || "-"}</div>
+              <div className="encounter-bg">{char.background || "-"}</div>
+            </div>
+
+            <div className="encounter-stats">
+              <div className="encounter-level">Lvl {char.character_level}</div>
+              <div className="encounter-ac">AC {char.character_AC}</div>
+              <div className="encounter-speed">Speed {char.character_speed}</div>
+              <div className="encounter-hp">
+                HP {char.character_current_HP}/{char.character_max_HP}
+              </div>
+            </div>
+          </div>
+        ))}
+
+        {/* ➕ Create New Character */}
         <div
-          key={char.character_id}
-          className="encounter-box"
-    onClick={() => {
-      // Save selected character ID to localStorage
-      localStorage.setItem("selectedCharacterId", char.character_id);
-      // Call parent callback
-      onSelectCharacter(char);
-    }}
-  >
+          className="encounter-box create-new"
+          onClick={() => onCreateCharacter && onCreateCharacter()}
+        >
           <div className="encounter-img-container">
-            <img src={char.character_img || rose} alt={char.character_name} className="encounter-img" />
+            <div className="encounter-img placeholder">+</div>
           </div>
-
           <div className="encounter-info">
-            <div className="encounter-name">{char.character_name}</div>
-            <div className="encounter-race">{char.race || "-"}</div>
-            <div className="encounter-class">{char.class || "-"}</div>
-            <div className="encounter-bg">{char.background || "-"}</div>
+            <div className="encounter-name">Create New Character</div>
           </div>
-
-          <div className="encounter-stats">
-            <div className="encounter-level">Lvl {char.character_level}</div>
-            <div className="encounter-ac">AC {char.character_AC}</div>
-            <div className="encounter-speed">Speed {char.character_speed}</div>
-            <div className="encounter-hp">HP {char.character_current_HP}/{char.character_max_HP}</div>
-          </div>
-        </div>
-      ))}
-
-      {/* ➕ Create New Character */}
-      <div className="encounter-box create-new" onClick={() => onCreateCharacter && onCreateCharacter()}>
-        <div className="encounter-img-container">
-          <div className="encounter-img placeholder">+</div>
-        </div>
-        <div className="encounter-info">
-          <div className="encounter-name">Create New Character</div>
         </div>
       </div>
     </div>
@@ -82,5 +92,3 @@ const CharacterList = ({ campaignId, onSelectCharacter, onCreateCharacter }) => 
 };
 
 export default CharacterList;
-
-

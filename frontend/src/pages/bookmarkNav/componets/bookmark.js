@@ -15,43 +15,50 @@ const Bookmark = () => {
 
   const isActive = (path) => location.pathname === path;
 
-  const handleNav = (path) => {
-    if (location.pathname !== path) {
-      setIsFlipping(true);
-      setNextPath(path); // preload next page behind flips
+ const handleNav = (path) => {
+  if (location.pathname !== path) {
+    setIsFlipping(true);
+    setNextPath(path); // preload next page behind flips
 
-      const totalFlips = 15;
-      const flipDelay = 40; // ms per mini flip
+    const totalFlips = 15;
+    const flipDelay = 40; // ms per mini flip
 
-      for (let i = 0; i < totalFlips; i++) {
-        setTimeout(() => {
-          setFlipCount(i + 1);
+    for (let i = 0; i < totalFlips; i++) {
+      setTimeout(() => {
+        setFlipCount(i + 1);
 
-          // Play flip sound and track it
-          const flipSound = new Audio(flipSoundFile);
-          flipSound.play();
-          activeSounds.current.push(flipSound);
+        // Play a new sound for this flip
+        const flipSound = new Audio(flipSoundFile);
+        activeSounds.current.push(flipSound);
 
-          // On last flip, navigate and stop all sounds
-          if (i === totalFlips - 1) {
-            setTimeout(() => {
-              // Stop all currently playing sounds
-              activeSounds.current.forEach((sound) => {
+        flipSound.play().catch(() => {
+          // ignore errors if browser blocks rapid play
+        });
+
+        // On last flip, stop all sounds
+        if (i === totalFlips - 1) {
+          setTimeout(() => {
+            // Stop all sounds safely
+            activeSounds.current.forEach((sound) => {
+              // Only pause if it’s actually playing
+              if (!sound.paused) {
                 sound.pause();
                 sound.currentTime = 0;
-              });
-              activeSounds.current = [];
+              }
+            });
+            activeSounds.current = [];
 
-              navigate(path);
-              setIsFlipping(false);
-              setFlipCount(0);
-              setNextPath(null);
-            }, 200); // linger before landing
-          }
-        }, i * flipDelay);
-      }
+            navigate(path);
+            setIsFlipping(false);
+            setFlipCount(0);
+            setNextPath(null);
+          }, 200); // linger before landing
+        }
+      }, i * flipDelay);
     }
-  };
+  }
+};
+
 
   return (
     <div className="bookmark-tabs-container">

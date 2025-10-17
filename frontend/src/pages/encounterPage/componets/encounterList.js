@@ -10,8 +10,8 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
   const [campaign, setCampaign] = useState(null);
 
   useEffect(() => {
-      // 🧹 Clear encounter when viewing the encounter list
-  localStorage.removeItem("selectedEncounterId");
+    // 🧹 Clear encounter when viewing the encounter list
+    localStorage.removeItem("selectedEncounterId");
     const storedCampaign = localStorage.getItem("selectedCampaignData");
     if (!storedCampaign) {
       setError("You must open a campaign to see encounters.");
@@ -24,9 +24,7 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
 
     const fetchEncounters = async () => {
       try {
-        const res = await API.get(
-          `/api/encounters/${campaignData.campaign_id}`
-        );
+        const res = await API.get(`/api/encounters/${campaignData.campaign_id}`);
         setEncounters(res.data || []);
       } catch (err) {
         console.error("Error fetching encounters:", err);
@@ -55,13 +53,14 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
         Encounters for {campaign?.campaign_name || "Unknown Campaign"}
       </h2>
 
-      <div className="encounter-list-container">
+      {/* Scrollable container */}
+      <div className="character-list-scroll">
         {encounters.length > 0 ? (
           encounters.map((enc) => (
             <div
               key={enc.encounter_id}
               className="encounter-box"
-              onClick={() => handleEncounterSelect(enc)} // ← use the new handler
+              onClick={() => handleEncounterSelect(enc)}
             >
               <div className="encounter-img-container">
                 <img
@@ -108,6 +107,7 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
 };
 
 export default EncounterList;
+
 
 
 
