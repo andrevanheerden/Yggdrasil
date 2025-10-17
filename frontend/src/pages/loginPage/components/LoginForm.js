@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from "../../../api";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LoadingScreen from '../../loadingPopup/loadingScreen'; // Import the loading screen
@@ -27,14 +27,14 @@ const LoginForm = () => {
       setShowLoadingScreen(true); // Show loading screen
 
       // 1️⃣ Login and get token
-      const res = await axios.post('http://localhost:5000/api/users/login', formData);
+      const res = await API.post('/api/users/login', formData);
       const token = res.data.token;
       if (!token) throw new Error("No token received from login");
       localStorage.setItem('token', token);
       toast.success("Login successful!");
 
       // 2️⃣ Fetch logged-in user
-      const meRes = await axios.get('http://localhost:5000/api/users/me', {
+      const meRes = await API.get('/api/users/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
 

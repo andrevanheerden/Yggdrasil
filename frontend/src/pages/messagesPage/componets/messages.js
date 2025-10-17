@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import API from "../../../api";
 import { toast } from "react-toastify";
 import "../message.css";
 
@@ -11,8 +11,8 @@ const Messages = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem("token");
-      const res = await axios.post(
-        "http://localhost:5000/api/messages",
+      const res = await API.post(
+        "/api/messages",
         { type: messageType, text: message },
         { headers: { Authorization: `Bearer ${token}` } }
       );

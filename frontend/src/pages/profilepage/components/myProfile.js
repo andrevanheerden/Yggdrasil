@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../../api";
 import profileIMG from "../../../assets/images/profile.jpg";
 import "../profile.css";
 import { toast, ToastContainer } from "react-toastify";
@@ -21,7 +21,7 @@ const MyProfile = () => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/users/me", {
+        const res = await API.get("/api/users/me", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUser(res.data);
@@ -38,7 +38,7 @@ const MyProfile = () => {
     const fetchInvites = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/invites/my", {
+        const res = await API.get("/api/invites/my", {
           headers: { Authorization: `Bearer ${token}` },
         });
         setInvites(res.data || []);
@@ -69,7 +69,7 @@ const MyProfile = () => {
       formData.append("username", user.username);
       if (profileFile) formData.append("profile_img", profileFile);
 
-      const res = await axios.put("http://localhost:5000/api/users/me", formData, {
+      const res = await API.put("/api/users/me", formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -93,8 +93,8 @@ const handleInviteResponse = async (invite_id, accept) => {
     const invite = invites.find((i) => i.invite_id === invite_id);
     if (!invite) throw new Error("Invite not found");
 
-    await axios.post(
-      "http://localhost:5000/api/invites/respond",
+    await API.post(
+      "/api/invites/respond",
       { invite_id, accept },
       { headers: { Authorization: `Bearer ${token}` } }
     );
@@ -109,7 +109,7 @@ const handleInviteResponse = async (invite_id, accept) => {
 
     if (accept) {
       // REFRESH campaigns in Book.js after accepting
-      const campaignsRes = await axios.get("http://localhost:5000/api/campaigns/my", {
+      const campaignsRes = await API.get("/api/campaigns/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
       localStorage.setItem("myCampaigns", JSON.stringify(campaignsRes.data));

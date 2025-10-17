@@ -5,7 +5,7 @@ import "../Home.css";
 import Navbar from "./Navbar";
 import EditCampaignInfo from "../../campaignPage/componets/EditCampaignInfo";
 import { toast } from "react-toastify";
-import axios from "axios";
+import API from "../../../api";
 
 const EditCampaign = () => {
   const [title, setTitle] = useState("Edit Campaign");
@@ -24,7 +24,7 @@ const campaignId = (localStorage.getItem("editCampaignId") || "").split(":")[0];
     const fetchCampaign = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/campaigns", {
+        const res = await API.get("/api/campaigns", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const campaign = res.data.find((c) => c.campaign_id === campaignId);

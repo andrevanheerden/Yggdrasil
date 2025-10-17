@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../../../api";
 import "../Home.css";
 import logo from "../../../assets/images/logoLong.png";
 
@@ -14,7 +14,7 @@ const Navbar = () => {
     const fetchCurrentUser = async () => {
       if (!token) return;
       try {
-        const res = await axios.get("http://localhost:5000/api/users/me", {
+        const res = await API.get("/api/users/me", {
           headers: { Authorization: `Bearer ${token}` }
         });
         // Normalize role: lowercase and replace spaces with underscore

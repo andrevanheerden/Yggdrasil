@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import coverImg from '../../../assets/images/cover.png';
 import campaignImg2 from '../../../assets/images/forest.jpg';
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import API from "../../../api";
 import '../Home.css';
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -132,7 +132,7 @@ useEffect(() => {
         return;
       }
 
-      const res = await axios.get("http://localhost:5000/api/campaigns/my", {
+      const res = await API.get("/api/campaigns/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -228,7 +228,7 @@ useEffect(() => {
     confirmAction("Are you sure you want to delete this campaign?", async () => {
       try {
         const token = localStorage.getItem("token");
-        await axios.delete(`http://localhost:5000/api/campaigns/${campaignId}`, {
+        await API.delete(`/api/campaigns/${campaignId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setCampaigns(campaigns.filter(c => c.campaign_id !== campaignId));
@@ -245,7 +245,7 @@ useEffect(() => {
     confirmAction("Do you want to leave this campaign?", async () => {
       try {
         const token = localStorage.getItem("token");
-        await axios.post(`http://localhost:5000/api/campaigns/${campaignId}/leave`, {}, {
+        await API.post(`/api/campaigns/${campaignId}/leave`, {}, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setCampaigns(campaigns.filter(c => c.campaign_id !== campaignId));

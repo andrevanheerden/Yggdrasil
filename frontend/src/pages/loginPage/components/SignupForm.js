@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from "../../../api";
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import LoadingScreen from '../../loadingPopup/loadingScreen'; 
@@ -41,7 +41,7 @@ const SignupForm = () => {
       setShowLoadingScreen(true);
 
       // 1️⃣ Signup
-      await axios.post('http://localhost:5000/api/users/signup', {
+      await API.post('/api/users/signup', {
         username: formData.username,
         email: formData.email,
         password: formData.password
@@ -50,7 +50,7 @@ const SignupForm = () => {
       toast.success("Signup successful!");
 
       // 2️⃣ Login immediately after signup
-      const loginRes = await axios.post('http://localhost:5000/api/users/login', {
+      const loginRes = await API.post('S/api/users/login', {
         email: formData.email,
         password: formData.password
       });
@@ -61,7 +61,7 @@ const SignupForm = () => {
       localStorage.setItem('token', token);
 
       // 3️⃣ Fetch logged-in user data
-      const meRes = await axios.get('http://localhost:5000/api/users/me', {
+      const meRes = await API.get('/api/users/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
