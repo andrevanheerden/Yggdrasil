@@ -28,21 +28,25 @@ const app = express();
 
 // CORS setup
 const allowedOrigins = [
-  'http://localhost:3000',           // local dev
-  process.env.FRONTEND_URL            // deployed frontend
+  'http://localhost:3000',
+  process.env.FRONTEND_URL
 ];
 
 app.use(cors({
   origin: function(origin, callback) {
+    console.log('Incoming request from origin:', origin); // debug
+
     if (!origin) return callback(null, true); // allow Postman, curl, etc.
-    if (allowedOrigins.indexOf(origin) === -1) {
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      console.warn(`Blocked CORS request from: ${origin}`);
+      return callback(new Error('CORS not allowed'), false);
     }
-    return callback(null, true);
   },
   credentials: true
 }));
+
 
 // Middleware
 app.use(express.json());
