@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../character.css";
-import rose from "../../../assets/images/rose.jpg";
+import rose from "../../../assets/images/noItem.jpg";
 import API from "../../../api";
 
 const CharacterList = ({ campaignId, onSelectCharacter, onCreateCharacter }) => {

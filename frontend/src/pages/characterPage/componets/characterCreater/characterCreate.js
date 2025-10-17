@@ -8,6 +8,8 @@ import CharacterDesCreater from "./characterDesCreater";
 import RaceCreation from "./raceCreater";
 import BackgroundCreation from "./backgroundCreater";
 import API from "../../../../api";
+import LoadingScreen from "../../../loadingPopup/loadingScreen"; // same path as in EncounterCreater
+
 
 import {
   Chart as ChartJS,
@@ -31,7 +33,9 @@ const initialSkills = {
   Cha: ["Deception", "Intimidation", "Performance", "Persuasion"],
 };
 
+
 const CharacterCreater = ({ onClose, campaignId }) => {
+  const [loading, setLoading] = useState(false);
   const latestCampaignId = campaignId || localStorage.getItem("selectedCampaignId");
 
   const [currentPage, setCurrentPage] = useState("stats");
@@ -171,11 +175,13 @@ const CharacterCreater = ({ onClose, campaignId }) => {
   };
 
   const saveCharacter = async () => {
-    if (!latestCampaignId) {
-      alert("You must be in a campaign to save a character.");
-      return;
-    }
-    try {
+  if (!latestCampaignId) {
+    alert("You must be in a campaign to save a character.");
+    return;
+  }
+
+  try {
+    setLoading(true); // ← start loading
       // 1. Save main character
       const formData = new FormData();
       formData.append("campaign_id", latestCampaignId);
@@ -252,12 +258,14 @@ formData.append("character_description", characterDescription);
       });
 
       alert("Character saved successfully!");
-      onClose && onClose();
-    } catch (err) {
-      console.error(err);
-      alert("Failed to save character.");
-    }
-  };
+    onClose && onClose();
+  } catch (err) {
+    console.error(err);
+    alert("Failed to save character.");
+  } finally {
+    setLoading(false); // ← stop loading
+  }
+};
 
   const handleNext = () => {
     if (currentPage === "stats") {
@@ -330,6 +338,7 @@ formData.append("character_description", characterDescription);
 
   return (
     <div className="character-popup-overlay">
+      {loading && <LoadingScreen />}
       <button className="exit-x-btn" onClick={handleExit}>✖</button>
       <button className="nav-arrow left" onClick={handlePrev}>◀</button>
 
