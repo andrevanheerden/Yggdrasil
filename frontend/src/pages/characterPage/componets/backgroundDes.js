@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../../api";
 import "../character.css";
 import defaultPortrait from "../../../assets/images/rose.jpg";
 
@@ -35,8 +35,8 @@ const BackgroundDes = ({ character }) => {
     const fetchBackground = async () => {
       try {
         console.log("Fetching background for character:", character.id);
-        const res = await axios.get(
-          `http://localhost:5000/api/character-backgrounds/character/${character.id}`
+        const res = await API.get(
+          `/api/character-backgrounds/character/${character.id}`
         );
 
         console.log("✅ Background response:", res.data);

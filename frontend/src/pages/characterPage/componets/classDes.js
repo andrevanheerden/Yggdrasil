@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "../character.css";
 import rose from "../../../assets/images/rose.jpg";
-import axios from "axios";
+import API from "../../../api";
 
 const ClassDes = ({ character }) => {
   const [classData, setClassData] = useState({
@@ -37,8 +37,8 @@ const ClassDes = ({ character }) => {
 
   const fetchClass = async () => {
     try {
-      const res = await axios.get(
-        `http://localhost:5000/api/character-classes/character/${character.id}`
+      const res = await API.get(
+        `/api/character-classes/character/${character.id}`
       );
 
       console.log("Raw backend response:", res.data); // ✅ LOG RAW RESPONSE

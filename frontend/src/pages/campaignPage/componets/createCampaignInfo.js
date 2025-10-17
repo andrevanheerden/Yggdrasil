@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../campaign.css";
 import pageBg from "../../../assets/images/page.png";
-import axios from "axios";
+import API from "../../../api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import LoadingScreen from "../../loadingPopup/loadingScreen"; // <-- Import LoadingScreen
@@ -65,8 +65,8 @@ const CreateCampaignInfo = ({ coverImage, coverColor, onClose, initialCampaignNa
     try {
       setLoading(true); // Show loading screen
 
-      const res = await axios.post(
-        "http://localhost:5000/api/campaigns/create",
+      const res = await API.post(
+        "/api/campaigns/create",
         formData,
         {
           headers: {

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import "../character.css";
-import axios from "axios";
+import API from "../../../api";
 import FullSpellView from "./fullSpellView";
 import CreateSpellPopup from "./spellCreater/spellCreatePopup";
 import fallbackImg from "../../../assets/images/noItem.jpg";
@@ -22,8 +22,8 @@ const RightPageSpells = ({ selectedCharacter }) => {
 
     const fetchSpells = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/character-spells/character/${selectedCharacter.id}`
+        const res = await API.get(
+          `/api/character-spells/character/${selectedCharacter.id}`
         );
         const fetchedSpells = res.data || [];
         setSpells(fetchedSpells);

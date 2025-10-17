@@ -7,7 +7,7 @@ import ClassCreation from "./classCreater";
 import CharacterDesCreater from "./characterDesCreater";
 import RaceCreation from "./raceCreater";
 import BackgroundCreation from "./backgroundCreater";
-import axios from "axios";
+import API from "../../../../api";
 
 import {
   Chart as ChartJS,
@@ -208,11 +208,11 @@ formData.append("character_description", characterDescription);
 
       if (characterFile) formData.append("character_img", characterFile);
 
-      const response = await axios.post("http://localhost:5000/api/characters", formData);
+      const response = await API.post("/api/characters", formData);
       const { character_id } = response.data;
 
       // 2. Save race (separate description, skills, tools, languages)
-      await axios.post("http://localhost:5000/api/character-races", {
+      await API.post("/api/character-races", {
         character_id,
         race_name: raceData.name,
         race_description: raceData.description,
@@ -223,7 +223,7 @@ formData.append("character_description", characterDescription);
       });
 
       // 3. Save background (separate description, skills, tools, languages)
-      await axios.post("http://localhost:5000/api/character-backgrounds", {
+      await API.post("/api/character-backgrounds", {
         character_id,
         background_name: backgroundData.name,
         background_description: backgroundData.description,
@@ -234,7 +234,7 @@ formData.append("character_description", characterDescription);
       });
 
       // 4. Save class (separate description, skills, tools, languages)
-      await axios.post("http://localhost:5000/api/character-classes", {
+      await API.post("/api/character-classes", {
         character_id,
         class_name: classData.name,
         class_description: classData.description,

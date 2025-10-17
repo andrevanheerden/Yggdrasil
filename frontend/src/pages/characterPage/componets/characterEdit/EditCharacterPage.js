@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
-import axios from "axios";
+import API from "../../../../api";
 import { Radar } from "react-chartjs-2";
 
 // Helper to generate radar chart options
@@ -47,10 +47,10 @@ const EditCharacterPage = forwardRef(({ chartOptions = {}, savingThrowOptions = 
 
     const fetchData = async () => {
       try {
-        const charRes = await axios.get(`http://localhost:5000/api/characters/id/${id}`);
+        const charRes = await API.get(`/api/characters/id/${id}`);
         const charData = charRes.data;
 
-        const classRes = await axios.get(`http://localhost:5000/api/character-classes/character/${id}`);
+        const classRes = await API.get(`/api/character-classes/character/${id}`);
         const classData = classRes.data[0] || {};
 
         setForm({
@@ -114,7 +114,7 @@ useImperativeHandle(ref, () => ({
 
     try {
       // --- Update character ---
-      const existingCharRes = await axios.get(`http://localhost:5000/api/characters/id/${characterId}`);
+      const existingCharRes = await API.get(`/api/characters/id/${characterId}`);
       const existingChar = existingCharRes.data;
 
       const charPayload = {
@@ -142,12 +142,12 @@ useImperativeHandle(ref, () => ({
         character_img: existingChar.character_img, // preserve Cloudinary link if no new upload
       };
 
-      await axios.put(`http://localhost:5000/api/characters/${characterId}`, charPayload);
+      await API.put(`/api/characters/${characterId}`, charPayload);
 
       // --- Update class ---
       let existingClassRes;
       try {
-        existingClassRes = await axios.get(`http://localhost:5000/api/character-classes/character/${characterId}`);
+        existingClassRes = await API.get(`/api/character-classes/character/${characterId}`);
       } catch (err) {
         if (err.response?.status !== 404) throw err;
       }
@@ -170,9 +170,9 @@ useImperativeHandle(ref, () => ({
       };
 
       if (existingClass?.class_id) {
-        await axios.put(`http://localhost:5000/api/character-classes/${existingClass.class_id}`, classPayload);
+        await API.put(`/api/character-classes/${existingClass.class_id}`, classPayload);
       } else {
-        await axios.post(`http://localhost:5000/api/character-classes`, {
+        await API.post(`/api/character-classes`, {
           character_id: characterId,
           ...classPayload,
         });

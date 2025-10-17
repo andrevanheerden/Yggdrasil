@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../../api";
 import "../campaign.css";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -19,8 +19,8 @@ const DMNotes = () => {
 
       setLoading(true);
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/dm-notes/${campaignId}`
+        const res = await API.get(
+          `/api/dm-notes/${campaignId}`
         );
 
         if (res.data && res.data.length > 0) {
@@ -54,13 +54,13 @@ const DMNotes = () => {
     try {
       if (noteId) {
         // Update existing note
-        await axios.put(`http://localhost:5000/api/dm-notes/${noteId}`, {
+        await API.put(`/api/dm-notes/${noteId}`, {
           note_text: notes,
         });
         toast.success("DM notes updated successfully!");
       } else {
         // Create new note
-        const res = await axios.post("http://localhost:5000/api/dm-notes", {
+        const res = await API.post("/api/dm-notes", {
           campaign_id: campaignId,
           note_text: notes,
         });

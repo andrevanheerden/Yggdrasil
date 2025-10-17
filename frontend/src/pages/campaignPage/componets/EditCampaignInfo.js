@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "../campaign.css";
 import pageBg from "../../../assets/images/page.png";
-import axios from "axios";
+import API from "../../../api";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import LoadingScreen from "../../loadingPopup/loadingScreen";
@@ -29,7 +29,7 @@ const EditCampaignInfo = ({ editCampaignId }) => {
       try {
         setLoading(true); // show loading
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:5000/api/campaigns", {
+        const res = await API.get("/api/campaigns", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const campaign = res.data.find((c) => c.campaign_id === editCampaignId);
@@ -94,8 +94,8 @@ const EditCampaignInfo = ({ editCampaignId }) => {
 
     try {
       setLoading(true); // show loading
-      await axios.put(
-        `http://localhost:5000/api/campaigns/${editCampaignId}`,
+      await API.put(
+        `/api/campaigns/${editCampaignId}`,
         formData,
         {
           headers: {

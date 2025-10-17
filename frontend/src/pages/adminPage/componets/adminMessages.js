@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"; 
-import axios from "axios";
+import API from "../../../api";
 import "../admin.css"; // reuse the message CSS file
 
 const AdminMessages = () => {
@@ -13,7 +13,7 @@ const AdminMessages = () => {
   // Fetch messages from backend
   const fetchMessages = async () => {
     try {
-      const res = await axios.get("http://localhost:5000/api/messages", {
+      const res = await API.get("/api/messages", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(res.data.messages);
@@ -42,7 +42,7 @@ const AdminMessages = () => {
   // Resolve (delete) message
   const handleResolve = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/api/messages/${id}`, {
+      await API.delete(`/api/messages/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setMessages(messages.filter(m => m.id !== id));

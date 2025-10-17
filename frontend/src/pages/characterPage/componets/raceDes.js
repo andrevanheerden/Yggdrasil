@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../../api";
 import "../character.css";
 import defaultPortrait from "../../../assets/images/rose.jpg";
 
@@ -34,8 +34,8 @@ const RaceDes = ({ character }) => {
 
     const fetchRace = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/character-races/character/${character.id}`
+        const res = await API.get(
+          `/api/character-races/character/${character.id}`
         );
 
         if (Array.isArray(res.data) && res.data.length > 0) {

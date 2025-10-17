@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../campaign.css"; 
-import axios from "axios";
+import API from "../../../api";
 
 const CampaignDescription = () => {
   const [campaign, setCampaign] = useState(null);
@@ -15,7 +15,7 @@ useEffect(() => {
       if (!campaignId) return;
 
       // ✅ Use the /my endpoint to include campaigns where user is a player
-      const res = await axios.get("http://localhost:5000/api/campaigns/my", {
+      const res = await API.get("/api/campaigns/my", {
         headers: { Authorization: `Bearer ${token}` },
       });
 

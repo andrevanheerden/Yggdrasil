@@ -1,6 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import "../../character.css";
-import axios from "axios";
+import API from "../../../../api";
 
 const CreateSpellPage = forwardRef(({ onSpellCreated }, ref) => {
   const [spellName, setSpellName] = useState("");
@@ -52,7 +52,7 @@ const CreateSpellPage = forwardRef(({ onSpellCreated }, ref) => {
     // Image
     if (spellImage) formData.append("spell_image", spellImage);
 
-    const res = await axios.post("http://localhost:5000/api/character-spells", formData, {
+    const res = await API.post("/api/character-spells", formData, {
       headers: { "Content-Type": "multipart/form-data" },
     });
 

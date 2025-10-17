@@ -1,6 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import "../../character.css";
-import axios from "axios";
+import API from "../../../../api";
 
 const CreateActionPage = forwardRef(({ onActionCreated }, ref) => {
   const [actionName, setActionName] = useState("");
@@ -49,8 +49,8 @@ const CreateActionPage = forwardRef(({ onActionCreated }, ref) => {
       // Image
       if (actionImage) formData.append("action_image", actionImage);
 
-      const res = await axios.post(
-        "http://localhost:5000/api/character-actions",
+      const res = await API.post(
+        "/api/character-actions",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

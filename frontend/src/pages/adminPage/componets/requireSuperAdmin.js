@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import axios from "axios";
+import API from "../../../api";
 
 const RequireSuperAdmin = ({ children }) => {
   const [role, setRole] = useState(null);
@@ -11,7 +11,7 @@ const RequireSuperAdmin = ({ children }) => {
     const fetchUser = async () => {
       if (!token) return setLoading(false);
       try {
-        const res = await axios.get("http://localhost:5000/api/users/me", {
+        const res = await API.get("/api/users/me", {
           headers: { Authorization: `Bearer ${token}` }
         });
         // Normalize role just like Navbar

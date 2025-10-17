@@ -1,6 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import "../../character.css";
-import axios from "axios";
+import API from "../../../../api";
 
 const CreateItemPage = forwardRef(({ onItemCreated }, ref) => {
   const [itemName, setItemName] = useState("");
@@ -50,8 +50,8 @@ const handleSubmit = async () => {
 
     console.log("📦 Sending Character Item payload:", characterId);
 
-    const res = await axios.post(
-      "http://localhost:5000/api/character-inventory",
+    const res = await API.post(
+      "/api/character-inventory",
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
     );

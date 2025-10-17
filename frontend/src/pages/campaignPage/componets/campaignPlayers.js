@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"; 
 import profileIMG from "../../../assets/images/profile.jpg";
 import "../campaign.css";
-import axios from "axios";
+import API from "../../../api";
 
 const CampaignPlayers = () => {
   const [dm, setDm] = useState({
@@ -20,8 +20,8 @@ const CampaignPlayers = () => {
         if (!campaignId) return;
 
         // Fetch DM info
-        const dmRes = await axios.get(
-          `http://localhost:5000/api/campaigns/${campaignId}/dm`,
+        const dmRes = await API.get(
+          `/api/campaigns/${campaignId}/dm`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         if (dmRes.data) setDm({
@@ -31,8 +31,8 @@ const CampaignPlayers = () => {
         });
 
         // Fetch players
-        const rolesRes = await axios.get(
-          `http://localhost:5000/api/campaigns/${campaignId}/roles`,
+        const rolesRes = await API.get(
+          `/api/campaigns/${campaignId}/roles`,
           { headers: { Authorization: `Bearer ${token}` } }
         );
         const playerRoles = rolesRes.data.filter(r => r.role === "player");
@@ -51,8 +51,8 @@ const handleInvite = async () => {
     const token = localStorage.getItem("token");
     const campaignId = localStorage.getItem("selectedCampaignId");
 
-await axios.post(
-  "http://localhost:5000/api/campaigns/invite",
+await API.post(
+  "/api/campaigns/invite",
   { campaign_id: campaignId, receiver_id: inviteId }, // <-- use receiver_id
   { headers: { Authorization: `Bearer ${token}` } }
 );

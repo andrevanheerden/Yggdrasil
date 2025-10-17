@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../character.css";
 import rose from "../../../assets/images/rose.jpg";
-import axios from "axios";
+import API from "../../../api";
 
 const CharacterList = ({ campaignId, onSelectCharacter, onCreateCharacter }) => {
   const [characters, setCharacters] = useState([]);
@@ -17,7 +17,7 @@ const CharacterList = ({ campaignId, onSelectCharacter, onCreateCharacter }) => 
     const fetchCharacters = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/characters/${campaignId}`);
+        const res = await API.get(`/api/characters/${campaignId}`);
         setCharacters(Array.isArray(res.data) ? res.data : []);
       } catch (err) {
         console.error(err);
