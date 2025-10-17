@@ -1,6 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import "../../encounter.css";
-import axios from "axios";
+import API from "../../../../api";
 
 const CreateSpellPage = forwardRef(({ onSpellCreated, encounterId }, ref) => {
   const [spellName, setSpellName] = useState("");
@@ -37,8 +37,8 @@ const handleSubmit = async () => {
 
     if (spellImage) formData.append("spell_image", spellImage);
 
-    const res = await axios.post(
-      "http://localhost:5000/api/encounter-spells",
+    const res = await API.post(
+      "/api/encounter-spells",
       formData,
       { headers: { "Content-Type": "multipart/form-data" } }
     );

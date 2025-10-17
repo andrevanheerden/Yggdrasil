@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import axios from "axios";
+import API from "../../../api";
 import FullItemView from "./fullItemView";
 import CreateItemPopup from "./itemCreater/itemCreatePopup";
 import fallbackImg from "../../../assets/images/noItem.jpg";
@@ -20,8 +20,8 @@ const RightPageInventory = ({ selectedEncounter }) => {
 
     const fetchItems = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/encounter-inventory/encounter/${selectedEncounter.encounter_id}`
+        const res = await API.get(
+          `/api/encounter-inventory/encounter/${selectedEncounter.encounter_id}`
         );
         const fetchedItems = res.data || [];
         setItems(fetchedItems);

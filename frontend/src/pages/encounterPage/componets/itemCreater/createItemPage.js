@@ -1,6 +1,6 @@
 import React, { useState, forwardRef, useImperativeHandle, useEffect } from "react";
 import "../../encounter.css";
-import axios from "axios";
+import API from "../../../../api";
 
 const CreateItemPage = forwardRef(({ onItemCreated }, ref) => {
   const [itemName, setItemName] = useState("");
@@ -67,8 +67,8 @@ formData.append(
 
       console.log("📦 Sending payload with Encounter ID:", encounterId);
 
-      const res = await axios.post(
-        "http://localhost:5000/api/encounter-inventory",
+      const res = await API.post(
+        "/api/encounter-inventory",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

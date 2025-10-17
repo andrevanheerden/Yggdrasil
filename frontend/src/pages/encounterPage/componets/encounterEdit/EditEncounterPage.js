@@ -1,6 +1,6 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from "react";
 import { Radar } from "react-chartjs-2";
-import axios from "axios";
+import API from "../../../../api";
 import "../../encounter.css";
 
 const EditEncounterPage = forwardRef(({ chartOptions = {}, savingThrowOptions = {} }, ref) => {
@@ -30,7 +30,7 @@ const EditEncounterPage = forwardRef(({ chartOptions = {}, savingThrowOptions = 
     if (!encounterId) return;
     const fetchEncounter = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/encounters/id/${encounterId}`);
+        const res = await API.get(`/api/encounters/id/${encounterId}`);
         const data = res.data;
         setForm({
           encounter_name: data.encounter_name || "",
@@ -107,7 +107,7 @@ const EditEncounterPage = forwardRef(({ chartOptions = {}, savingThrowOptions = 
     handleSubmit: async () => {
       if (!encounterId) return alert("No encounter selected!");
       try {
-        const existingRes = await axios.get(`http://localhost:5000/api/encounters/id/${encounterId}`);
+        const existingRes = await API.get(`/api/encounters/id/${encounterId}`);
         const existing = existingRes.data;
 
         const payload = {
@@ -135,7 +135,7 @@ const EditEncounterPage = forwardRef(({ chartOptions = {}, savingThrowOptions = 
           encounter_img: existing.encounter_img,
         };
 
-        await axios.put(`http://localhost:5000/api/encounters/${encounterId}`, payload);
+        await API.put(`/api/encounters/${encounterId}`, payload);
         alert("Encounter updated successfully!");
       } catch (err) {
         console.error("Failed to update encounter:", err);

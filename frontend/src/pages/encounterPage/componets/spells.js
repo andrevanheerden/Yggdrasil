@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import axios from "axios";
+import API from "../../../api";
 import FullSpellView from "./fullSpellView";
 import CreateSpellPopup from "./spellCreater/spellCreatePopup";
 import { toast } from "react-toastify";
@@ -22,8 +22,8 @@ const RightPageSpells = ({ selectedEncounter }) => {
 
     const fetchSpells = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/encounter-spells/encounter/${selectedEncounter.encounter_id}`
+        const res = await API.get(
+          `/api/encounter-spells/encounter/${selectedEncounter.encounter_id}`
         );
         const fetchedSpells = Array.isArray(res.data) ? res.data : [];
         setSpells(fetchedSpells);

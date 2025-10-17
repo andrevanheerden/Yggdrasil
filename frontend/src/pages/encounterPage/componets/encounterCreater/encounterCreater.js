@@ -4,7 +4,7 @@ import "../../../characterPage/character.css";
 import pageBg from "../../../../assets/images/page.png";
 import EncounterSheetCreater from "./encounterSheetCreater";
 import RaceCreation from "./raceCreater";
-import axios from "axios";
+import API from "../../../../api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import LoadingScreen from "../../../loadingPopup/loadingScreen";
@@ -175,7 +175,7 @@ const EncounterCreater = ({ onClose, campaignId }) => {
 
       if (encounterFile) formData.append("encounter_img", encounterFile);
 
-      await axios.post("http://localhost:5000/api/encounters", formData, {
+      await API.post("/api/encounters", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
 

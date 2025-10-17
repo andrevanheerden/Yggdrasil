@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../encounter.css";
-import axios from "axios";
+import API from "../../../api";
 import FullActionView from "./fullActionView";
 import CreateActionPopup from "./actionCreater/actionCreatePopup";
 import noSpellImg from "../../../assets/images/noItem.jpg"; // <-- Add this line
@@ -21,8 +21,8 @@ const RightPageActions = ({ selectedEncounter }) => {
 
     const fetchActions = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/encounter-actions/${selectedEncounter.encounter_id}`
+        const res = await API.get(
+          `/api/encounter-actions/${selectedEncounter.encounter_id}`
         );
         const fetchedActions = res.data || [];
         setActions(fetchedActions);

@@ -1,7 +1,7 @@
 // CreateActionPopup.jsx
 import React, { useState, useRef } from "react";
 import ReactDOM from "react-dom";
-import axios from "axios";
+import API from "../../../../api";
 import "../../encounter.css";
 import pageBg from "../../../../assets/images/page.png";
 import CreateActionPage from "./craeteActionPage";
@@ -63,8 +63,8 @@ const CreateActionPopup = ({ onClose, encounterId, onActionCreated }) => {
 
       if (actionImage) formData.append("action_image", actionImage);
 
-      const res = await axios.post(
-        "http://localhost:5000/api/encounter-actions",
+      const res = await API.post(
+        "/api/encounter-actions",
         formData,
         { headers: { "Content-Type": "multipart/form-data" } }
       );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import API from "../../../api";
 import "../encounter.css";
 import fallbackImg from "../../../assets/images/profile.jpg"; // Fallback image
 
@@ -24,8 +24,8 @@ const EncounterList = ({ onSelectEncounter, onCreateEncounter }) => {
 
     const fetchEncounters = async () => {
       try {
-        const res = await axios.get(
-          `http://localhost:5000/api/encounters/${campaignData.campaign_id}`
+        const res = await API.get(
+          `/api/encounters/${campaignData.campaign_id}`
         );
         setEncounters(res.data || []);
       } catch (err) {
