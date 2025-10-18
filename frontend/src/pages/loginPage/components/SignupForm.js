@@ -22,6 +22,7 @@ const SignupForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Frontend validation
     if (!formData.username || !formData.email || !formData.password) {
       toast.error("All fields are required");
       return;
@@ -40,7 +41,7 @@ const SignupForm = () => {
     try {
       setShowLoadingScreen(true);
 
-      // 1️⃣ Signup request
+      // 1️⃣ Signup
       const signupRes = await API.post('/api/users/signup', {
         username: formData.username,
         email: formData.email,
@@ -56,30 +57,31 @@ const SignupForm = () => {
       });
 
       const token = loginRes.data.token;
-      if (!token) throw new Error("No token received from login");
+      if (!token) throw new Error("Login failed: No token received");
 
       localStorage.setItem('token', token);
 
-      // 3️⃣ Fetch current user info
+      // 3️⃣ Fetch current user
       const meRes = await API.get('/api/users/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       const userData = meRes.data;
+      if (!userData.user_id && !userData.id) throw new Error("Failed to fetch user data");
+
       localStorage.setItem('user_id', userData.user_id || userData.id);
-      console.log("Signed-up and logged-in user:", userData);
 
       // Navigate to home
-      setTimeout(() => navigate('/home'), 1000);
+      setTimeout(() => navigate('/home'), 500);
 
     } catch (err) {
       console.error("Signup/Login error:", err.response?.data || err.message);
 
-      // Show backend error messages clearly
+      // Show backend error messages
       if (err.response?.data?.error) {
         toast.error(err.response.data.error);
       } else {
-        toast.error("Signup/Login failed");
+        toast.error(err.message || "Signup/Login failed");
       }
 
       setShowLoadingScreen(false);
@@ -91,6 +93,7 @@ const SignupForm = () => {
       <LoadingScreen isVisible={showLoadingScreen} />
       <form className="login-form" onSubmit={handleSubmit}>
         <h2 className="subtitle">Sign Up</h2>
+
         <div className="form-group">
           <label htmlFor="signup-username">Username</label>
           <input
@@ -103,6 +106,7 @@ const SignupForm = () => {
             required
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="signup-email">Email</label>
           <input
@@ -115,6 +119,7 @@ const SignupForm = () => {
             required
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="signup-password">Password</label>
           <input
@@ -128,6 +133,7 @@ const SignupForm = () => {
             autoComplete="new-password"
           />
         </div>
+
         <div className="form-group">
           <label htmlFor="signup-confirm-password">Confirm Password</label>
           <input
@@ -141,6 +147,7 @@ const SignupForm = () => {
             autoComplete="new-password"
           />
         </div>
+
         <button type="submit" className="submit-btn">Sign Up</button>
       </form>
     </>
@@ -148,4 +155,3 @@ const SignupForm = () => {
 };
 
 export default SignupForm;
-
