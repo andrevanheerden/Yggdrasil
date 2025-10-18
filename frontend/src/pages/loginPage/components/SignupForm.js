@@ -33,24 +33,24 @@ const SignupForm = () => {
     }
 
     if (formData.password.length < 6 || formData.password.length > 12) {
-      toast.error("Password must be between 6 and 12 characters long");
+      toast.error("Password must be between 6 and 12 characters");
       return;
     }
 
     try {
       setShowLoadingScreen(true);
 
-      // 1️⃣ Signup
-      await API.post('/api/users/signup', {
+      // 1️⃣ Signup request
+      const signupRes = await API.post('/api/users/signup', {
         username: formData.username,
         email: formData.email,
         password: formData.password
       });
 
-      toast.success("Signup successful!");
+      toast.success(signupRes.data.message || "Signup successful!");
 
       // 2️⃣ Login immediately after signup
-      const loginRes = await API.post('S/api/users/login', {
+      const loginRes = await API.post('/api/users/login', {
         email: formData.email,
         password: formData.password
       });
@@ -60,24 +60,28 @@ const SignupForm = () => {
 
       localStorage.setItem('token', token);
 
-      // 3️⃣ Fetch logged-in user data
+      // 3️⃣ Fetch current user info
       const meRes = await API.get('/api/users/me', {
         headers: { Authorization: `Bearer ${token}` }
       });
 
       const userData = meRes.data;
-      const userId = userData.user_id || userData.id;
-      localStorage.setItem('user_id', userId);
-      console.log("Signed-up and logged-in user ID:", userId);
+      localStorage.setItem('user_id', userData.user_id || userData.id);
+      console.log("Signed-up and logged-in user:", userData);
 
-      // Navigate to home after a short delay to show loading screen
-      setTimeout(() => {
-        navigate('/home');
-      }, 2000);
+      // Navigate to home
+      setTimeout(() => navigate('/home'), 1000);
 
     } catch (err) {
       console.error("Signup/Login error:", err.response?.data || err.message);
-      toast.error(err.response?.data?.error || 'Signup/Login failed');
+
+      // Show backend error messages clearly
+      if (err.response?.data?.error) {
+        toast.error(err.response.data.error);
+      } else {
+        toast.error("Signup/Login failed");
+      }
+
       setShowLoadingScreen(false);
     }
   };
@@ -144,3 +148,4 @@ const SignupForm = () => {
 };
 
 export default SignupForm;
+
