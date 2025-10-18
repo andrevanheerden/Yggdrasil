@@ -1,10 +1,10 @@
 const pool = require("../config/db");
 
 // Create a new user
-const createUser = async ({ user_id, username, email, password, profile_img }) => {
+const createUser = async ({ user_id, username, email, password, role }) => {
   const [result] = await pool.query(
-    "INSERT INTO users (user_id, username, email, password, profile_img) VALUES (?, ?, ?, ?, ?)",
-    [user_id, username, email, password, profile_img]
+    "INSERT INTO users (user_id, username, email, password, profile_img, role) VALUES (?, ?, ?, ?, ?, ?)",
+    [user_id, username, email, password, null, role] // profile_img is null at signup
   );
   return result;
 };
@@ -22,4 +22,3 @@ const findUserByUsername = async (username) => {
 };
 
 module.exports = { createUser, findUserByEmail, findUserByUsername };
-

@@ -52,7 +52,8 @@ const signup = async (req, res) => {
     const user_id = await generateUniqueUserId();
     const role = "user"; // default role
 
-    await createUser({ user_id, username, email, password: hashedPassword, profile_img: null, role });
+    await createUser({ user_id, username, email, password: hashedPassword, role });
+
 
     res.status(201).json({ message: "User registered successfully", user_id });
   } catch (error) {
