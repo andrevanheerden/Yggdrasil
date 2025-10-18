@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './Login.css';
 import LoginForm from './components/LoginForm';
 import SignupForm from './components/SignupForm';
+import { useSEO } from '../../hook/useSEO'; 
 
 
 function Login({ onLogin, loading, error }) {
@@ -10,6 +11,14 @@ function Login({ onLogin, loading, error }) {
   const [signupError, setSignupError] = useState(null);
   const [signupLoading, setSignupLoading] = useState(false);
   const navigate = useNavigate();
+
+   // SEO setup for Login page
+  useSEO({
+    title: 'Yggdrasil — Login / Signup',
+    description: 'Log in or sign up for Yggdrasil, the free online DnD campaign, character, and encounter manager. Access your characters, campaigns, and adventures today!',
+    keywords: 'DnD login, Dungeons & Dragons login, RPG account, campaign manager login, character creator login, encounter manager login, free DnD tools, tabletop RPG, online DnD platform',
+    canonical: 'https://andredv.xyz/login'
+  });
 
   // Handle login: just navigate to home
   const handleLogin = async () => {
