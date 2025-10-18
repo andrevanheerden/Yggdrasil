@@ -6,6 +6,7 @@ import Navbar from "../homePage/components/Navbar";
 import BookmarkNav from "../bookmarkNav/bookmarkNav";
 import CreateCharacterPopup from "./componets/characterCreater/characterCreate";
 import EditCharacterPopup from "./componets/characterEdit/EditCharacterPopup";
+import { useSEO } from "../../hook/useSEO";
 import "./character.css";
 
 function Character() {
@@ -13,6 +14,26 @@ function Character() {
   const [showPopup, setShowPopup] = useState(false);
   const [showEditPopup, setShowEditPopup] = useState(false); // ✅ FIXED: Added state
   const [selectedCharacter, setSelectedCharacter] = useState(null);
+
+ // --- SEO ---
+  useSEO({
+    title: "Yggdrasil — Free DnD Character Manager",
+    description: "Create, edit, and manage Dungeons & Dragons characters online for free. Track character stats, sheets, backgrounds, races, classes, and more with Yggdrasil, the free DnD character creator and campaign manager.",
+    keywords: "DnD, Dungeons & Dragons, RPG, character creator, character manager, tabletop RPG, role-playing game tools, free DnD tools, online DnD, fantasy RPG tools, character sheet manager, race manager, class manager, background editor, free RPG tools",
+    canonical: "https://andredv.xyz/character",
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Yggdrasil Character Manager",
+      "url": "https://andredv.xyz/character",
+      "description": "Create, edit, and manage Dungeons & Dragons characters online for free. Track character stats, sheets, backgrounds, races, classes, and more with Yggdrasil.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Yggdrasil",
+        "url": "https://andredv.xyz/"
+      }
+    }
+  });
 
   // --- Create popup ---
   const handleOpenPopup = () => setShowPopup(true);
