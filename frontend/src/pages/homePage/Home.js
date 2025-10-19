@@ -3,6 +3,7 @@ import './Home.css';
 import Navbar from './components/Navbar';
 import BookCenterWrapper from './components/book';
 import { useSEO } from '../../hook/useSEO';
+import RequireLoginPopup from '../loginPopup/requireLoginPopup';
 
 function Home() {
   useSEO({
@@ -21,6 +22,7 @@ function Home() {
     <div>
       <Navbar />
       <BookCenterWrapper />
+      <RequireLoginPopup />
     </div>
   );
 }

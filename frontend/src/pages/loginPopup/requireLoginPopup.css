@@ -1,0 +1,70 @@
+/* overlay covers whole viewport and blurs the BACKDROP (the page behind it) */
+.require-login-overlay {
+  position: fixed;
+  inset: 0; /* top:0; right:0; bottom:0; left:0 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.35); /* semi-transparent dark layer */
+  /* blur the content behind the overlay (keeps children sharp) */
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+/* popup sits above the overlay (child of overlay) and will remain sharp */
+.require-login-popup {
+  position: relative;
+  z-index: 10000; /* ensure above overlay (child but higher z inside) */
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 40px 60px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+  animation: popupFadeIn 0.28s ease;
+  /* ensure no inherited filter will apply */
+  filter: none !important;
+  -webkit-filter: none !important;
+}
+
+.require-login-popup h2 {
+  margin-bottom: 10px;
+  font-size: 1.8rem;
+}
+
+.require-login-popup p {
+  margin-bottom: 20px;
+  font-size: 1.1rem;
+}
+
+.require-login-popup button {
+  padding: 10px 25px;
+  background-color: #4caf50;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.require-login-popup button:hover {
+  background-color: #45a049;
+}
+
+/* remove previous global blur selector if present in other files:
+   .blurred-background *:not(.require-login-overlay):not(.require-login-popup) { ... }
+   If that exists anywhere, please delete it (or make sure it's not applied). */
+
+/* animation */
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

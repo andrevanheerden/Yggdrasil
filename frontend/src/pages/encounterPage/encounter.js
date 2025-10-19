@@ -8,6 +8,8 @@ import EncounterCreater from "./componets/encounterCreater/encounterCreater";
 import EditEncounterPopup from "./componets/encounterEdit/EditEncounterPopup";
 import "./encounter.css";
 import { useSEO } from "../../hook/useSEO"; 
+import RequireLoginPopup from '../loginPopup/requireLoginPopup';
+
 
 function Encounter() {
   const [showCreatePopup, setShowCreatePopup] = useState(false);
@@ -50,6 +52,7 @@ function Encounter() {
 
   return (
     <>
+     <RequireLoginPopup />
       <BookmarkNav />
       <Navbar />
 

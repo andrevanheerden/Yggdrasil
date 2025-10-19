@@ -8,6 +8,7 @@ import CreateCharacterPopup from "./componets/characterCreater/characterCreate";
 import EditCharacterPopup from "./componets/characterEdit/EditCharacterPopup";
 import { useSEO } from "../../hook/useSEO";
 import "./character.css";
+import RequireLoginPopup from '../loginPopup/requireLoginPopup';
 
 function Character() {
   const [activeTab, setActiveTab] = useState("characterList");
@@ -50,6 +51,7 @@ function Character() {
 
   return (
     <>
+      <RequireLoginPopup />
       <BookmarkNav />
       <Navbar />
 

@@ -8,6 +8,7 @@ import BookmarkNav from "../bookmarkNav/bookmarkNav";
 import { useLocation } from "react-router-dom";
 import CreateCampaignInfo from "./componets/createCampaignInfo";
 import { useSEO } from "../../hook/useSEO";
+import RequireLoginPopup from '../loginPopup/requireLoginPopup';
 
 const Campaign = () => {
   const location = useLocation();
@@ -45,6 +46,7 @@ const Campaign = () => {
 
   return (
     <>
+      <RequireLoginPopup />
       <BookmarkNav />
       <Navbar />
 

@@ -3,6 +3,7 @@ import './admin.css';
 import Navbar from "../homePage/components/Navbar";
 import AdminMessage from './componets/adminMessages'; // exact casing and folder
 import { useSEO } from '../../hook/useSEO';
+import RequireLoginPopup from '../loginPopup/requireLoginPopup';
 
 function AdminPage() {
   // --- SEO ---
@@ -27,6 +28,7 @@ function AdminPage() {
 
   return (
     <div>
+      <RequireLoginPopup />
       <Navbar />
       <AdminMessage />
     </div>

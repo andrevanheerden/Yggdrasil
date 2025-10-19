@@ -3,6 +3,7 @@ import './message.css';
 import Navbar from "../homePage/components/Navbar";
 import Message from './componets/messages'; // exact casing and folder
 import { useSEO } from '../../hook/useSEO';
+import RequireLoginPopup from '../loginPopup/requireLoginPopup';
 
 function ProfilePage() {
     useSEO({
@@ -22,6 +23,7 @@ function ProfilePage() {
     <div>
       <Navbar />
       <Message />
+      <RequireLoginPopup />
     </div>
   );
 }
