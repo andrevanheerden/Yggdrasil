@@ -1,1 +1,1 @@
-![banner](./assets/header.png)
+![banner](./frontend/src/assets/readMeAssets/yggdrasilHeader.png)
