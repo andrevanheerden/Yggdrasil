@@ -20,13 +20,13 @@ I created Yggdrasil out of a desire to simplify the D&D experience. Unlike exist
 
 ## How Yggdrasil was build
 
-####Frontend: React.js
+#### Frontend: React.js
 React is a modern JavaScript library designed for building dynamic, responsive, and efficient user interfaces. It’s ideal for creating interactive elements such as character builders, dashboards, and live campaign previews, ensuring a seamless experience for both Dungeon Masters and players.
 
-####Backend: Node.js with Express
+#### Backend: Node.js with Express
 Node.js provides a fast and scalable server-side runtime for JavaScript, while Express simplifies routing, API development, and backend logic. Together, they deliver an efficient, modular system that integrates smoothly with React and supports real-time gameplay features.
 
-####Database: MySQL
+#### Database: MySQL
 MySQL is a reliable relational database system, perfect for managing structured D&D data such as characters, stats, spells, and inventories. It supports complex queries, ensures data integrity, and maintains robust relationships between tables — making it ideal for a world as detailed as Dungeons & Dragons.
 
 ## What problems does Yggdrasil solve
@@ -37,11 +37,11 @@ Yggdrasil addresses this issue by offering a completely open and accessible plat
 By removing limitations and empowering users to build without boundaries, Yggdrasil delivers a richer, more personalized D&D experience that goes beyond traditional platforms.
 
 ## How was Yggdrasil deployed 
-####Frontend:
+#### Frontend:
 The frontend is built with React.js and deployed on Vercel with a .xyz domain. It is connected to the backend via an environmental variable containing the backend URL, which was configured during the backend setup process.
 
-####Backend:
+#### Backend:
 The backend is deployed on Render and linked to the frontend using the URL provided during deployment. This URL is stored as an environment variable in the frontend to ensure secure and seamless communication between the two layers.
 
-####Database:
+#### Database:
 The MySQL database is hosted on AlwaysData, which functions similarly to XAMPP. The only significant change required was updating the local configuration to use the AlwaysData connection details instead of the local setup. The database is also connected to the backend through environment variables for secure access.
