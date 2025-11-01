@@ -45,3 +45,26 @@ The backend is deployed on Render and linked to the frontend using the URL provi
 
 #### Database:
 The MySQL database is hosted on AlwaysData, which functions similarly to XAMPP. The only significant change required was updating the local configuration to use the AlwaysData connection details instead of the local setup. The database is also connected to the backend through environment variables for secure access.
+
+## Challenges
+
+## Mockups
+
+<table>
+  <tr>
+    <td><img src="./frontend/src/assets/readMeAssets/Mockup1.png" width="600"></td>
+    <td><img src="./frontend/src/assets/readMeAssets/Mockup2.png" width="600"></td>
+  </tr>
+  <tr>
+    <td><img src="./frontend/src/assets/readMeAssets/Mockup3.png" width="600"></td>
+    <td><img src="./frontend/src/assets/readMeAssets/Mockup4.png" width="600"></td>
+  </tr>
+</table>
+
+## Conclusion
+
+## Creaters
+
+<a href="https://github.com/andrevanheerden/Yggdrasil/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=andrevanheerden/Yggdrasil" />
+</a>
