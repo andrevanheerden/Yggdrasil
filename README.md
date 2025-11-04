@@ -68,7 +68,9 @@ Overall, these challenges strengthened my problem-solving skills, improved my te
 </table>
 
 ## Conclusion
-Developing Yggdrasil has been a valuable learning experience, allowing me to grow as a full-stack developer while creating a platform that empowers Dungeons & Dragons players to manage campaigns and unleash their creativity. I sincerely thank Tsungai Katsuro for their guidance and support, which made this project possible.
+Developing Yggdrasil has been a valuable learning experience, allowing me to grow as a full-stack developer while creating a platform that empowers Dungeons & Dragons players to manage campaigns and unleash their creativity. I sincerely thank Tsungai Katsuro for their guidance and support, which made this project possible. For more information, please refer to the Documentation folder, which contains PDFs on my product proposal, design process, and SEO & Google Analytics documentation.
+
+[![View Deployed Website](https://img.shields.io/badge/View%20Deployed%20Website-00B746?style=for-the-badge&logo=globe&logoColor=white)](https://andredv.xyz/)
 
 ## Creaters
 
