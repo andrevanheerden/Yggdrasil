@@ -10,6 +10,54 @@ The platform features a fully integrated, game-style inventory and creation syst
 
 I created Yggdrasil out of a desire to simplify the D&D experience. Unlike existing tools such as D&D Beyond, which often hide key features behind paywalls and clutter the campaign management process, Yggdrasil focuses on accessibility, flexibility, and intuitive design — so you can spend less time organizing and more time adventuring.
 
+## How to run Yggdrasil
+
+#### Step 1:
+
+Clone the repo:
+```
+https://github.com/andrevanheerden/Yggdrasil.git
+```
+#### Step 2:
+
+open yggdrasil frontend file in terminal:
+
+```
+cd frontend
+```
+
+#### Step 3:
+
+Install dependencies using terminal:
+
+```
+npm install
+```
+
+#### Step 4:
+
+now open a new terminal and open bakend files:
+
+```
+cd backend
+```
+
+#### Step 5:
+
+start the backend: 
+
+```
+npm start
+```
+
+#### Step 6:
+
+go backe to previos terminal and start the frontend: 
+
+```
+npm start
+```
+
 ## Yggdrasil is build with
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
