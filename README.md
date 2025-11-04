@@ -74,7 +74,7 @@ Developing Yggdrasil has been a valuable learning experience, allowing me to gro
 
 ## Demo Video
 
-[![Demo video](https://img.shields.io/badge/View%20Deployed%20Website-DDDDDD?style=for-the-badge&logo=globe&logoColor=white)](https://drive.google.com/drive/u/0/folders/1HLpoQxmLsw_EykI3wrv6EeejwaA22XCM)
+[![Demo video](https://img.shields.io/badge/Demo%20video-DDDDDD?style=for-the-badge&logo=globe&logoColor=white)](https://drive.google.com/drive/u/0/folders/1HLpoQxmLsw_EykI3wrv6EeejwaA22XCM)
 
 ## Creaters
 
