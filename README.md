@@ -47,7 +47,13 @@ The backend is deployed on Render and linked to the frontend using the URL provi
 The MySQL database is hosted on AlwaysData, which functions similarly to XAMPP. The only significant change required was updating the local configuration to use the AlwaysData connection details instead of the local setup. The database is also connected to the backend through environment variables for secure access.
 
 ## Challenges
+During the creation of Yggdrasil, I encountered several challenges that helped me grow as a developer. One of the main challenges was time management. Balancing multiple major projects made it difficult to focus fully on the website, resulting in periods of intense “crunch time” to meet deadlines and collect metrics for evaluation. This experience taught me the importance of planning, prioritization, and maintaining a realistic development schedule.
 
+Another significant challenge was the transition from MongoDB to MySQL, which required self-hosting and reconfiguring the database. I initially faced difficulties with XAMPP and setting up connections, but through persistence and research, I was able to overcome these issues and implement a stable solution. 
+
+Finally, deploying the website presented its own hurdles. Many large deployment platforms, such as Azure, are feature-rich but not always intuitive, which made initial deployment complex. Navigating these platforms and finding a straightforward deployment path taught me valuable lessons about environmental variables, linking frontends and backends, and the importance of choosing deployment solutions that balance functionality with usability.
+
+Overall, these challenges strengthened my problem-solving skills, improved my technical knowledge, and reinforced the value of planning and persistence in solo development projects.
 ## Mockups
 
 <table>
@@ -62,6 +68,7 @@ The MySQL database is hosted on AlwaysData, which functions similarly to XAMPP. 
 </table>
 
 ## Conclusion
+Developing Yggdrasil has been a valuable learning experience, allowing me to grow as a full-stack developer while creating a platform that empowers Dungeons & Dragons players to manage campaigns and unleash their creativity. I sincerely thank Tsungai Katsuro for their guidance and support, which made this project possible.
 
 ## Creaters
 
