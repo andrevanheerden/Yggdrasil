@@ -129,3 +129,9 @@ Developing Yggdrasil has been a valuable learning experience, allowing me to gro
 <a href="https://github.com/andrevanheerden/Yggdrasil/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=andrevanheerden/Yggdrasil" />
 </a>
+
+## Acknowledgments
+
+Thanks for these awesome help in teaching me the skills to develop this project 
+
+- Tsungai Katsuro - tsungai@openwindow.co.za
